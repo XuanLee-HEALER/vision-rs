@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply bg-base text-subtext1;
+    @apply bg-base text-subtext1 overflow-x-hidden;
   }
 
   html {
@@ -20,12 +20,22 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* 完全隐藏滚动条 */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
-/* 自定义滚动条 */
+/* 自定义滚动条（保留用于某些区域） */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -33,12 +43,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.surface1');
-  border-radius: 4px;
+  background: transparent;
+  border-radius: 2px;
+  transition: background 300ms ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.surface2');
+  background: theme('colors.surface1');
 }
 
 /* 选中文本样式 */
@@ -47,11 +58,120 @@
   color: theme('colors.text');
 }
 
-/* 代码块样式优化 */
+/* ==================== 动画系统 ==================== */
+
+/* 环境光渐变 */
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 30s ease infinite;
+}
+
+/* 呼吸光效 */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+    box-shadow: 0 0 8px currentColor;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 16px currentColor;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 进度环绘制 */
+@keyframes draw-circle {
+  from {
+    stroke-dasharray: 0 37.7;
+  }
+  to {
+    stroke-dasharray: 37.7 37.7;
+  }
+}
+
+.animate-draw-circle {
+  animation: draw-circle 0.6s ease-out;
+}
+
+/* 淡入上浮 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 淡入 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 脉冲 */
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* 旋转 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 淡入动画 */
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* ==================== 代码块样式 ==================== */
+
 pre {
   @apply bg-mantle border border-surface0 rounded-lg p-5 my-6 overflow-x-auto;
   font-size: 14px;
   line-height: 1.6;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+pre:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 code {
@@ -64,25 +184,66 @@ pre code {
   @apply bg-transparent text-text p-0;
 }
 
-/* MDX 内容样式 */
+/* ==================== MDX 内容样式 ==================== */
+
 .prose {
   @apply max-w-none;
 }
 
+/* 段落淡入动画 */
+.prose > * {
+  animation: fade-in-up 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.prose > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.prose > *:nth-child(2) {
+  animation-delay: 50ms;
+}
+.prose > *:nth-child(3) {
+  animation-delay: 100ms;
+}
+.prose > *:nth-child(4) {
+  animation-delay: 150ms;
+}
+.prose > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+.prose > *:nth-child(6) {
+  animation-delay: 250ms;
+}
+
+/* 标题 */
 .prose h1 {
   @apply text-text text-4xl font-bold mb-6;
+  scroll-margin-top: 2rem;
 }
 
 .prose h2 {
   @apply text-text text-3xl font-semibold mt-12 mb-5 pb-2 border-b border-overlay0;
+  scroll-margin-top: 2rem;
 }
 
 .prose h3 {
   @apply text-text text-2xl font-semibold mt-8 mb-4;
+  scroll-margin-top: 2rem;
 }
 
 .prose h4 {
   @apply text-subtext1 text-xl font-semibold mt-6 mb-3;
+  scroll-margin-top: 2rem;
+}
+
+/* 段落首字母放大 */
+.prose > p:first-of-type::first-letter {
+  font-size: 3.5em;
+  font-weight: 700;
+  float: left;
+  line-height: 0.9;
+  margin: 0.1em 0.1em 0 0;
+  color: theme('colors.blue');
 }
 
 .prose p {
@@ -97,7 +258,8 @@ pre code {
   @apply text-text font-semibold;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   @apply text-subtext1 mb-4;
 }
 
@@ -128,4 +290,53 @@ pre code {
 
 .prose tr:hover {
   @apply bg-surface0;
+}
+
+/* ==================== 滚动吸附 ==================== */
+
+.snap-y {
+  scroll-snap-type: y proximity;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* ==================== 视差效果 ==================== */
+
+.parallax-slow {
+  transform: translateZ(-1px) scale(2);
+}
+
+/* ==================== 响应式优化 ==================== */
+
+@media (max-width: 1280px) {
+  .prose > p:first-of-type::first-letter {
+    font-size: 2.5em;
+  }
+}
+
+@media (max-width: 768px) {
+  .prose > p:first-of-type::first-letter {
+    font-size: inherit;
+    font-weight: inherit;
+    float: none;
+    margin: 0;
+  }
+
+  .prose {
+    font-size: 14px;
+  }
+
+  .prose h1 {
+    font-size: 2rem;
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+  }
+
+  .prose h3 {
+    font-size: 1.25rem;
+  }
 }

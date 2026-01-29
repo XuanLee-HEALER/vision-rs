@@ -1,24 +1,28 @@
-import type { MDXComponents } from 'mdx/types'
+import type { MDXComponents } from 'mdx/types';
+import InteractiveCodeBlock from '@/components/InteractiveCodeBlock';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    h1: ({ children }) => (
-      <h1 className="text-4xl font-bold text-text mb-6">{children}</h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="text-3xl font-semibold text-text mt-12 mb-5 pb-2 border-b border-overlay0">
+    h1: ({ children }) => <h1 className="text-4xl font-bold text-text mb-6">{children}</h1>,
+    h2: ({ children, id }) => (
+      <h2
+        id={id}
+        className="text-3xl font-semibold text-text mt-12 mb-5 pb-2 border-b border-overlay0 scroll-mt-8"
+      >
         {children}
       </h2>
     ),
-    h3: ({ children }) => (
-      <h3 className="text-2xl font-semibold text-text mt-8 mb-4">{children}</h3>
+    h3: ({ children, id }) => (
+      <h3 id={id} className="text-2xl font-semibold text-text mt-8 mb-4 scroll-mt-8">
+        {children}
+      </h3>
     ),
-    h4: ({ children }) => (
-      <h4 className="text-xl font-semibold text-subtext1 mt-6 mb-3">{children}</h4>
+    h4: ({ children, id }) => (
+      <h4 id={id} className="text-xl font-semibold text-subtext1 mt-6 mb-3 scroll-mt-8">
+        {children}
+      </h4>
     ),
-    p: ({ children }) => (
-      <p className="text-base leading-relaxed text-subtext1 mb-4">{children}</p>
-    ),
+    p: ({ children }) => <p className="text-base leading-relaxed text-subtext1 mb-4">{children}</p>,
     a: ({ href, children }) => (
       <a
         href={href}
@@ -36,22 +40,22 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           </code>
         );
       }
-      return <code className={className}>{children}</code>;
+
+      // Extract language from className (e.g., "language-rust")
+      const language = className?.replace('language-', '') || 'text';
+      const code = String(children).trim();
+
+      return <InteractiveCodeBlock code={code} language={language} />;
     },
-    pre: ({ children }) => (
-      <pre className="bg-mantle border border-surface0 rounded-lg p-5 my-6 overflow-x-auto">
-        {children}
-      </pre>
-    ),
+    pre: ({ children }) => {
+      // Pre is handled by code component
+      return <>{children}</>;
+    },
     ul: ({ children }) => (
-      <ul className="list-disc list-inside text-subtext1 mb-4 space-y-2">
-        {children}
-      </ul>
+      <ul className="list-disc list-inside text-subtext1 mb-4 space-y-2">{children}</ul>
     ),
     ol: ({ children }) => (
-      <ol className="list-decimal list-inside text-subtext1 mb-4 space-y-2">
-        {children}
-      </ol>
+      <ol className="list-decimal list-inside text-subtext1 mb-4 space-y-2">{children}</ol>
     ),
     li: ({ children }) => <li className="mb-2">{children}</li>,
     blockquote: ({ children }) => (
@@ -69,16 +73,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </th>
     ),
-    td: ({ children }) => (
-      <td className="p-3 border border-overlay0">{children}</td>
-    ),
+    td: ({ children }) => <td className="p-3 border border-overlay0">{children}</td>,
     img: ({ src, alt }) => (
-      <img
-        src={src}
-        alt={alt}
-        className="rounded-lg my-8 mx-auto shadow-lg max-w-full"
-      />
+      <img src={src} alt={alt} className="rounded-lg my-8 mx-auto shadow-lg max-w-full" />
     ),
     ...components,
-  }
+  };
 }

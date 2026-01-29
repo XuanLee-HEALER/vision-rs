@@ -1,10 +1,10 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -45,11 +45,54 @@ const config: Config = {
         sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
         mono: ['Fira Code', 'JetBrains Mono', 'monospace'],
       },
+      animation: {
+        gradient: 'gradient 30s ease infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'draw-circle': 'draw-circle 0.6s ease-out',
+        'fade-in-up': 'fade-in-up 0.6s ease-out',
+        'fade-in': 'fade-in 0.3s ease-out',
+      },
+      keyframes: {
+        gradient: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        'pulse-glow': {
+          '0%, 100%': {
+            opacity: '0.5',
+            boxShadow: '0 0 8px currentColor',
+          },
+          '50%': {
+            opacity: '1',
+            boxShadow: '0 0 16px currentColor',
+          },
+        },
+        'draw-circle': {
+          from: { strokeDasharray: '0 37.7' },
+          to: { strokeDasharray: '37.7 37.7' },
+        },
+        'fade-in-up': {
+          from: {
+            opacity: '0',
+            transform: 'translateY(20px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+      },
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
+        spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require('@tailwindcss/typography')],
 };
 
 export default config;
