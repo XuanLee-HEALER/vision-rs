@@ -11,3 +11,9 @@ export type {
 
 // Server-side loaders
 export { getAllLessonSlugs, getLesson, getLessonsByCategory } from './loader.server';
+
+// Navigation
+export { generateNavigation, getNavigation } from './navigation.server';
+
+// Table of Contents
+export { extractToc, buildTocTree } from './toc.server';

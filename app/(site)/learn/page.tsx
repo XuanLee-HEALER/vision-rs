@@ -1,14 +1,12 @@
-import LearnLayout from "@/components/LearnLayout";
-import Link from "next/link";
+import LearnLayout from '@/components/layout/LearnLayout';
+import Link from 'next/link';
 
 export default function LearnPage() {
   return (
     <LearnLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-5xl font-bold text-text mb-4">
-            开始学习 Rust
-          </h1>
+          <h1 className="text-5xl font-bold text-text mb-4">开始学习 Rust</h1>
           <p className="text-xl text-subtext1">
             通过图文并茂的方式，深入理解 Rust 编程语言的核心概念
           </p>
@@ -49,11 +47,11 @@ export default function LearnPage() {
         </div>
 
         <div className="mt-16 p-6 bg-surface0 rounded-lg border border-overlay0">
-          <h2 className="text-2xl font-semibold text-text mb-4">
-            💡 学习建议
-          </h2>
+          <h2 className="text-2xl font-semibold text-text mb-4">💡 学习建议</h2>
           <ul className="space-y-2 text-subtext1">
-            <li>• 如果你是 Rust 新手，建议从<strong className="text-text">语言概念</strong>开始</li>
+            <li>
+              • 如果你是 Rust 新手，建议从<strong className="text-text">语言概念</strong>开始
+            </li>
             <li>• 每个主题都包含详细的代码示例和可视化图表</li>
             <li>• 点击左侧导航栏可以快速跳转到感兴趣的内容</li>
             <li>• 遇到不理解的概念，可以多看几遍代码示例</li>
@@ -72,25 +70,19 @@ interface LearningPathCardProps {
   color: string;
 }
 
-function LearningPathCard({
-  icon,
-  title,
-  description,
-  href,
-  color,
-}: LearningPathCardProps) {
+function LearningPathCard({ icon, title, description, href, color }: LearningPathCardProps) {
   return (
     <Link
       href={href}
       className="block p-6 bg-surface0 rounded-lg border border-overlay0 hover:border-blue hover:bg-surface1 transition-all group"
     >
       <div className="text-4xl mb-4">{icon}</div>
-      <h3 className={`text-xl font-semibold text-${color} mb-2 group-hover:text-lavender transition-colors`}>
+      <h3
+        className={`text-xl font-semibold text-${color} mb-2 group-hover:text-lavender transition-colors`}
+      >
         {title}
       </h3>
-      <p className="text-subtext1 text-sm leading-relaxed">
-        {description}
-      </p>
+      <p className="text-subtext1 text-sm leading-relaxed">{description}</p>
     </Link>
   );
 }

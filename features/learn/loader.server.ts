@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { Lesson, LessonFrontmatter } from './types';
+import { extractToc, buildTocTree } from './toc.server';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
 
@@ -51,10 +52,15 @@ export async function getLesson(slug: string): Promise<Lesson | null> {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
 
+    // 提取目录
+    const tocItems = extractToc(content);
+    const toc = buildTocTree(tocItems);
+
     return {
       slug,
       frontmatter: data as LessonFrontmatter,
       content,
+      toc,
     };
   } catch (error) {
     console.error(`Error loading lesson: ${slug}`, error);

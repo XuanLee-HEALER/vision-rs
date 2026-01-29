@@ -1,17 +1,21 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { navigationData, NavSection, NavItem } from "@/lib/navigation";
-import { useState } from "react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { NavSection, NavItem } from '@/features/learn';
+import { useState } from 'react';
 
-export default function Sidebar() {
+interface SidebarClientProps {
+  navigation: NavSection[];
+}
+
+export default function SidebarClient({ navigation }: SidebarClientProps) {
   const pathname = usePathname();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    "语言概念": true,
-    "数据结构": true,
-    "三方库原理": false,
-    "网络编程 & 分布式": false,
+    语言概念: true,
+    数据结构: true,
+    三方库原理: false,
+    '网络编程 & 分布式': false,
   });
 
   const toggleSection = (title: string) => {
@@ -26,7 +30,7 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-20 h-[calc(100vh-5rem)] w-72 bg-crust border-r border-overlay0 overflow-y-auto">
       <nav className="p-6 space-y-8">
-        {navigationData.map((section) => (
+        {navigation.map((section) => (
           <div key={section.title}>
             {/* Section Header */}
             <button
@@ -41,7 +45,7 @@ export default function Sidebar() {
               </div>
               <svg
                 className={`w-4 h-4 text-overlay2 transition-transform ${
-                  openSections[section.title] ? "rotate-90" : ""
+                  openSections[section.title] ? 'rotate-90' : ''
                 }`}
                 fill="none"
                 stroke="currentColor"
@@ -61,11 +65,7 @@ export default function Sidebar() {
               <div className="space-y-1">
                 {/* Simple items */}
                 {section.items?.map((item) => (
-                  <NavLink
-                    key={item.href}
-                    item={item}
-                    isActive={isActive(item.href)}
-                  />
+                  <NavLink key={item.href} item={item} isActive={isActive(item.href)} />
                 ))}
 
                 {/* Subsections */}
@@ -76,11 +76,7 @@ export default function Sidebar() {
                     </div>
                     <div className="space-y-1">
                       {subsection.items.map((item) => (
-                        <NavLink
-                          key={item.href}
-                          item={item}
-                          isActive={isActive(item.href)}
-                        />
+                        <NavLink key={item.href} item={item} isActive={isActive(item.href)} />
                       ))}
                     </div>
                   </div>
@@ -102,8 +98,8 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
         block px-3 py-2 rounded-md text-sm transition-all duration-200
         ${
           isActive
-            ? "bg-surface1 text-blue font-medium border-l-3 border-blue"
-            : "text-subtext1 hover:bg-surface0 hover:text-blue"
+            ? 'bg-surface1 text-blue font-medium border-l-3 border-blue'
+            : 'text-subtext1 hover:bg-surface0 hover:text-blue'
         }
       `}
     >

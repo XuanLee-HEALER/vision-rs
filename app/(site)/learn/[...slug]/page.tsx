@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllLessonSlugs, getLesson } from '@/features/learn';
+import TableOfContents from '@/components/content/TableOfContents';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -117,17 +118,33 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   }
 
   return (
-    <article className="prose prose-lg max-w-none">
-      <MDXRemote
-        source={lesson.content}
-        components={components}
-        options={{
-          mdxOptions: {
-            remarkPlugins: [remarkGfm],
-            rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings],
-          },
-        }}
-      />
-    </article>
+    <>
+      <article className="prose prose-lg max-w-none">
+        <MDXRemote
+          source={lesson.content}
+          components={components}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkGfm],
+              rehypePlugins: [rehypeSlug, rehypeAutolinkHeadings],
+            },
+          }}
+        />
+      </article>
+
+      {/* Table of Contents - 右侧 */}
+      {lesson.toc && lesson.toc.length > 0 && (
+        <aside className="hidden w-64 shrink-0 border-l border-overlay0/30 pl-8 lg:block">
+          <div className="sticky top-6">
+            <h4 className="mb-4 text-xs font-medium uppercase tracking-wider text-subtext0">
+              本页大纲
+            </h4>
+            <nav>
+              <TableOfContents items={lesson.toc} />
+            </nav>
+          </div>
+        </aside>
+      )}
+    </>
   );
 }
