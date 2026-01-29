@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code local settings (keep settings.json for shared config)
+.claude/settings.local.json
+
+# Serena cache
+.serena/cache/

@@ -1,0 +1,18 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build outputs
+.next
+out
+build
+
+# Cache
+.cache
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Generated
+next-env.d.ts
