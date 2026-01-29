@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NavSection, NavItem } from '@/features/learn';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SidebarClientProps {
   navigation: NavSection[];
@@ -17,6 +17,38 @@ export default function SidebarClient({ navigation }: SidebarClientProps) {
     三方库原理: false,
     '网络编程 & 分布式': false,
   });
+  const [topPosition, setTopPosition] = useState(0);
+  const [height, setHeight] = useState('100vh');
+
+  useEffect(() => {
+    const header = document.getElementById('site-header');
+    if (!header) return;
+
+    const updatePosition = () => {
+      const rect = header.getBoundingClientRect();
+      const bannerBottom = rect.bottom;
+
+      if (bannerBottom > 0) {
+        // Banner 可见，Sidebar 从 Banner 下方开始
+        setTopPosition(bannerBottom);
+        setHeight(`calc(100vh - ${bannerBottom}px)`);
+      } else {
+        // Banner 不可见，Sidebar 占满视窗
+        setTopPosition(0);
+        setHeight('100vh');
+      }
+    };
+
+    // 初始化
+    updatePosition();
+
+    // 监听滚动
+    window.addEventListener('scroll', updatePosition, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition);
+    };
+  }, []);
 
   const toggleSection = (title: string) => {
     setOpenSections((prev) => ({
@@ -28,7 +60,10 @@ export default function SidebarClient({ navigation }: SidebarClientProps) {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className="fixed left-0 top-20 h-[calc(100vh-5rem)] w-72 bg-crust border-r border-overlay0 overflow-y-auto">
+    <aside
+      style={{ top: `${topPosition}px`, height }}
+      className="fixed left-0 w-72 bg-crust border-r border-overlay0 overflow-y-auto"
+    >
       <nav className="p-6 space-y-8">
         {navigation.map((section) => (
           <div key={section.title}>
