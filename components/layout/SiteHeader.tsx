@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function Banner() {
   return (
-    <header className="h-14 border-b border-overlay0/10 bg-mantle">
+    <header id="site-header" className="h-14 border-b border-overlay0/10 bg-mantle">
       <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between gap-3 px-4 md:px-6">
         {/* Logo - 响应式 */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
