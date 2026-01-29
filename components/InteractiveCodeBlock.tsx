@@ -66,10 +66,13 @@ export default function InteractiveCodeBlock({
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-surface0/30 backdrop-blur-sm border-b border-overlay0/30">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-subtext0 font-mono">{fileName || language}</span>
+          <span className="text-xs font-mono" style={{ color: '#d0d0d0' }}>
+            {fileName || language}
+          </span>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-xs text-subtext0 hover:text-text transition-colors"
+            className="text-xs transition-colors hover:text-text"
+            style={{ color: '#d0d0d0' }}
           >
             {isExpanded ? '折叠' : '展开'}
           </button>
@@ -79,6 +82,7 @@ export default function InteractiveCodeBlock({
           <button
             onClick={copyCode}
             className="px-3 py-1 text-xs bg-surface1 hover:bg-surface2 rounded transition-colors flex items-center gap-1"
+            style={{ color: '#f0f0f0' }}
           >
             {isCopied ? (
               <>
@@ -101,7 +105,8 @@ export default function InteractiveCodeBlock({
             <button
               onClick={runCode}
               disabled={isRunning}
-              className="px-3 py-1 text-xs bg-blue hover:bg-blue/80 text-base rounded transition-colors disabled:opacity-50 flex items-center gap-1"
+              className="px-3 py-1 text-xs bg-blue hover:bg-blue/80 rounded transition-colors disabled:opacity-50 flex items-center gap-1"
+              style={{ color: '#f0f0f0' }}
             >
               {isRunning ? (
                 <>
@@ -163,10 +168,13 @@ export default function InteractiveCodeBlock({
       {output && (
         <div className="border-t border-overlay0/30 bg-surface0/20 p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-xs text-subtext0">输出：</div>
+            <div className="text-xs" style={{ color: '#d0d0d0' }}>
+              输出：
+            </div>
             <button
               onClick={() => setOutput('')}
-              className="text-xs text-subtext0 hover:text-text transition-colors"
+              className="text-xs transition-colors hover:text-text"
+              style={{ color: '#d0d0d0' }}
             >
               清除
             </button>

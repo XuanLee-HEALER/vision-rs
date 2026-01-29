@@ -58,272 +58,123 @@
   color: theme('colors.text');
 }
 
-/* ==================== 动画系统 ==================== */
-
-/* 环境光渐变 */
-@keyframes gradient {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 30s ease infinite;
-}
-
-/* 呼吸光效 */
-@keyframes pulse-glow {
-  0%,
-  100% {
-    opacity: 0.5;
-    box-shadow: 0 0 8px currentColor;
-  }
-  50% {
-    opacity: 1;
-    box-shadow: 0 0 16px currentColor;
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* 进度环绘制 */
-@keyframes draw-circle {
-  from {
-    stroke-dasharray: 0 37.7;
-  }
-  to {
-    stroke-dasharray: 37.7 37.7;
-  }
-}
-
-.animate-draw-circle {
-  animation: draw-circle 0.6s ease-out;
-}
-
-/* 淡入上浮 */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 淡入 */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* 脉冲 */
-@keyframes ping {
-  75%,
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-.animate-ping {
-  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-/* 旋转 */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-/* 淡入动画 */
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
 /* ==================== 代码块样式 ==================== */
 
 pre {
-  @apply bg-mantle border border-surface0 rounded-lg p-5 my-6 overflow-x-auto;
+  @apply mt-8 mb-8 rounded-lg border border-overlay0/30 bg-mantle p-6 overflow-x-auto;
   font-size: 14px;
   line-height: 1.6;
-  transition:
-    transform 200ms ease,
-    box-shadow 200ms ease;
-}
-
-pre:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 code {
-  @apply bg-surface0 text-mauve px-1.5 py-0.5 rounded;
-  font-size: 0.875em;
-  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  @apply bg-surface0/50 px-1.5 py-0.5 rounded text-sm;
+  color: #c6a0f6 !important;
+  font-family: 'CaskaydiaCove Nerd Font Mono', monospace;
 }
 
 pre code {
-  @apply bg-transparent text-text p-0;
+  @apply bg-transparent p-0;
+  color: #f0f0f0 !important;
 }
 
-/* ==================== MDX 内容样式 ==================== */
+/* ==================== MDX 内容样式 (Prose) ==================== */
 
 .prose {
   @apply max-w-none;
 }
 
-/* 段落淡入动画 */
-.prose > * {
-  animation: fade-in-up 0.6s ease-out;
-  animation-fill-mode: both;
-}
-
-.prose > *:nth-child(1) {
-  animation-delay: 0ms;
-}
-.prose > *:nth-child(2) {
-  animation-delay: 50ms;
-}
-.prose > *:nth-child(3) {
-  animation-delay: 100ms;
-}
-.prose > *:nth-child(4) {
-  animation-delay: 150ms;
-}
-.prose > *:nth-child(5) {
-  animation-delay: 200ms;
-}
-.prose > *:nth-child(6) {
-  animation-delay: 250ms;
-}
-
 /* 标题 */
 .prose h1 {
-  @apply text-text text-4xl font-bold mb-6;
+  @apply text-4xl font-medium tracking-tight mb-6;
+  color: #f0f0f0 !important;
   scroll-margin-top: 2rem;
 }
 
 .prose h2 {
-  @apply text-text text-3xl font-semibold mt-12 mb-5 pb-2 border-b border-overlay0;
+  @apply text-2xl font-medium tracking-tight mt-16 mb-6 pb-4 border-b border-overlay0/10;
+  color: #f0f0f0 !important;
   scroll-margin-top: 2rem;
 }
 
 .prose h3 {
-  @apply text-text text-2xl font-semibold mt-8 mb-4;
+  @apply text-xl font-medium mt-12 mb-4;
+  color: #f0f0f0 !important;
   scroll-margin-top: 2rem;
 }
 
 .prose h4 {
-  @apply text-subtext1 text-xl font-semibold mt-6 mb-3;
+  @apply text-lg font-medium mt-8 mb-3;
+  color: #e0e0e0 !important;
   scroll-margin-top: 2rem;
 }
 
-/* 段落首字母放大 */
-.prose > p:first-of-type::first-letter {
-  font-size: 3.5em;
-  font-weight: 700;
-  float: left;
-  line-height: 0.9;
-  margin: 0.1em 0.1em 0 0;
-  color: theme('colors.blue');
-}
-
+/* 段落 */
 .prose p {
-  @apply text-subtext1 text-base leading-relaxed mb-4;
+  @apply text-base leading-relaxed mb-6;
+  color: #e0e0e0 !important;
 }
 
+/* 链接 */
 .prose a {
-  @apply text-blue no-underline border-b border-transparent transition-colors hover:border-blue;
+  @apply no-underline border-b border-transparent transition-colors;
+  color: #8aadf4 !important;
 }
 
+.prose a:hover {
+  border-color: #8aadf4;
+}
+
+/* 加粗 */
 .prose strong {
-  @apply text-text font-semibold;
+  @apply font-semibold;
+  color: #f0f0f0 !important;
 }
 
+/* 列表 */
 .prose ul,
 .prose ol {
-  @apply text-subtext1 mb-4;
+  @apply mb-4;
+  color: #e0e0e0 !important;
 }
 
 .prose li {
   @apply mb-2;
+  color: #e0e0e0 !important;
 }
 
+/* 引用块 */
 .prose blockquote {
-  @apply border-l-4 border-blue bg-surface0 pl-4 py-2 my-4 italic;
+  @apply border-l-4 border-blue bg-surface0/50 pl-4 py-2 my-4 italic;
+  color: #d0d0d0 !important;
 }
 
+/* 图片 */
 .prose img {
-  @apply rounded-lg my-8 mx-auto shadow-lg;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  @apply rounded-lg my-8 mx-auto shadow-lg max-w-full;
 }
 
+/* 表格 */
 .prose table {
   @apply w-full my-6 border-collapse;
 }
 
 .prose th {
-  @apply bg-surface0 text-text font-semibold p-3 text-left border border-overlay0;
+  @apply bg-surface0/50 font-semibold p-3 text-left border border-overlay0/30;
+  color: #f0f0f0 !important;
 }
 
 .prose td {
-  @apply p-3 border border-overlay0;
+  @apply p-3 border border-overlay0/30;
+  color: #e0e0e0 !important;
 }
 
 .prose tr:hover {
-  @apply bg-surface0;
-}
-
-/* ==================== 滚动吸附 ==================== */
-
-.snap-y {
-  scroll-snap-type: y proximity;
-}
-
-.snap-start {
-  scroll-snap-align: start;
-}
-
-/* ==================== 视差效果 ==================== */
-
-.parallax-slow {
-  transform: translateZ(-1px) scale(2);
+  @apply bg-surface0/30;
 }
 
 /* ==================== 响应式优化 ==================== */
 
-@media (max-width: 1280px) {
-  .prose > p:first-of-type::first-letter {
-    font-size: 2.5em;
-  }
-}
-
 @media (max-width: 768px) {
-  .prose > p:first-of-type::first-letter {
-    font-size: inherit;
-    font-weight: inherit;
-    float: none;
-    margin: 0;
-  }
-
   .prose {
     font-size: 14px;
   }

@@ -1,31 +1,33 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
 
-interface TocItem {
-  id: string;
-  text: string;
-  level: number;
-}
+import { useEffect, useState } from 'react';
 
 export default function TableOfContents() {
-  const [toc, setToc] = useState<TocItem[]>([]);
-  const [activeId, setActiveId] = useState<string>('');
-  const pathname = usePathname();
+  const [headings, setHeadings] = useState<{ id: string; text: string }[]>([]);
+  const [activeId, setActiveId] = useState('');
 
   useEffect(() => {
-    // Extract headings from the page
-    const headings = Array.from(document.querySelectorAll('h2, h3, h4')) as HTMLHeadingElement[];
+    // 提取 h2 标题
+    const h2s = Array.from(document.querySelectorAll('h2'));
+    const tocItems = h2s.map((h, index) => {
+      // 生成唯一 ID
+      const baseId = h.id || h.textContent?.toLowerCase().replace(/\s+/g, '-') || '';
+      const uniqueId = h.id || `${baseId}-${index}`;
 
-    const tocItems: TocItem[] = headings.map((heading) => ({
-      id: heading.id || heading.textContent?.toLowerCase().replace(/\s+/g, '-') || '',
-      text: heading.textContent || '',
-      level: parseInt(heading.tagName.substring(1)),
-    }));
+      // 设置 ID
+      if (!h.id) {
+        h.id = uniqueId;
+      }
 
-    setToc(tocItems);
+      return {
+        id: uniqueId,
+        text: h.textContent || '',
+      };
+    });
 
-    // Observe which heading is in view
+    setHeadings(tocItems);
+
+    // Intersection Observer 自动高亮
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -37,56 +39,41 @@ export default function TableOfContents() {
       { rootMargin: '-100px 0px -80% 0px' }
     );
 
-    headings.forEach((heading) => {
-      if (heading.id) {
-        observer.observe(heading);
-      }
+    h2s.forEach((h) => {
+      if (h.id) observer.observe(h);
     });
 
     return () => {
-      headings.forEach((heading) => {
-        if (heading.id) {
-          observer.unobserve(heading);
-        }
+      h2s.forEach((h) => {
+        if (h.id) observer.unobserve(h);
       });
     };
-  }, [pathname]);
+  }, []);
 
-  if (toc.length === 0) return null;
+  if (headings.length === 0) return null;
 
   return (
-    <aside className="hidden xl:block fixed right-0 top-0 h-screen w-72 border-l border-overlay0/30 bg-crust/30 backdrop-blur-sm">
-      <div className="p-6 h-full overflow-y-auto scrollbar-none">
-        <h3 className="text-sm font-bold text-text mb-4">目录</h3>
-        <nav>
-          <ul className="space-y-2">
-            {toc.map((item) => (
-              <li key={item.id} style={{ paddingLeft: `${(item.level - 2) * 12}px` }}>
-                <a
-                  href={`#${item.id}`}
-                  className={`
-                    block text-xs py-1.5 px-3 rounded-md transition-all duration-200
-                    ${
-                      activeId === item.id
-                        ? 'text-blue bg-blue/10 border-l-2 border-blue font-medium'
-                        : 'text-subtext0 hover:text-text hover:bg-surface0'
-                    }
-                  `}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById(item.id)?.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    });
-                  }}
-                >
-                  {item.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-    </aside>
+    <ul className="space-y-2 text-sm">
+      {headings.map((h) => (
+        <li key={h.id}>
+          <a
+            href={`#${h.id}`}
+            className={`
+              block transition-colors
+              ${activeId === h.id ? 'text-blue font-medium' : 'text-subtext0 hover:text-text'}
+            `}
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById(h.id)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+            }}
+          >
+            {h.text}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -18,9 +18,9 @@ const config: Config = {
         surface1: '#494d64',
         surface2: '#5b6078',
 
-        text: '#cad3f5',
-        subtext1: '#b8c0e0',
-        subtext0: '#a5adcb',
+        text: '#f0f0f0',
+        subtext1: '#e0e0e0',
+        subtext0: '#d0d0d0',
 
         overlay0: '#6e738d',
         overlay1: '#8087a2',
@@ -42,8 +42,8 @@ const config: Config = {
         rosewater: '#f4dbd6',
       },
       fontFamily: {
-        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'monospace'],
+        sans: ['CaskaydiaCove Nerd Font Mono', 'monospace'],
+        mono: ['CaskaydiaCove Nerd Font Mono', 'monospace'],
       },
       animation: {
         gradient: 'gradient 30s ease infinite',
