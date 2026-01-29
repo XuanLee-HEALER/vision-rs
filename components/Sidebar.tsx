@@ -1,0 +1,113 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { navigationData, NavSection, NavItem } from "@/lib/navigation";
+import { useState } from "react";
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    "语言概念": true,
+    "数据结构": true,
+    "三方库原理": false,
+    "网络编程 & 分布式": false,
+  });
+
+  const toggleSection = (title: string) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
+
+  const isActive = (href: string) => pathname === href;
+
+  return (
+    <aside className="fixed left-0 top-20 h-[calc(100vh-5rem)] w-72 bg-crust border-r border-overlay0 overflow-y-auto">
+      <nav className="p-6 space-y-8">
+        {navigationData.map((section) => (
+          <div key={section.title}>
+            {/* Section Header */}
+            <button
+              onClick={() => toggleSection(section.title)}
+              className="w-full flex items-center justify-between mb-3 group"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{section.icon}</span>
+                <h3 className="text-base font-bold text-text group-hover:text-blue transition-colors">
+                  {section.title}
+                </h3>
+              </div>
+              <svg
+                className={`w-4 h-4 text-overlay2 transition-transform ${
+                  openSections[section.title] ? "rotate-90" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+
+            {/* Section Content */}
+            {openSections[section.title] && (
+              <div className="space-y-1">
+                {/* Simple items */}
+                {section.items?.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    item={item}
+                    isActive={isActive(item.href)}
+                  />
+                ))}
+
+                {/* Subsections */}
+                {section.subsections?.map((subsection) => (
+                  <div key={subsection.name} className="mt-4 first:mt-0">
+                    <div className="text-xs font-semibold text-overlay2 uppercase tracking-wider mb-2 px-3">
+                      {subsection.name}
+                    </div>
+                    <div className="space-y-1">
+                      {subsection.items.map((item) => (
+                        <NavLink
+                          key={item.href}
+                          item={item}
+                          isActive={isActive(item.href)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </nav>
+    </aside>
+  );
+}
+
+function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
+  return (
+    <Link
+      href={item.href}
+      className={`
+        block px-3 py-2 rounded-md text-sm transition-all duration-200
+        ${
+          isActive
+            ? "bg-surface1 text-blue font-medium border-l-3 border-blue"
+            : "text-subtext1 hover:bg-surface0 hover:text-blue"
+        }
+      `}
+    >
+      {item.title}
+    </Link>
+  );
+}

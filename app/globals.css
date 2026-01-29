@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-overlay0;
+  }
+
+  body {
+    @apply bg-base text-subtext1;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.surface1');
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.surface2');
+}
+
+/* 选中文本样式 */
+::selection {
+  background: theme('colors.surface2');
+  color: theme('colors.text');
+}
+
+/* 代码块样式优化 */
+pre {
+  @apply bg-mantle border border-surface0 rounded-lg p-5 my-6 overflow-x-auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+code {
+  @apply bg-surface0 text-mauve px-1.5 py-0.5 rounded;
+  font-size: 0.875em;
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+pre code {
+  @apply bg-transparent text-text p-0;
+}
+
+/* MDX 内容样式 */
+.prose {
+  @apply max-w-none;
+}
+
+.prose h1 {
+  @apply text-text text-4xl font-bold mb-6;
+}
+
+.prose h2 {
+  @apply text-text text-3xl font-semibold mt-12 mb-5 pb-2 border-b border-overlay0;
+}
+
+.prose h3 {
+  @apply text-text text-2xl font-semibold mt-8 mb-4;
+}
+
+.prose h4 {
+  @apply text-subtext1 text-xl font-semibold mt-6 mb-3;
+}
+
+.prose p {
+  @apply text-subtext1 text-base leading-relaxed mb-4;
+}
+
+.prose a {
+  @apply text-blue no-underline border-b border-transparent transition-colors hover:border-blue;
+}
+
+.prose strong {
+  @apply text-text font-semibold;
+}
+
+.prose ul, .prose ol {
+  @apply text-subtext1 mb-4;
+}
+
+.prose li {
+  @apply mb-2;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue bg-surface0 pl-4 py-2 my-4 italic;
+}
+
+.prose img {
+  @apply rounded-lg my-8 mx-auto shadow-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.prose table {
+  @apply w-full my-6 border-collapse;
+}
+
+.prose th {
+  @apply bg-surface0 text-text font-semibold p-3 text-left border border-overlay0;
+}
+
+.prose td {
+  @apply p-3 border border-overlay0;
+}
+
+.prose tr:hover {
+  @apply bg-surface0;
+}
