@@ -1,45 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useScrollManager } from '@/hooks/useScrollManager';
+import { useSideMenu } from '@/contexts/SideMenuContext';
 
 export default function SidebarToggle() {
   const [topPosition, setTopPosition] = useState(80); // 初始位置 (5rem = 80px)
 
-  useEffect(() => {
-    const header = document.getElementById('site-header');
-    if (!header) return;
+  const SPACING = 24; // 按钮与 Banner 底部的间距 (1.5rem)
+  const MIN_TOP = 16; // 按钮固定在顶部时的最小距离 (1rem)
 
-    const SPACING = 24; // 按钮与 Banner 底部的间距 (1.5rem)
-    const MIN_TOP = 16; // 按钮固定在顶部时的最小距离 (1rem)
+  useScrollManager((scrollY, headerBottom) => {
+    if (headerBottom >= SPACING) {
+      // Banner 还在视口内，按钮跟随 Banner
+      setTopPosition(headerBottom + SPACING);
+    } else {
+      // Banner 已滚出视口，按钮固定在顶部
+      setTopPosition(MIN_TOP);
+    }
+  });
 
-    const handleScroll = () => {
-      const rect = header.getBoundingClientRect();
-      const bannerBottom = rect.bottom;
-
-      if (bannerBottom >= SPACING) {
-        // Banner 还在视口内，按钮跟随 Banner
-        setTopPosition(bannerBottom + SPACING);
-      } else {
-        // Banner 已滚出视口，按钮固定在顶部
-        setTopPosition(MIN_TOP);
-      }
-    };
-
-    // 初始化位置
-    handleScroll();
-
-    // 监听滚动事件
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  const handleClick = () => {
-    const event = new CustomEvent('toggleSideMenu');
-    window.dispatchEvent(event);
-  };
+  const { toggle } = useSideMenu();
 
   return (
     <button
@@ -50,7 +31,7 @@ export default function SidebarToggle() {
         hover:border-overlay0/50 hover:bg-surface0
       "
       aria-label="打开菜单"
-      onClick={handleClick}
+      onClick={toggle}
     >
       <svg className="h-5 w-5 text-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path

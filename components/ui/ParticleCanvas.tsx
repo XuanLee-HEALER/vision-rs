@@ -12,6 +12,60 @@ interface Particle {
   draw(): void;
 }
 
+/**
+ * 空间分区网格,用于优化粒子间距离计算
+ * 将画布分成固定大小的网格单元,只检查相邻单元的粒子
+ */
+class SpatialGrid {
+  cellSize = 120; // 网格单元大小 (等于连接距离)
+  grid: Map<string, Particle[]> = new Map();
+
+  /**
+   * 重建网格,将所有粒子分配到对应的网格单元
+   */
+  rebuild(particles: Particle[]) {
+    this.grid.clear();
+    particles.forEach((p) => {
+      const key = this.getCellKey(p.x, p.y);
+      if (!this.grid.has(key)) {
+        this.grid.set(key, []);
+      }
+      this.grid.get(key)!.push(p);
+    });
+  }
+
+  /**
+   * 获取粒子所在网格单元的 key
+   */
+  private getCellKey(x: number, y: number): string {
+    const col = Math.floor(x / this.cellSize);
+    const row = Math.floor(y / this.cellSize);
+    return `${col},${row}`;
+  }
+
+  /**
+   * 获取指定粒子附近的所有粒子 (包括相邻 9 个单元)
+   */
+  getNearbyParticles(particle: Particle): Particle[] {
+    const neighbors: Particle[] = [];
+    const [colStr, rowStr] = this.getCellKey(particle.x, particle.y).split(',');
+    const col = parseInt(colStr);
+    const row = parseInt(rowStr);
+
+    // 检查当前单元和相邻 8 个单元
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const key = `${col + dx},${row + dy}`;
+        const cellParticles = this.grid.get(key);
+        if (cellParticles) {
+          neighbors.push(...cellParticles);
+        }
+      }
+    }
+    return neighbors;
+  }
+}
+
 export default function ParticleCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -83,6 +137,9 @@ export default function ParticleCanvas() {
       particles.push(new ParticleClass());
     }
 
+    // 创建空间分区网格
+    const spatialGrid = new SpatialGrid();
+
     // Mouse interaction
     let mouseX = 0;
     let mouseY = 0;
@@ -98,8 +155,11 @@ export default function ParticleCanvas() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // 重建空间网格 (每帧重建,因为粒子位置会变化)
+      spatialGrid.rebuild(particles);
+
       // Update and draw particles
-      particles.forEach((particle, index) => {
+      particles.forEach((particle) => {
         particle.update();
         particle.draw();
 
@@ -112,9 +172,23 @@ export default function ParticleCanvas() {
           particle.vx += dx * 0.00005;
           particle.vy += dy * 0.00005;
         }
+      });
 
-        // Draw connections between nearby particles
-        particles.slice(index + 1).forEach((otherParticle) => {
+      // 使用空间分区优化连接线绘制
+      const drawnConnections = new Set<string>();
+
+      particles.forEach((particle) => {
+        const nearbyParticles = spatialGrid.getNearbyParticles(particle);
+
+        nearbyParticles.forEach((otherParticle) => {
+          // 避免重复绘制同一对粒子的连接线
+          const particleIndex = particles.indexOf(particle);
+          const otherIndex = particles.indexOf(otherParticle);
+          if (particleIndex >= otherIndex) return;
+
+          const connectionKey = `${particleIndex}-${otherIndex}`;
+          if (drawnConnections.has(connectionKey)) return;
+
           const dx = particle.x - otherParticle.x;
           const dy = particle.y - otherParticle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -126,6 +200,8 @@ export default function ParticleCanvas() {
             ctx.strokeStyle = `rgba(138, 173, 244, ${0.15 * (1 - distance / 120)})`;
             ctx.lineWidth = 1;
             ctx.stroke();
+
+            drawnConnections.add(connectionKey);
           }
         });
       });

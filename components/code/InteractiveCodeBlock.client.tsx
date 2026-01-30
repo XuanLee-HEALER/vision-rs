@@ -66,13 +66,10 @@ export default function InteractiveCodeBlock({
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-surface0/30 backdrop-blur-sm border-b border-overlay0/30">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono" style={{ color: '#d0d0d0' }}>
-            {fileName || language}
-          </span>
+          <span className="text-xs font-mono text-subtext0">{fileName || language}</span>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-xs transition-colors hover:text-text"
-            style={{ color: '#d0d0d0' }}
+            className="text-xs text-subtext0 transition-colors hover:text-text"
           >
             {isExpanded ? '折叠' : '展开'}
           </button>
@@ -81,8 +78,8 @@ export default function InteractiveCodeBlock({
         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={copyCode}
-            className="px-3 py-1 text-xs bg-surface1 hover:bg-surface2 rounded transition-colors flex items-center gap-1"
-            style={{ color: '#f0f0f0' }}
+            className="px-3 py-1 text-xs text-text bg-surface1 hover:bg-surface2 rounded transition-colors flex items-center gap-1"
+            aria-label="复制代码"
           >
             {isCopied ? (
               <>
@@ -105,8 +102,8 @@ export default function InteractiveCodeBlock({
             <button
               onClick={runCode}
               disabled={isRunning}
-              className="px-3 py-1 text-xs bg-blue hover:bg-blue/80 rounded transition-colors disabled:opacity-50 flex items-center gap-1"
-              style={{ color: '#f0f0f0' }}
+              className="px-3 py-1 text-xs text-base bg-blue hover:bg-blue/80 rounded transition-colors disabled:opacity-50 flex items-center gap-1"
+              aria-label="运行代码"
             >
               {isRunning ? (
                 <>
@@ -168,13 +165,11 @@ export default function InteractiveCodeBlock({
       {output && (
         <div className="border-t border-overlay0/30 bg-surface0/20 p-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-xs" style={{ color: '#d0d0d0' }}>
-              输出：
-            </div>
+            <div className="text-xs text-subtext0">输出：</div>
             <button
               onClick={() => setOutput('')}
-              className="text-xs transition-colors hover:text-text"
-              style={{ color: '#d0d0d0' }}
+              className="text-xs text-subtext0 transition-colors hover:text-text"
+              aria-label="清除输出"
             >
               清除
             </button>
