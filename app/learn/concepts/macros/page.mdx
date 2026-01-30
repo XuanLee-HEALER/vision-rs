@@ -1,0 +1,233 @@
+import LearnLayout from '@/components/LearnLayout';
+
+export const metadata = {
+  title: '宏系统 - Vision-RS',
+  description: 'Rust 的宏编程'
+};
+
+<LearnLayout>
+
+# 宏系统
+
+宏（Macro）在编译时展开代码，提供元编程能力。
+
+## 声明宏
+
+使用 `macro_rules!` 定义声明宏：
+
+```rust
+macro_rules! say_hello {
+    () => {
+        println!("Hello!");
+    };
+}
+
+fn main() {
+    say_hello!();  // 展开为 println!("Hello!");
+}
+```
+
+### 带参数的宏
+
+```rust
+macro_rules! create_function {
+    ($func_name:ident) => {
+        fn $func_name() {
+            println!("函数 {:?} 被调用", stringify!($func_name));
+        }
+    };
+}
+
+create_function!(foo);
+create_function!(bar);
+
+fn main() {
+    foo();  // "函数 "foo" 被调用"
+    bar();  // "函数 "bar" 被调用"
+}
+```
+
+### 模式匹配
+
+```rust
+macro_rules! vec_of_strings {
+    ($($x:expr),*) => {
+        {
+            let mut temp_vec = Vec::new();
+            $(
+                temp_vec.push($x.to_string());
+            )*
+            temp_vec
+        }
+    };
+}
+
+fn main() {
+    let v = vec_of_strings!["hello", "world"];
+    println!("{:?}", v);  // ["hello", "world"]
+}
+```
+
+## 常用的内置宏
+
+### println! 和 format!
+
+```rust
+fn main() {
+    println!("Hello, {}!", "world");
+    let s = format!("x = {}, y = {}", 10, 20);
+}
+```
+
+### vec!
+
+```rust
+fn main() {
+    let v = vec![1, 2, 3];
+
+    // 等同于
+    let mut v = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+}
+```
+
+### panic!
+
+```rust
+fn main() {
+    panic!("发生了致命错误！");
+}
+```
+
+### assert! 和 debug_assert!
+
+```rust
+fn main() {
+    assert!(1 + 1 == 2, "数学出错了！");
+    assert_eq!(1 + 1, 2);
+    assert_ne!(1, 2);
+
+    // 只在 debug 模式下检查
+    debug_assert!(expensive_check());
+}
+
+fn expensive_check() -> bool {
+    true
+}
+```
+
+## 派生宏
+
+使用 `#[derive]` 自动实现 trait：
+
+```rust
+#[derive(Debug, Clone, PartialEq)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+fn main() {
+    let p1 = Point { x: 1, y: 2 };
+    let p2 = p1.clone();
+
+    println!("{:?}", p1);  // Debug
+    assert_eq!(p1, p2);    // PartialEq
+}
+```
+
+## 属性宏
+
+```rust
+#[test]
+fn it_works() {
+    assert_eq!(2 + 2, 4);
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_add() {
+        assert_eq!(2 + 2, 4);
+    }
+}
+```
+
+## 过程宏（高级）
+
+过程宏需要单独的 crate：
+
+```rust
+// 在 my_macro crate 中
+use proc_macro::TokenStream;
+
+#[proc_macro_derive(HelloMacro)]
+pub fn hello_macro_derive(input: TokenStream) -> TokenStream {
+    // 实现代码生成逻辑
+    // ...
+}
+```
+
+使用：
+
+```rust
+use my_macro::HelloMacro;
+
+#[derive(HelloMacro)]
+struct Pancakes;
+
+fn main() {
+    Pancakes::hello_macro();
+}
+```
+
+## 宏调试
+
+```rust
+macro_rules! debug_macro {
+    ($($x:tt)*) => {
+        {
+            println!("展开为：");
+            $($x)*
+        }
+    };
+}
+
+fn main() {
+    debug_macro! {
+        let x = 42;
+        println!("{}", x);
+    }
+}
+```
+
+使用 `cargo expand` 查看宏展开结果：
+
+```bash
+cargo install cargo-expand
+cargo expand
+```
+
+## 宏 vs 函数
+
+| 特性 | 宏 | 函数 |
+|------|------|------|
+| 调用语法 | `name!()` | `name()` |
+| 展开时机 | 编译时 | 运行时 |
+| 参数个数 | 可变 | 固定 |
+| 参数类型 | 任意 | 固定 |
+| 卫生性 | 有 | 无关 |
+
+## 小结
+
+- ✅ 宏在编译时展开代码
+- ✅ `macro_rules!` 定义声明宏
+- ✅ 派生宏自动实现 trait
+- ✅ 过程宏提供高级元编程
+- ✅ 宏比函数更灵活，但更难调试
+
+</LearnLayout>
+
+export default ({ children }) => <>{children}</>;
