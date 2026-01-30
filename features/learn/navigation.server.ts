@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { NavSection, NavItem, NavSubsection, LessonFrontmatter } from './types';
+import { MENTAL_MODEL_CONFIG } from './mental-model-config';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
 
@@ -10,10 +11,13 @@ const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
  */
 export async function generateNavigation(): Promise<NavSection[]> {
   const sections: Record<string, NavSection> = {
-    concepts: {
-      title: '语言概念',
-      icon: '🔤',
-      items: [],
+    'mental-model': {
+      title: 'Rust 心智世界',
+      icon: '',
+      items: MENTAL_MODEL_CONFIG.map((part) => ({
+        title: part.title,
+        href: `/learn/mental-model/${part.slug}`,
+      })),
     },
     'data-structures': {
       title: '数据结构',
