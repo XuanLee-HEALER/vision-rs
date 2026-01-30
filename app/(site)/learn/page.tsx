@@ -67,8 +67,20 @@ interface LearningPathCardProps {
   title: string;
   description: string;
   href: string;
-  color: string;
+  color: 'blue' | 'green' | 'mauve' | 'peach' | 'yellow' | 'red' | 'teal' | 'pink';
 }
+
+// Tailwind 完整 class 名称映射（避免动态拼接导致生产环境样式缺失）
+const colorClasses: Record<LearningPathCardProps['color'], string> = {
+  blue: 'text-blue',
+  green: 'text-green',
+  mauve: 'text-mauve',
+  peach: 'text-peach',
+  yellow: 'text-yellow',
+  red: 'text-red',
+  teal: 'text-teal',
+  pink: 'text-pink',
+};
 
 function LearningPathCard({ icon, title, description, href, color }: LearningPathCardProps) {
   return (
@@ -78,7 +90,7 @@ function LearningPathCard({ icon, title, description, href, color }: LearningPat
     >
       <div className="text-4xl mb-4">{icon}</div>
       <h3
-        className={`text-xl font-semibold text-${color} mb-2 group-hover:text-lavender transition-colors`}
+        className={`text-xl font-semibold ${colorClasses[color]} mb-2 group-hover:text-lavender transition-colors`}
       >
         {title}
       </h3>

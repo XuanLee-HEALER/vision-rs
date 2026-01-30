@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { execSync } from 'child_process';
+import { Octokit } from '@octokit/rest';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/mental-model');
 
@@ -20,8 +20,87 @@ export interface Chapter {
 
 /**
  * 更新章节的"我的理解"部分
+ * 使用 GitHub API 进行更新，兼容 Serverless 环境
  */
 export async function updateUnderstanding(params: UpdateUnderstandingParams) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const githubToken = process.env.GITHUB_TOKEN;
+  const githubOwner = process.env.GITHUB_OWNER;
+  const githubRepo = process.env.GITHUB_REPO;
+  const githubBranch = process.env.GITHUB_BRANCH || 'main';
+
+  // 在生产环境且配置了 GitHub Token，使用 GitHub API
+  if (isProduction && githubToken && githubOwner && githubRepo) {
+    return await updateViaGitHubAPI(params, {
+      token: githubToken,
+      owner: githubOwner,
+      repo: githubRepo,
+      branch: githubBranch,
+    });
+  }
+
+  // 开发环境或未配置 GitHub API，使用本地文件系统（仅限开发）
+  if (!isProduction) {
+    return await updateViaFileSystem(params);
+  }
+
+  throw new Error(
+    'GitHub API not configured. Please set GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO environment variables.'
+  );
+}
+
+/**
+ * 通过 GitHub API 更新文件
+ */
+async function updateViaGitHubAPI(
+  params: UpdateUnderstandingParams,
+  config: { token: string; owner: string; repo: string; branch: string }
+) {
+  const octokit = new Octokit({ auth: config.token });
+  const filePath = `content/mental-model/${params.chapterId}.mdx`;
+
+  try {
+    // 1. 获取文件当前内容和 SHA
+    const { data: fileData } = await octokit.repos.getContent({
+      owner: config.owner,
+      repo: config.repo,
+      path: filePath,
+      ref: config.branch,
+    });
+
+    if (!('content' in fileData)) {
+      throw new Error('File not found or is a directory');
+    }
+
+    // 2. 解码并修改内容
+    const currentContent = Buffer.from(fileData.content, 'base64').toString('utf-8');
+    const newContent = replaceUnderstandingSection(currentContent, params.content);
+
+    // 3. 提交更新
+    await octokit.repos.createOrUpdateFileContents({
+      owner: config.owner,
+      repo: config.repo,
+      path: filePath,
+      message: `Update understanding for ${params.chapterId}\n\nEdited by: ${params.email}`,
+      content: Buffer.from(newContent).toString('base64'),
+      sha: fileData.sha,
+      branch: config.branch,
+    });
+
+    console.log(`Successfully updated ${params.chapterId} via GitHub API`);
+    return { success: true, method: 'github-api' };
+  } catch (error) {
+    console.error('GitHub API update failed:', error);
+    throw new Error(
+      `Failed to update via GitHub API: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * 通过本地文件系统更新（仅限开发环境）
+ */
+async function updateViaFileSystem(params: UpdateUnderstandingParams) {
   const filePath = path.join(CONTENT_DIR, `${params.chapterId}.mdx`);
 
   // 验证文件存在
@@ -29,20 +108,9 @@ export async function updateUnderstanding(params: UpdateUnderstandingParams) {
     throw new Error(`Chapter file not found: ${params.chapterId}`);
   }
 
-  // 读取原文件
+  // 读取并修改文件
   const original = fs.readFileSync(filePath, 'utf-8');
-
-  // 定位"我的理解"部分
-  const marker = '## 我的理解';
-  const markerIndex = original.lastIndexOf(marker);
-
-  if (markerIndex === -1) {
-    throw new Error('Understanding section not found in file');
-  }
-
-  // 构造新内容（保留标记之前的所有内容）
-  const beforeMarker = original.substring(0, markerIndex);
-  const newContent = `${beforeMarker}${marker}\n\n> 此部分可通过管理后台编辑\n\n${params.content.trim()}\n`;
+  const newContent = replaceUnderstandingSection(original, params.content);
 
   // 原子性写入 (tmp -> rename)
   const tmpPath = `${filePath}.tmp`;
@@ -57,25 +125,24 @@ export async function updateUnderstanding(params: UpdateUnderstandingParams) {
     throw error;
   }
 
-  // Git 提交
-  try {
-    const safeFilePath = filePath.replace(/'/g, "'\\''");
-    const safeChapterId = params.chapterId.replace(/'/g, "'\\''");
-    const safeEmail = params.email.replace(/'/g, "'\\''");
+  console.log(`Successfully updated ${params.chapterId} via file system (dev mode)`);
+  return { success: true, method: 'file-system' };
+}
 
-    execSync(`git add '${safeFilePath}'`, { cwd: process.cwd() });
-    execSync(
-      `git commit -m 'Update understanding for ${safeChapterId}\n\nEdited by: ${safeEmail}'`,
-      { cwd: process.cwd() }
-    );
+/**
+ * 替换"我的理解"部分的内容
+ */
+function replaceUnderstandingSection(originalContent: string, newContent: string): string {
+  const marker = '## 我的理解';
+  const markerIndex = originalContent.lastIndexOf(marker);
 
-    console.log(`Successfully committed changes for ${params.chapterId}`);
-  } catch (error) {
-    console.error('Git commit failed:', error);
-    // 不影响文件更新，仅记录日志
+  if (markerIndex === -1) {
+    throw new Error('Understanding section not found in file');
   }
 
-  return { success: true };
+  // 构造新内容（保留标记之前的所有内容）
+  const beforeMarker = originalContent.substring(0, markerIndex);
+  return `${beforeMarker}${marker}\n\n> 此部分可通过管理后台编辑\n\n${newContent.trim()}\n`;
 }
 
 /**

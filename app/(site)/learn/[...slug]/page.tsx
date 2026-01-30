@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllLessonSlugs, getLesson } from '@/features/learn';
 import TableOfContents from '@/components/content/TableOfContents';
+import InteractiveCodeBlock from '@/components/code/InteractiveCodeBlock.client';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -68,12 +69,31 @@ const components = {
       </code>
     );
   },
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre
-      className="bg-mantle border border-surface0 rounded-lg p-5 my-6 overflow-x-auto text-sm leading-relaxed"
-      {...props}
-    />
-  ),
+  pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => {
+    // 提取 code 元素的内容和语言
+    const codeElement = Array.isArray(children)
+      ? children.find((child: any) => child?.type === 'code')
+      : children;
+
+    if (codeElement && typeof codeElement === 'object' && 'props' in codeElement) {
+      const className = codeElement.props.className || '';
+      const language = className.replace(/language-/, '') || 'text';
+      const code = String(codeElement.props.children || '').trim();
+
+      // 使用 InteractiveCodeBlock 提供复制和运行功能
+      return <InteractiveCodeBlock code={code} language={language} showLineNumbers={true} />;
+    }
+
+    // 如果没有找到 code 元素，使用默认的 pre 渲染
+    return (
+      <pre
+        className="bg-mantle border border-surface0 rounded-lg p-5 my-6 overflow-x-auto text-sm leading-relaxed"
+        {...props}
+      >
+        {children}
+      </pre>
+    );
+  },
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
       className="text-blue border-b border-transparent hover:border-blue transition-colors"
