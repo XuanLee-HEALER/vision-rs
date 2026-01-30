@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -17,11 +17,7 @@ export default function ChaptersPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    fetchChapters();
-  }, []);
-
-  const fetchChapters = async () => {
+  const fetchChapters = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/chapters');
 
@@ -41,7 +37,11 @@ export default function ChaptersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchChapters();
+  }, [fetchChapters]);
 
   // 按 part 分组
   const groupedChapters = chapters.reduce(

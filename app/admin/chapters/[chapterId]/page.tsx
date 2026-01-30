@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -25,13 +25,7 @@ export default function EditChapterPage() {
   const [error, setError] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  useEffect(() => {
-    if (chapterId) {
-      fetchChapter();
-    }
-  }, [chapterId]);
-
-  const fetchChapter = async () => {
+  const fetchChapter = useCallback(async () => {
     try {
       const res = await fetch(`/api/admin/chapters/${chapterId}`);
 
@@ -53,7 +47,13 @@ export default function EditChapterPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [chapterId, router]);
+
+  useEffect(() => {
+    if (chapterId) {
+      fetchChapter();
+    }
+  }, [chapterId, fetchChapter]);
 
   const handleSave = async () => {
     if (!chapterId || content === originalContent) return;

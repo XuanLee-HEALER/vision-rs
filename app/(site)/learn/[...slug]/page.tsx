@@ -1,3 +1,4 @@
+import React from 'react';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getAllLessonSlugs, getLesson } from '@/features/learn';
@@ -72,7 +73,10 @@ const components = {
   pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => {
     // 提取 code 元素的内容和语言
     const codeElement = Array.isArray(children)
-      ? children.find((child: any) => child?.type === 'code')
+      ? children.find(
+          (child): child is React.ReactElement =>
+            React.isValidElement(child) && child.type === 'code'
+        )
       : children;
 
     if (codeElement && typeof codeElement === 'object' && 'props' in codeElement) {
