@@ -30,6 +30,11 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 路径验证失败
+    if (errorMessage.includes('Invalid chapter ID')) {
+      return NextResponse.json({ error: errorMessage }, { status: 400 });
+    }
+
     if (errorMessage.includes('not found')) {
       return NextResponse.json({ error: 'Chapter not found' }, { status: 404 });
     }

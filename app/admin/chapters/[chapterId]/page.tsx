@@ -234,7 +234,40 @@ export default function EditChapterPage() {
   );
 }
 
-// 简单的 Markdown 渲染函数（基础支持）
+// 安全的 HTML 属性转义
+function escapeHtmlAttribute(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+// 验证 URL 安全性
+function isSafeUrl(url: string): boolean {
+  const trimmedUrl = url.trim().toLowerCase();
+
+  // 拒绝危险协议
+  const dangerousProtocols = ['javascript:', 'data:', 'vbscript:', 'file:'];
+  for (const protocol of dangerousProtocols) {
+    if (trimmedUrl.startsWith(protocol)) {
+      return false;
+    }
+  }
+
+  // 允许 http(s)、mailto、相对路径和锚点
+  return (
+    trimmedUrl.startsWith('http://') ||
+    trimmedUrl.startsWith('https://') ||
+    trimmedUrl.startsWith('mailto:') ||
+    trimmedUrl.startsWith('/') ||
+    trimmedUrl.startsWith('#') ||
+    trimmedUrl.startsWith('.')
+  );
+}
+
+// 简单但安全的 Markdown 渲染函数
 function renderMarkdown(markdown: string): string {
   let html = markdown;
 
@@ -255,8 +288,18 @@ function renderMarkdown(markdown: string): string {
   html = html.replace(/```([a-z]*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-  // 链接
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  // 链接（安全处理）
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+    // 验证 URL 安全性
+    if (!isSafeUrl(url)) {
+      // 如果 URL 不安全，只渲染文本
+      return text;
+    }
+    // 转义 URL 和文本
+    const safeUrl = escapeHtmlAttribute(url);
+    const safeText = text; // text 已经被前面的 HTML 转义处理过了
+    return `<a href="${safeUrl}">${safeText}</a>`;
+  });
 
   // 列表
   html = html.replace(/^\* (.+)$/gim, '<li>$1</li>');

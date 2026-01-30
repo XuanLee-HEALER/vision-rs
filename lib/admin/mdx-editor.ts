@@ -5,6 +5,35 @@ import { Octokit } from '@octokit/rest';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/mental-model');
 
+/**
+ * 验证 chapterId 是否安全
+ * 只允许字母、数字、连字符和下划线，防止路径穿越攻击
+ */
+function validateChapterId(chapterId: string): void {
+  // 检查是否为空
+  if (!chapterId || typeof chapterId !== 'string') {
+    throw new Error('Invalid chapter ID: empty or invalid type');
+  }
+
+  // 只允许字母、数字、连字符和下划线
+  const validPattern = /^[a-zA-Z0-9_-]+$/;
+  if (!validPattern.test(chapterId)) {
+    throw new Error(
+      `Invalid chapter ID: "${chapterId}" contains invalid characters. Only alphanumeric, hyphens, and underscores are allowed.`
+    );
+  }
+
+  // 防止过长的文件名
+  if (chapterId.length > 100) {
+    throw new Error('Invalid chapter ID: too long (max 100 characters)');
+  }
+
+  // 明确拒绝路径穿越尝试
+  if (chapterId.includes('..') || chapterId.includes('/') || chapterId.includes('\\')) {
+    throw new Error('Invalid chapter ID: path traversal attempt detected');
+  }
+}
+
 export interface UpdateUnderstandingParams {
   chapterId: string; // e.g., "1-1-crates-items"
   content: string; // 新的"我的理解"内容
@@ -56,6 +85,9 @@ async function updateViaGitHubAPI(
   params: UpdateUnderstandingParams,
   config: { token: string; owner: string; repo: string; branch: string }
 ) {
+  // 验证 chapterId 安全性
+  validateChapterId(params.chapterId);
+
   const octokit = new Octokit({ auth: config.token });
   const filePath = `content/mental-model/${params.chapterId}.mdx`;
 
@@ -101,6 +133,9 @@ async function updateViaGitHubAPI(
  * 通过本地文件系统更新（仅限开发环境）
  */
 async function updateViaFileSystem(params: UpdateUnderstandingParams) {
+  // 验证 chapterId 安全性
+  validateChapterId(params.chapterId);
+
   const filePath = path.join(CONTENT_DIR, `${params.chapterId}.mdx`);
 
   // 验证文件存在
@@ -149,6 +184,9 @@ function replaceUnderstandingSection(originalContent: string, newContent: string
  * 获取章节的"我的理解"部分内容
  */
 export function getUnderstandingSection(chapterId: string): string {
+  // 验证 chapterId 安全性
+  validateChapterId(chapterId);
+
   const filePath = path.join(CONTENT_DIR, `${chapterId}.mdx`);
 
   if (!fs.existsSync(filePath)) {
@@ -213,6 +251,9 @@ export function getAllChapters(): Chapter[] {
  * 获取章节的完整信息（包括 frontmatter）
  */
 export function getChapterInfo(chapterId: string) {
+  // 验证 chapterId 安全性
+  validateChapterId(chapterId);
+
   const filePath = path.join(CONTENT_DIR, `${chapterId}.mdx`);
 
   if (!fs.existsSync(filePath)) {
