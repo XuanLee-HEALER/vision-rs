@@ -12,6 +12,31 @@ interface SideMenuClientProps {
 export default function SideMenuClient({ navigation }: SideMenuClientProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const [topPosition, setTopPosition] = useState(56);
+  const [height, setHeight] = useState('calc(100vh - 56px)');
+
+  // 监听 banner 位置变化
+  useEffect(() => {
+    const header = document.getElementById('site-header');
+    if (!header) return;
+
+    const updatePosition = () => {
+      const rect = header.getBoundingClientRect();
+      const bannerBottom = rect.bottom;
+
+      if (bannerBottom > 0) {
+        setTopPosition(bannerBottom);
+        setHeight(`calc(100vh - ${bannerBottom}px)`);
+      } else {
+        setTopPosition(0);
+        setHeight('100vh');
+      }
+    };
+
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, { passive: true });
+    return () => window.removeEventListener('scroll', updatePosition);
+  }, []);
 
   // 监听自定义事件
   useEffect(() => {
@@ -32,8 +57,9 @@ export default function SideMenuClient({ navigation }: SideMenuClientProps) {
 
       {/* Menu */}
       <aside
+        style={{ top: `${topPosition}px`, height }}
         className={`
-          fixed left-0 top-14 z-50 h-[calc(100vh-3.5rem)] w-70
+          fixed left-0 z-50 w-70
           border-r border-overlay0/10 bg-mantle/95 backdrop-blur-xl
           transform transition-transform duration-300 ease-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}

@@ -17,8 +17,8 @@ export default function SidebarClient({ navigation }: SidebarClientProps) {
     三方库原理: false,
     '网络编程 & 分布式': false,
   });
-  const [topPosition, setTopPosition] = useState(0);
-  const [height, setHeight] = useState('100vh');
+  const [topPosition, setTopPosition] = useState(56); // Banner 高度 (h-14 = 56px)
+  const [height, setHeight] = useState('calc(100vh - 56px)');
 
   useEffect(() => {
     const header = document.getElementById('site-header');
