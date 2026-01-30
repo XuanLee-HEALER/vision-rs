@@ -47,6 +47,7 @@ export interface NavSubsection {
 export interface NavSection {
   title: string;
   icon: string;
+  href?: string; // Section 首页链接
   items?: NavItem[];
   subsections?: NavSubsection[];
 }

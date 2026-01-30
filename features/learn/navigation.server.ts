@@ -14,6 +14,7 @@ export async function generateNavigation(): Promise<NavSection[]> {
     'mental-model': {
       title: 'Rust 心智世界',
       icon: '',
+      href: '/learn/mental-model',
       items: MENTAL_MODEL_CONFIG.map((part) => ({
         title: part.title,
         href: `/learn/mental-model/${part.slug}`,
@@ -22,6 +23,7 @@ export async function generateNavigation(): Promise<NavSection[]> {
     'data-structures': {
       title: '数据结构',
       icon: '📦',
+      href: '/learn/data-structures',
       subsections: [
         {
           name: '标准库提供',
@@ -36,11 +38,13 @@ export async function generateNavigation(): Promise<NavSection[]> {
     crates: {
       title: '三方库原理',
       icon: '🔧',
+      href: '/learn/crates',
       items: [],
     },
     network: {
       title: '网络编程 & 分布式',
       icon: '🌐',
+      href: '/learn/network',
       items: [],
     },
   };
@@ -82,12 +86,16 @@ export async function generateNavigation(): Promise<NavSection[]> {
     }
   }
 
-  // 对每个 section 的 items 按 order 排序
-  for (const section of Object.values(sections)) {
+  // 对每个 section 的 items 排序
+  for (const [key, section] of Object.entries(sections)) {
     if (section.items) {
+      // mental-model 已经在 config 中按正确顺序定义，不需要重新排序
+      if (key === 'mental-model') {
+        continue;
+      }
+
+      // 其他 section 按标题排序
       section.items.sort((a, b) => {
-        // 如果有 order 字段，使用它排序
-        // 否则按标题排序
         return a.title.localeCompare(b.title, 'zh-CN');
       });
     }

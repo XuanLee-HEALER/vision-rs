@@ -76,32 +76,46 @@ export default function NavigationMenu({
             {navigation.map((section) => (
               <div key={section.title}>
                 {/* Section Header */}
-                <button
-                  onClick={() => toggleSection(section.title)}
-                  className="w-full flex items-center justify-between mb-3 group"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{section.icon}</span>
-                    <h3 className="text-base font-bold text-text group-hover:text-blue transition-colors">
-                      {section.title}
-                    </h3>
-                  </div>
-                  <svg
-                    className={`w-4 h-4 text-overlay2 transition-transform ${
-                      openSections[section.title] ? 'rotate-90' : ''
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="w-full flex items-center justify-between mb-3 group">
+                  {section.href ? (
+                    <Link
+                      href={section.href}
+                      className="flex items-center gap-2 flex-1"
+                      onClick={handleLinkClick}
+                    >
+                      <span className="text-lg">{section.icon}</span>
+                      <h3 className="text-base font-bold text-text group-hover:text-blue transition-colors">
+                        {section.title}
+                      </h3>
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-2 flex-1">
+                      <span className="text-lg">{section.icon}</span>
+                      <h3 className="text-base font-bold text-text">{section.title}</h3>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => toggleSection(section.title)}
+                    className="p-1"
+                    aria-label={`展开/折叠 ${section.title}`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      className={`w-4 h-4 text-overlay2 transition-transform ${
+                        openSections[section.title] ? 'rotate-90' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
 
                 {/* Section Content */}
                 {openSections[section.title] && (
@@ -147,9 +161,19 @@ export default function NavigationMenu({
             {navigation.map((section) => (
               <div key={section.title} className="mb-8">
                 {/* Section Title */}
-                <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-subtext0">
-                  {section.title}
-                </h3>
+                {section.href ? (
+                  <Link
+                    href={section.href}
+                    className="mb-3 block text-xs font-medium uppercase tracking-wider text-subtext0 hover:text-blue transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    {section.title}
+                  </Link>
+                ) : (
+                  <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-subtext0">
+                    {section.title}
+                  </h3>
+                )}
 
                 {/* Simple Items */}
                 {section.items && (
