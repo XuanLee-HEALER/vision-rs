@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD046 -->
+{/* markdownlint-disable MD046 */}
 
 import LearnLayout from '@/components/LearnLayout';
 import MermaidDiagram from '@/components/MermaidDiagram';
@@ -59,7 +59,7 @@ graph TD
 | 128-bit | `i128`  | `u128`  | -2¹²⁷ ~ 2¹²⁷-1   | 0 ~ 2¹²⁸-1     |
 | arch    | `isize` | `usize` | 取决于架构       | 取决于架构     |
 
-````rust
+```rust
 fn main() {
     let a: i32 = -42;         // 有符号 32 位
     let b: u32 = 42;          // 无符号 32 位
@@ -73,7 +73,7 @@ fn main() {
     let binary = 0b1111_0000;  // 二进制
     let byte = b'A';           // 字节（仅限 u8）
 }
-```text
+```
 
 **整数溢出**：
 
@@ -89,7 +89,7 @@ fn main() {
     let w = x.saturating_add(1);    // 饱和为 255
     let o = x.overflowing_add(1);   // 返回 (值, 是否溢出)
 }
-```text
+```
 
 ### 2. 浮点类型
 
@@ -113,7 +113,7 @@ fn main() {
 
     println!("NaN == NaN? {}", nan == nan);  // false!
 }
-```text
+```
 
 ⚠️ **注意**：浮点数遵循 IEEE-754 标准，可能有精度问题。
 
@@ -136,7 +136,7 @@ fn main() {
     let or = true || false;    // true
     let not = !true;           // false
 }
-```text
+```
 
 ### 4. 字符类型
 
@@ -154,7 +154,7 @@ fn main() {
     // char 是 Unicode 标量值
     let emoji = '🦀';  // Rust 的吉祥物 Ferris！
 }
-```text
+```
 
 **char vs 字符串**：
 
@@ -167,7 +167,7 @@ fn main() {
     let rustacean = '🦀';       // ✅ 合法
     // let invalid = '🦀😻';    // ❌ 编译错误：char 只能是单个字符
 }
-```text
+```
 
 ## 复合类型
 
@@ -193,7 +193,7 @@ fn main() {
     // 单元类型（unit type）
     let unit = ();  // 空元组，大小为 0 字节
 }
-```text
+```
 
 **元组的内存布局**：
 
@@ -202,7 +202,7 @@ fn main() {
     let tuple: (u8, u16, u8) = (1, 2, 3);
     println!("Size: {} bytes", std::mem::size_of_val(&tuple));  // 6 bytes（可能有填充）
 }
-```text
+```
 
 <MemoryLayout3D scenario="stack" />
 
@@ -226,7 +226,7 @@ fn main() {
     // 数组是栈分配的
     println!("数组大小: {} bytes", std::mem::size_of_val(&a));  // 20 bytes (5 * 4)
 }
-```text
+```
 
 **数组 vs Vec**：
 
@@ -240,7 +240,7 @@ fn main() {
     let mut vec = vec![1, 2, 3, 4, 5];
     vec.push(6);  // ✅ 可以增长
 }
-```text
+```
 
 **越界访问**：
 
@@ -258,7 +258,7 @@ fn main() {
         None => println!("索引越界"),
     }
 }
-```text
+```
 
 ## 切片类型
 
@@ -278,7 +278,7 @@ fn main() {
     let hello: &str = &s[0..5];    // "hello"
     let world: &str = &s[6..11];   // "world"
 }
-```text
+```
 
 ## 类型转换
 
@@ -298,7 +298,7 @@ fn main() {
 
     println!("b = {}", b);
 }
-```text
+```
 
 **安全转换**：
 
@@ -315,7 +315,7 @@ fn main() {
         Err(_) => println!("转换失败：值超出范围"),
     }
 }
-```text
+```
 
 ## 类型别名
 
@@ -331,7 +331,7 @@ fn main() {
     // Kilometers 和 i32 完全相同
     let total = distance + another;  // ✅ 可以相加
 }
-```text
+```
 
 ## 类型推导
 
@@ -349,7 +349,7 @@ fn main() {
 
     let x: i32 = "42".parse().expect("Not a number!");  // ✅ 明确类型
 }
-```text
+```
 
 ## 内存大小
 
@@ -370,7 +370,7 @@ fn main() {
     println!("[i32; 10]: {} bytes",
         mem::size_of::<[i32; 10]>());  // 40
 }
-```text
+```
 
 ## 实践建议
 
@@ -393,7 +393,7 @@ fn main() {
     // 4. 优先使用 f64 而不是 f32
     let pi = 3.14159;  // 默认 f64，精度更高
 }
-```text
+```
 
 ### ❌ 避免做法
 
@@ -413,7 +413,7 @@ fn main() {
     let y: i64 = 20;
     // let z = x + y;  // ❌ 需要显式转换
 }
-```text
+```
 
 ## 练习题
 
@@ -424,7 +424,7 @@ fn main() {
     let data = (42u8, 3.14f64, 'A', [1i32, 2, 3]);
     // 问：data 占用多少字节？
 }
-```text
+```
 
 <details>
 <summary>查看答案</summary>
@@ -437,7 +437,7 @@ fn main() {
     println!("{} bytes", mem::size_of_val(&data));  // 32 bytes
     // u8(1) + padding(7) + f64(8) + char(4) + [i32;3](12) = 32
 }
-```text
+```
 
 </details>
 
@@ -451,7 +451,7 @@ fn main() {
     let y: u16 = x;
     println!("{}", y);
 }
-```text
+```
 
 <details>
 <summary>查看答案</summary>
@@ -462,7 +462,7 @@ fn main() {
     let y: u16 = x as u16;  // 显式转换
     println!("{}", y);  // 255
 }
-```text
+```
 
 </details>
 
@@ -481,5 +481,3 @@ fn main() {
 
 </LearnLayout>
 
-export default ({ children }) => <>{children}</>;
-````

@@ -3,9 +3,9 @@ import { notFound } from 'next/navigation';
 import { getPartBySlug, MENTAL_MODEL_CONFIG } from '@/features/learn/mental-model-config';
 
 interface PartPageProps {
-  params: {
+  params: Promise<{
     partSlug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -14,7 +14,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: PartPageProps) {
+export async function generateMetadata(props: PartPageProps) {
+  const params = await props.params;
   const part = getPartBySlug(params.partSlug);
 
   if (!part) {
@@ -29,7 +30,8 @@ export async function generateMetadata({ params }: PartPageProps) {
   };
 }
 
-export default function PartPage({ params }: PartPageProps) {
+export default async function PartPage(props: PartPageProps) {
+  const params = await props.params;
   const part = getPartBySlug(params.partSlug);
 
   if (!part) {

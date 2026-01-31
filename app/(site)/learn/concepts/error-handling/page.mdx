@@ -20,7 +20,7 @@ Rust 将错误分为两类：**可恢复错误**（`Result<T, E>`）和**不可�
 fn main() {
     panic!("程序崩溃了！");
 }
-```text
+```
 
 **何时使用 panic**：
 
@@ -48,7 +48,7 @@ fn main() {
         }
     };
 }
-```text
+```
 
 ## 匹配不同错误
 
@@ -70,7 +70,7 @@ fn main() {
         },
     };
 }
-```text
+```
 
 ## unwrap 和 expect
 
@@ -85,7 +85,7 @@ fn main() {
     let f = File::open("hello.txt")
         .expect("无法打开 hello.txt");
 }
-```text
+```
 
 ## 传播错误
 
@@ -108,7 +108,7 @@ fn read_username_simplified() -> Result<String, io::Error> {
     File::open("hello.txt")?.read_to_string(&mut s)?;
     Ok(s)
 }
-```text
+```
 
 <MermaidDiagram
   chart={`
@@ -129,7 +129,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let f = File::open("hello.txt")?;  // ✅ 现在可以在 main 中使用 ?
     Ok(())
 }
-```text
+```
 
 ## 自定义错误类型
 
@@ -159,7 +159,7 @@ impl From<std::io::Error> for MyError {
         MyError::Io(err)
     }
 }
-```text
+```
 
 ## Option vs Result
 
@@ -173,7 +173,7 @@ fn find_user(id: u32) -> Option<User> {
 fn save_user(user: &User) -> Result<(), DatabaseError> {
     // ...
 }
-```text
+```
 
 ## and_then 和 map
 
@@ -189,7 +189,7 @@ fn main() {
         .and_then(|x| Ok(x * 2))
         .and_then(|x| Ok(x + 1));  // Ok(5)
 }
-```text
+```
 
 ## 实践建议
 
@@ -211,7 +211,7 @@ let config = load_config()
 pub fn parse_number(s: &str) -> Result<i32, ParseError> {
     s.parse().map_err(|e| ParseError::InvalidFormat(e))
 }
-```text
+```
 
 ### ❌ 避免做法
 
@@ -226,7 +226,7 @@ let _ = may_fail();  // 错误被静默忽略
 if x < 0 {
     panic!("x 不能为负");  // 应该使用 Result
 }
-```text
+```
 
 ## 小结
 
@@ -239,4 +239,3 @@ if x < 0 {
 
 </LearnLayout>
 
-export default ({ children }) => <>{children}</>;

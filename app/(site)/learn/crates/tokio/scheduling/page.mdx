@@ -37,7 +37,7 @@ tokio::spawn(async {
     let data = fetch_from_network().await;
     println!("Data: {}", data);
 });
-```text
+```
 
 ### spawn_blocking (阻塞任务)
 
@@ -46,7 +46,7 @@ tokio::task::spawn_blocking(|| {
     // CPU 密集或阻塞操作
     expensive_computation()
 });
-```text
+```
 
 **区别**：
 
@@ -61,7 +61,7 @@ Tokio 使用 LIFO 策略处理本地任务：
 // 新任务被添加到队列头部
 tokio::spawn(async { /* Task 1 */ });
 tokio::spawn(async { /* Task 2 */ });  // 会先执行
-```text
+```
 
 ## Yield
 
@@ -79,7 +79,7 @@ async fn cooperative_task() {
         }
     }
 }
-```text
+```
 
 ## 小结
 
@@ -90,4 +90,3 @@ async fn cooperative_task() {
 
 </LearnLayout>
 
-export default ({ children }) => <>{children}</>;

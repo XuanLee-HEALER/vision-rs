@@ -1,9 +1,29 @@
+// @ts-nocheck - React 19 + @react-three/fiber 类型兼容性问题
 'use client';
 
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, Object3DNode } from '@react-three/fiber';
 import { OrbitControls, Text, Box, Cone } from '@react-three/drei';
 import { useRef, useState } from 'react';
 import * as THREE from 'three';
+
+// 扩展 JSX 类型以支持 Three.js 元素
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      group: Object3DNode<THREE.Group, typeof THREE.Group>;
+      mesh: Object3DNode<THREE.Mesh, typeof THREE.Mesh>;
+      meshStandardMaterial: Object3DNode<
+        THREE.MeshStandardMaterial,
+        typeof THREE.MeshStandardMaterial
+      >;
+      cylinderGeometry: Object3DNode<THREE.CylinderGeometry, typeof THREE.CylinderGeometry>;
+      ambientLight: Object3DNode<THREE.AmbientLight, typeof THREE.AmbientLight>;
+      pointLight: Object3DNode<THREE.PointLight, typeof THREE.PointLight>;
+      spotLight: Object3DNode<THREE.SpotLight, typeof THREE.SpotLight>;
+      gridHelper: Object3DNode<THREE.GridHelper, typeof THREE.GridHelper>;
+    }
+  }
+}
 
 interface MemoryBlockProps {
   position: [number, number, number];

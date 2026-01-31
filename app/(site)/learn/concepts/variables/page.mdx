@@ -21,7 +21,7 @@ fn main() {
     let x = 5;
     println!("x 的值是: {}", x);
 }
-```text
+```
 
 ### 不可变性（Immutability）
 
@@ -33,7 +33,7 @@ fn main() {
     // x = 6;  // ❌ 编译错误：cannot assign twice to immutable variable
     println!("x = {}", x);
 }
-```text
+```
 
 #### 为什么默认不可变？
 
@@ -54,7 +54,7 @@ fn main() {
     x = 6;  // ✅ 可以修改
     println!("x 的新值: {}", x);
 }
-```text
+```
 
 <MermaidDiagram
   chart={`
@@ -95,7 +95,7 @@ fn main() {
 
     println!("外层 x = {}", x);  // 6
 }
-```text
+```
 
 ### 遮蔽 vs 可变性
 
@@ -112,7 +112,7 @@ fn main() {
     let mut count = "   ";
     // count = count.len();       // ❌ 编译错误：类型不匹配
 }
-```text
+```
 
 2. **保持不可变性**：
 
@@ -122,7 +122,7 @@ fn main() {
     let x = x + 1;  // 新的 x 仍然是不可变的
     // x = 10;      // ❌ 不能修改
 }
-```text
+```
 
 <MermaidDiagram
   chart={`
@@ -149,7 +149,7 @@ const PI: f64 = 3.14159;
 fn main() {
     println!("最大点数: {}", MAX_POINTS);
 }
-```text
+```
 
 ### 常量的特点
 
@@ -179,7 +179,7 @@ fn main() {
 fn get_value() -> u32 {
     42
 }
-```text
+```
 
 ## 类型推导
 
@@ -199,7 +199,7 @@ fn main() {
     guess.push_str("42");
     let guess: i32 = guess.trim().parse().expect("Not a number!");
 }
-```text
+```
 
 ## 数字分隔符
 
@@ -214,7 +214,7 @@ fn main() {
 
     println!("一百万: {}", million);
 }
-```text
+```
 
 ## 实践建议
 
@@ -237,7 +237,7 @@ fn main() {
     let input = "42";
     let input: i32 = input.parse().unwrap();
 }
-```text
+```
 
 ### ❌ 避免做法
 
@@ -257,7 +257,7 @@ fn main() {
     let x = x - 1;
     // 太多遮蔽会让代码难以追踪
 }
-```text
+```
 
 ## 内存视角
 
@@ -270,18 +270,18 @@ fn main() {
 
     println!("x = {}, y = {}", x, y);
 }
-```text
+```
 
 **栈上的布局**：
 
-```text
+```
 栈内存：
 ┌──────────┐
 │  x: 42   │  ← i32 在栈上，4 字节
 ├──────────┤
 │  y: 42   │  ← 复制值，不是引用
 └──────────┘
-```text
+```
 
 ## 练习题
 
@@ -293,7 +293,7 @@ fn main() {
     x = 6;  // ❌ 编译错误
     println!("{}", x);
 }
-```text
+```
 
 <details>
 <summary>查看答案</summary>
@@ -304,7 +304,7 @@ fn main() {
     x = 6;
     println!("{}", x);
 }
-```text
+```
 
 </details>
 
@@ -317,7 +317,7 @@ fn main() {
     let guess = "42";
     // 在这里将 guess 转换为数字（提示：使用遮蔽）
 }
-```text
+```
 
 <details>
 <summary>查看答案</summary>
@@ -328,7 +328,7 @@ fn main() {
     let guess: i32 = guess.parse().expect("Not a number!");
     println!("数字是: {}", guess);
 }
-```text
+```
 
 </details>
 
@@ -345,4 +345,3 @@ fn main() {
 
 </LearnLayout>
 
-export default ({ children }) => <>{children}</>;

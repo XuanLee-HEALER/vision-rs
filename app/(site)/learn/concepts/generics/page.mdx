@@ -35,7 +35,7 @@ fn main() {
     let result = largest(&chars);
     println!("最大字符: {}", result);
 }
-```text
+```
 
 ## 泛型结构体
 
@@ -68,7 +68,7 @@ fn main() {
 
     println!("距离原点: {}", float_point.distance_from_origin());
 }
-```text
+```
 
 ## 泛型枚举
 
@@ -88,7 +88,7 @@ fn main() {
     let some_string: Option<String> = Some(String::from("hello"));
     let absent: Option<i32> = None;
 }
-```text
+```
 
 ## 多个泛型参数
 
@@ -101,7 +101,7 @@ struct Point<T, U> {
 fn main() {
     let mixed = Point { x: 5, y: 4.0 };  // T=i32, U=f64
 }
-```text
+```
 
 ## 泛型约束
 
@@ -120,7 +120,7 @@ where
 {
     println!("{}", t);
 }
-```text
+```
 
 ## 单态化
 
@@ -129,7 +129,7 @@ Rust 在编译时为每个具体类型生成专用代码：
 ```rust
 let integer = Some(5);   // 编译为 Option_i32
 let float = Some(5.0);   // 编译为 Option_f64
-```text
+```
 
 **零成本抽象**：泛型没有运行时开销！
 
@@ -158,7 +158,7 @@ impl Iterator for Counter {
         }
     }
 }
-```text
+```
 
 ## 小结
 
@@ -170,4 +170,3 @@ impl Iterator for Counter {
 
 </LearnLayout>
 
-export default ({ children }) => <>{children}</>;

@@ -31,7 +31,7 @@ fn main() {
     // println!("{}", s1);            // ❌ 编译错误！s1 已经无效
     println!("{}", s2);               // ✅ 正确，s2 现在是所有者
 }
-```text
+```
 
 ### 发生了什么？
 
@@ -46,7 +46,7 @@ fn main() {
 
 让我们可视化一下 `String` 在内存中的表示：
 
-```text
+```
 栈(Stack)                    堆(Heap)
 ┌──────────┐
 │   s1     │──────┐
@@ -63,7 +63,7 @@ fn main() {
 │  len: 5  │
 │  cap: 5  │
 └──────────┘
-```text
+```
 
 > **重要**：移动操作后，`s1` 的指针被**失效**，防止**双重释放**(double
 > free)问题。
@@ -79,7 +79,7 @@ fn main() {
 
     println!("s1 = {}, s2 = {}", s1, s2);  // ✅ 都有效
 }
-```text
+```
 
 ⚠️ **注意**：`clone` 可能会很昂贵，因为它会复制堆上的所有数据。
 
@@ -94,7 +94,7 @@ fn main() {
 
     println!("x = {}, y = {}", x, y);  // ✅ 都有效
 }
-```text
+```
 
 这些类型实现了 `Copy` trait：
 
@@ -130,7 +130,7 @@ fn takes_ownership(some_string: String) {
 fn makes_copy(some_integer: i32) {
     println!("{}", some_integer);
 }  // some_integer 在这里离开作用域，无事发生
-```text
+```
 
 ### 返回值与所有权
 
@@ -153,7 +153,7 @@ fn gives_ownership() -> String {
 fn takes_and_gives_back(a_string: String) -> String {
     a_string  // 返回值移动给调用者
 }
-```text
+```
 
 ## 为什么需要所有权？
 

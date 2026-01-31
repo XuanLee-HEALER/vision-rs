@@ -25,7 +25,7 @@ fn main() {
         _ => println!("其他"),
     }
 }
-```text
+```
 
 ### match 必须穷尽
 
@@ -39,7 +39,7 @@ fn main() {
         _ => println!("其他"),  // 必须处理所有情况
     }
 }
-```text
+```
 
 ## if let 模式
 
@@ -58,7 +58,7 @@ fn main() {
         _ => (),
     }
 }
-```text
+```
 
 ## while let 循环
 
@@ -73,7 +73,7 @@ fn main() {
         println!("{}", top);
     }
 }
-```text
+```
 
 ## 解构
 
@@ -97,7 +97,7 @@ fn main() {
         Point { x, y } => println!("其他位置: ({}, {})", x, y),
     }
 }
-```text
+```
 
 ### 解构枚举
 
@@ -117,7 +117,7 @@ fn process(msg: Message) {
         Message::ChangeColor(r, g, b) => println!("颜色: ({}, {}, {})", r, g, b),
     }
 }
-```text
+```
 
 ### 解构元组
 
@@ -128,7 +128,7 @@ fn main() {
     let (x, y, z) = tuple;
     println!("{}, {}, {}", x, y, z);
 }
-```text
+```
 
 ## 模式守卫
 
@@ -142,7 +142,7 @@ fn main() {
         None => (),
     }
 }
-```text
+```
 
 ## @ 绑定
 
@@ -166,7 +166,7 @@ fn main() {
         }
     }
 }
-```text
+```
 
 ## 小结
 
@@ -178,4 +178,3 @@ fn main() {
 
 </LearnLayout>
 
-export default ({ children }) => <>{children}</>;
