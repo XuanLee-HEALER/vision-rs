@@ -117,16 +117,15 @@ re_xxxxxxxxxxxxxxxxxxxxx
 
 ### 3.2 Edge Config（必需 - 用于内容可见性存储）
 
-#### 创建 Edge Config 数据库
+#### 创建 Edge Config
 
 1. 在 Vercel Dashboard 中，进入 **Storage** 标签
 2. 点击 **"Create Database"**
-3. 选择 **"KV"**（Redis）
-4. 输入数据库名称：`vision-rs-kv`
-5. 选择区域（推荐与项目相同区域）
-6. 点击 **"Create"**
+3. 选择 **"Edge Config"**
+4. 输入数据库名称：`vision-rs-edge-config`
+5. 点击 **"Create"**
 
-#### 连接 KV 到项目
+#### 连接 Edge Config 到项目
 
 1. 进入刚创建的 Edge Config
 2. 点击 **".env.local"** 标签
@@ -140,7 +139,7 @@ re_xxxxxxxxxxxxxxxxxxxxx
 5. 添加这些变量：
 
 ```
-EDGE_CONFIG=redis://...
+EDGE_CONFIG=https://edge-config.vercel.com/...
 EDGE_CONFIG=https://...
 VERCEL_API_TOKEN=...
 =...
@@ -302,7 +301,7 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 - 确认环境变量已添加到正确的环境（Production/Preview/Development）
 - 重新部署以应用新的环境变量
 
-**问题 3: KV 连接失败**
+**问题 3: Edge Config 连接失败**
 
 - 确认 Edge Config已创建
 - 确认环境变量正确配置
@@ -318,16 +317,14 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 
 ## 环境变量总结
 
-| 变量名                 | 必需  | 说明             | 示例                      |
-| ---------------------- | ----- | ---------------- | ------------------------- |
-| `ADMIN_EMAILS`         | ✅ 是 | 管理员邮箱白名单 | `admin@example.com`       |
-| `SESSION_SECRET`       | ✅ 是 | Session 加密密钥 | `openssl rand -base64 32` |
-| `RESEND_API_KEY`       | ✅ 是 | Resend API 密钥  | `re_xxxxx`                |
-| `EDGE_CONFIG`          | ✅ 是 | Edge Config URL  | `redis://...`             |
-| `EDGE_CONFIG`          | ✅ 是 | KV REST API URL  | `https://...`             |
-| `VERCEL_API_TOKEN`     | ✅ 是 | KV API Token     | `Axxxxx`                  |
-| ``                     | ❌ 否 | KV 只读 Token    | `Axxxxx`                  |
-| `NEXT_PUBLIC_SITE_URL` | ❌ 否 | 站点 URL         | `https://vision-rs.com`   |
+| 变量名                 | 必需  | 说明                        | 示例                                 |
+| ---------------------- | ----- | --------------------------- | ------------------------------------ |
+| `ADMIN_EMAILS`         | ✅ 是 | 管理员邮箱白名单            | `admin@example.com`                  |
+| `SESSION_SECRET`       | ✅ 是 | Session 加密密钥            | `openssl rand -base64 32`            |
+| `RESEND_API_KEY`       | ✅ 是 | Resend API 密钥             | `re_xxxxx`                           |
+| `EDGE_CONFIG`          | ✅ 是 | Edge Config 连接 URL        | `https://edge-config.vercel.com/...` |
+| `VERCEL_API_TOKEN`     | ✅ 是 | Vercel API Token (更新配置) | `vercel_xxxxx`                       |
+| `NEXT_PUBLIC_SITE_URL` | ❌ 否 | 站点 URL (用于 Sitemap)     | `https://vision-rs.com`              |
 
 ---
 
