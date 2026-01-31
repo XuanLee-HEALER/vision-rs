@@ -4,6 +4,7 @@ import Banner from '@/components/Banner';
 import SideMenu from '@/components/SideMenu';
 import MenuButton from '@/components/MenuButton';
 import ConditionalLayout from '@/components/ConditionalLayout';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'Vision-RS - 深入学习 Rust 编程语言',
@@ -20,21 +21,23 @@ export default function RootLayout({
     <html lang="zh-CN">
       <head></head>
       <body className="bg-base text-subtext1 antialiased">
-        {/* Banner - 占据文档流 */}
-        <Banner />
+        <AuthProvider>
+          {/* Banner - 占据文档流 */}
+          <Banner />
 
-        {/* Main Container */}
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="flex gap-12 py-12">
-            <ConditionalLayout>{children}</ConditionalLayout>
+          {/* Main Container */}
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="flex gap-12 py-12">
+              <ConditionalLayout>{children}</ConditionalLayout>
+            </div>
           </div>
-        </div>
 
-        {/* Floating Menu Button (左上角) */}
-        <MenuButton />
+          {/* Floating Menu Button (左上角) */}
+          <MenuButton />
 
-        {/* Overlay Menu */}
-        <SideMenu />
+          {/* Overlay Menu */}
+          <SideMenu />
+        </AuthProvider>
       </body>
     </html>
   );
