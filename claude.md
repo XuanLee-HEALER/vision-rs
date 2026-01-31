@@ -1,5 +1,32 @@
 # Vision-RS - 项目说明
 
+## ⚠️ 强制性要求（MUST）
+
+**在进行任何开发工作前，你 MUST 阅读并严格遵守以下文档：**
+
+1. **[代码质量要求](./docs/CODE_QUALITY.md)** - MUST 遵守
+2. **[本地开发工作流](./docs/LOCAL_WORKFLOW.md)** - MUST 遵守
+3. **[Vercel 部署指南](./docs/VERCEL_DEPLOYMENT_GUIDE.md)** - 生产部署必读
+
+### 🚫 MUST NOT 违反的核心规则
+
+- **MUST NOT** 提交包含 ESLint 错误的代码
+- **MUST NOT** 提交未格式化的代码
+- **MUST NOT** 提交敏感信息（API Keys、密码、真实邮箱）
+- **MUST NOT** 在文档中使用真实的 API Keys（使用 `xxx` 占位符）
+- **MUST NOT** 直接在 `main` 分支开发
+- **MUST NOT** 使用无意义的提交信息
+
+### ✅ MUST 执行的规则
+
+- **MUST** 在提交前运行 `just check`（lint + format + typecheck）
+- **MUST** 使用约定式提交格式：`<type>: <description>`
+- **MUST** 在功能分支开发，通过 PR 合并
+- **MUST** 为所有公共 API 提供 TypeScript 类型定义
+- **MUST** 在 MDX 文件中包含完整的 frontmatter
+
+---
+
 ## 技术栈
 
 ### 前端
@@ -65,9 +92,9 @@
 
 **生产环境额外配置**:
 
-- `KV_*` - Edge Config 相关变量（自动注入）
-- `GITHUB_*` - GitHub API 配置（用于管理后台编辑 MDX）
-- `NEXT_PUBLIC_SITE_URL` - 站点 URL（可选）
+- `EDGE_CONFIG` - Edge Config 连接 URL（Vercel 自动注入）
+- `VERCEL_API_TOKEN` - 用于更新 Edge Config（Vercel 自动注入）
+- `NEXT_PUBLIC_SITE_URL` - 站点 URL（可选，用于 Sitemap）
 
 ### 本地工具链
 
@@ -271,7 +298,7 @@ vercel remove <deployment-id>  # 删除不需要的
 
 ### 部署流程
 
-详见 [VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md)
+详见 [Vercel 部署指南](./docs/VERCEL_DEPLOYMENT_GUIDE.md)
 
 **快速部署**:
 
