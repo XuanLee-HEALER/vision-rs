@@ -86,7 +86,7 @@ openssl rand -base64 32
 ```
 名称: RESEND_API_KEY
 值: re_xxxxxxxxxxxxx
-re_fPe7eQH6_74t8zABycGQBhe638Xeekn5b
+re_xxxxxxxxxxxxxxxxxxxxx
 环境: Production, Preview, Development
 ```
 
@@ -318,16 +318,16 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 
 ## 环境变量总结
 
-| 变量名                        | 必需 | 说明             | 示例                      |
-| ----------------------------- | ---- | ---------------- | ------------------------- |
-| `ADMIN_EMAILS`                | ✅ 是 | 管理员邮箱白名单 | `admin@example.com`       |
-| `SESSION_SECRET`              | ✅ 是 | Session 加密密钥 | `openssl rand -base64 32` |
-| `RESEND_API_KEY`              | ✅ 是 | Resend API 密钥  | `re_xxxxx`                |
-| `EDGE_CONFIG`                      | ✅ 是 | Edge Config URL    | `redis://...`             |
-| `EDGE_CONFIG`             | ✅ 是 | KV REST API URL  | `https://...`             |
-| `VERCEL_API_TOKEN`           | ✅ 是 | KV API Token     | `Axxxxx`                  |
-| `` | ❌ 否 | KV 只读 Token    | `Axxxxx`                  |
-| `NEXT_PUBLIC_SITE_URL`        | ❌ 否 | 站点 URL         | `https://vision-rs.com`   |
+| 变量名                 | 必需  | 说明             | 示例                      |
+| ---------------------- | ----- | ---------------- | ------------------------- |
+| `ADMIN_EMAILS`         | ✅ 是 | 管理员邮箱白名单 | `admin@example.com`       |
+| `SESSION_SECRET`       | ✅ 是 | Session 加密密钥 | `openssl rand -base64 32` |
+| `RESEND_API_KEY`       | ✅ 是 | Resend API 密钥  | `re_xxxxx`                |
+| `EDGE_CONFIG`          | ✅ 是 | Edge Config URL  | `redis://...`             |
+| `EDGE_CONFIG`          | ✅ 是 | KV REST API URL  | `https://...`             |
+| `VERCEL_API_TOKEN`     | ✅ 是 | KV API Token     | `Axxxxx`                  |
+| ``                     | ❌ 否 | KV 只读 Token    | `Axxxxx`                  |
+| `NEXT_PUBLIC_SITE_URL` | ❌ 否 | 站点 URL         | `https://vision-rs.com`   |
 
 ---
 
