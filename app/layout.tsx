@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { SearchProvider } from '@/components/search/SearchProvider.client';
 
 export const metadata: Metadata = {
   title: 'Vision-RS - 深入学习 Rust 编程语言',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <head></head>
-      <body className="bg-base text-subtext1 antialiased">{children}</body>
+      <body className="bg-base text-subtext1 antialiased">
+        <SearchProvider>{children}</SearchProvider>
+      </body>
     </html>
   );
 }

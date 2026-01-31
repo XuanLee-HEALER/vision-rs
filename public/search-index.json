@@ -1,0 +1,792 @@
+[
+  {
+    "slug": "learn/concepts/borrowing",
+    "title": "借用与引用 - Vision-RS",
+    "description": "Rust 的借用机制与引用规则",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n借用与引用\n\n借用（Borrowing）是 Rust 中在不获取所有权的情况下访问数据的机制。\n\n引用\n\n引用允许你引用某个值而不取得其所有权：\n\n&s1 创建一个指向 s1 的引用，但不拥有它。\n\n<Mermaid\n  chart={`\ngraph LR\n    A[main 函数] -->|创建| B[s1: String]\n    A -->|传递 &s1| C[calculate_length 函数]\n    C -->|接收引用 s| B\n    C -->|返回 len| A\n\n    style B fill:#8aadf4,stroke:#8aadf4,color:#24273a\n    style C fill:#a6da95,stroke:#a6da95,color:#24273a\n\n`} />\n\n引用不可变\n\n默认情况下，引用是不可变的：\n\n可变引用\n\n使用 &mut 创建可变引用：\n\n可变引用的限制\n\n同一时间，同一作用域内，只能有一个可变引用：\n\n好处：防止数据竞争（data race）。\n\n不能同时存在可变和不可变引用\n\n借用检查器可视化\n\n<BorrowChecker />\n\n引用的作用域\n\n引用的作用域从声明开始，持续到最后一次使用：\n\n这个特性叫做非词法作用域生命周期（Non-Lexical Lifetimes, NLL）。\n\n悬垂引用\n\nRust 编译器保证引用永远不会成为悬垂引用（dangling reference）：\n\n修复方法：返回所有权而不是引用：\n\n借用规则总结\n\n<Mermaid\n  chart={`\ngraph TD\n    A[借用规则] --> B[规则 1]\n    A --> C[规则 2]\n    A --> D[规则 3]\n\n    B[任意时刻<br/>只能有以下之一]\n    C[一个可变引用]\n    D[任意数量不可变引用]\n\n    B --> E[✅ 一个 &mut T]\n    B --> F[✅ 多个 &T]\n    B --> G[❌ 混合 &mut T 和 &T]\n\n    style E fill:#a6da95,stroke:#a6da95,color:#24273a\n    style F fill:#a6da95,stroke:#a6da95,color:#24273a\n    style G fill:#ed8796,stroke:#ed8796,color:#24273a\n\n`} />\n\n三大规则：\n\n1. 在任意给定时间，要么只能有一个可变引用，要么只能有多个不可变引用\n2. 引用必须总是有效的（不能悬垂）\n3. 引用的生命周期不能超过被引用数据的生命周期\n\n引用与解引用\n\n使用 * 解引用：\n\n自动解引用：\n\nRust 在某些情况下会自动解引用（如方法调用）：\n\n多重引用\n\n可以创建引用的引用：\n\n切片（Slice）\n\n切片是一种特殊的引用，引用集合的连续序列：\n\n字符串字面量就是切片：\n\n数组切片：\n\n实践示例\n\n示例 1：安全的字符串分割\n\n示例 2：可变引用传递\n\n引用的内存表示\n\n内存布局：\n\n智能指针 vs 引用\n\n| 特性   | 引用 &T | 智能指针 Box<T>  |\n| ------ | --------- | ------------------ |\n| 所有权 | 无        | 有                 |\n| 解引用 | r      | b               |\n| 实现   | 简单指针  | 堆分配 + Drop      |\n| 大小   | 指针大小  | 指针大小（指向堆） |\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n练习题\n\n练习 1：修复借用错误\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n练习 2：实现字符串反转\n\n使用引用实现字符串反转：\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n小结\n\n- ✅ 引用允许访问数据而不获取所有权\n- ✅ &T 是不可变引用，&mut T 是可变引用\n- ✅ 同一时间只能有一个可变引用或多个不可变引用\n- ✅ 引用必须总是有效，不会悬垂\n- ✅ 切片是特殊的引用类型\n- ✅ Rust 的借用检查器在编译时保证内存安全\n\n下一步，我们将学习生命周期。\n\n</LearnLayout>",
+    "headings": [
+      "引用",
+      "可变引用",
+      "借用检查器可视化",
+      "引用的作用域",
+      "悬垂引用",
+      "借用规则总结",
+      "引用与解引用",
+      "多重引用",
+      "切片（Slice）",
+      "实践示例",
+      "引用的内存表示",
+      "智能指针 vs 引用",
+      "实践建议",
+      "练习题",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/error-handling",
+    "title": "错误处理 - Vision-RS",
+    "description": "Rust 的错误处理机制",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n错误处理\n\nRust 将错误分为两类：可恢复错误（Result<T, E>）和不可恢复错误（panic!）。\n\npanic! 宏\n\n遇到不可恢复的错误时，程序会 panic：\n\n何时使用 panic：\n\n- 示例代码、原型\n- 不可能发生的情况（逻辑错误）\n- 库代码中的契约违反\n\nResult 枚举\n\n匹配不同错误\n\nunwrap 和 expect\n\n传播错误\n\n使用 ? 运算符：\n\n<MermaidDiagram\n  chart={`\ngraph LR\n    A[调用函数] --> B{返回 Result}\n    B -->|Ok| C[提取值<br/>继续执行]\n    B -->|Err| D[提前返回<br/>传播错误]\n\n    style C fill:#a6da95,stroke:#a6da95,color:#24273a\n    style D fill:#ed8796,stroke:#ed8796,color:#24273a\n\n`} />\n\n? 只能用于返回 Result 的函数\n\n自定义错误类型\n\nOption vs Result\n\nand_then 和 map\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n小结\n\n- ✅ Result<T, E> 用于可恢复错误\n- ✅ panic! 用于不可恢复错误\n- ✅ ? 运算符简化错误传播\n- ✅ unwrap 和 expect 用于原型和测试\n- ✅ 自定义错误类型提高可读性\n- ✅ 库代码应返回 Result，让调用者处理\n\n</LearnLayout>",
+    "headings": [
+      "panic! 宏",
+      "Result 枚举",
+      "匹配不同错误",
+      "unwrap 和 expect",
+      "传播错误",
+      "? 只能用于返回 Result 的函数",
+      "自定义错误类型",
+      "Option vs Result",
+      "and_then 和 map",
+      "实践建议",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/generics",
+    "title": "泛型 - Vision-RS",
+    "description": "Rust 的泛型编程",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n泛型\n\n泛型让我们编写可适用于多种类型的代码。\n\n泛型函数\n\n泛型结构体\n\n泛型枚举\n\n多个泛型参数\n\n泛型约束\n\n单态化\n\nRust 在编译时为每个具体类型生成专用代码：\n\n零成本抽象：泛型没有运行时开销！\n\n关联类型\n\n小结\n\n- ✅ 泛型提供代码复用\n- ✅ 使用 <T> 语法声明泛型类型\n- ✅ 可以对泛型添加 trait 约束\n- ✅ 单态化保证零运行时开销\n- ✅ 关联类型简化 trait 定义\n\n</LearnLayout>",
+    "headings": [
+      "泛型函数",
+      "泛型结构体",
+      "泛型枚举",
+      "多个泛型参数",
+      "泛型约束",
+      "单态化",
+      "关联类型",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/heap-stack",
+    "title": "堆与栈 - Vision-RS",
+    "description": "Rust 的堆栈内存管理",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n堆与栈\n\n理解堆（Heap）和栈（Stack）是掌握 Rust 内存管理的关键。\n\n栈（Stack）\n\n栈是一种 LIFO（后进先出）的数据结构，用于存储局部变量和函数调用信息。\n\n栈的特点\n\n- ⚡ 快速分配和释放\n- 📏 大小固定，编译时确定\n- 🔄 自动管理，函数返回时自动清理\n- 📦 连续内存\n\n栈上分配的数据\n\n堆（Heap）\n\n堆是一个大的内存池，用于动态大小的数据。\n\n堆的特点\n\n- 🐌 分配较慢（需要分配器）\n- 📐 大小动态，运行时确定\n- 🔧 手动管理（Rust 通过所有权自动化）\n- 🗂️ 非连续内存\n\n堆上分配的数据\n\n<MemoryLayout3D scenario=\"heap\" />\n\n栈与堆的对比\n\n<MermaidDiagram\n  chart={`\ngraph TD\n    subgraph 栈\n        A[函数调用] --> B[栈帧]\n        B --> C[局部变量]\n        B --> D[返回地址]\n    end\n\n    subgraph 堆\n        E[动态分配] --> F[String]\n        E --> G[Vec]\n        E --> H[Box]\n    end\n\n    C -.指针.-> F\n    C -.指针.-> G\n    C -.指针.-> H\n\n    style A fill:#8aadf4,stroke:#8aadf4,color:#24273a\n    style E fill:#f5a97f,stroke:#f5a97f,color:#24273a\n\n`} />\n\n| 特性     | 栈             | 堆                  |\n| -------- | -------------- | ------------------- |\n| 速度     | 快             | 较慢                |\n| 大小     | 固定（编译时） | 动态（运行时）      |\n| 管理     | 自动           | 手动（Rust 自动化） |\n| 生命周期 | 作用域         | 显式控制            |\n| 典型用途 | 局部变量       | 大对象、动态大小    |\n\n栈帧\n\n每次函数调用都会创建一个栈帧：\n\n栈帧包含：\n\n- 局部变量\n- 参数\n- 返回地址\n- 保存的寄存器\n\n栈溢出\n\n栈空间有限（通常几 MB），递归过深会导致栈溢出：\n\n何时使用堆\n\n使用 Box<T> 将数据放在堆上：\n\nString vs &str\n\n内存布局：\n\nVec 的内存布局\n\n内存布局：\n\nRc 和 Arc\n\n多个所有者共享堆数据：\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n性能考虑\n\n栈分配：\n\n- ⚡ 快速（只需移动栈指针）\n- 🔄 缓存友好（局部性好）\n\n堆分配：\n\n- 🐌 较慢（需要分配器查找空闲块）\n- 💾 可能缓存未命中\n\n小结\n\n- ✅ 栈：快速、固定大小、自动管理\n- ✅ 堆：灵活、动态大小、显式管理\n- ✅ Rust 通过所有权自动管理堆内存\n- ✅ 优先使用栈，必要时使用堆\n- ✅ Box, Vec, String 等使用堆分配\n- ✅ 理解内存布局有助于优化性能\n\n</LearnLayout>",
+    "headings": [
+      "栈（Stack）",
+      "堆（Heap）",
+      "栈与堆的对比",
+      "栈帧",
+      "栈溢出",
+      "何时使用堆",
+      "String vs &str",
+      "Vec 的内存布局",
+      "Rc 和 Arc",
+      "实践建议",
+      "性能考虑",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/lifetimes",
+    "title": "生命周期 - Vision-RS",
+    "description": "Rust 的生命周期注解与生命周期规则",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n生命周期\n\n生命周期（Lifetime）是 Rust 中引用保持有效的作用域。\n\n为什么需要生命周期？\n\n生命周期防止悬垂引用（dangling references）：\n\n错误原因：x 的生命周期 'b 比 r 的生命周期 'a 短，当尝试使用 r 时，x\n已被释放。\n\n<LifetimeAnimation />\n\n生命周期注解语法\n\n生命周期注解使用单引号开头，通常使用小写字母：\n\n函数中的生命周期\n\n含义：返回值的生命周期与参数中生命周期较短的那个相同。\n\n<MermaidDiagram\n  chart={`\nsequenceDiagram\n    participant Main\n    participant longest\n    participant x\n    participant y\n\n    Main->>longest: 调用 longest(x, y)\n    longest->>x: 检查 x.len()\n    longest->>y: 检查 y.len()\n    longest->>Main: 返回引用（生命周期 = min(x, y)）\n\n    note over longest: 返回值生命周期<br/>取决于较短的输入\n\n`} />\n\n生命周期省略规则\n\n编译器可以在某些情况下自动推导生命周期，无需显式标注。\n\n三条省略规则：\n\n1. 规则 1：每个引用参数都有自己的生命周期\n\n2. 规则 2：如果只有一个输入生命周期，赋予所有输出\n\n3. 规则 3：如果有 &self 或 &mut self，返回值的生命周期是 self\n   的生命周期\n\n需要显式标注的情况\n\n结构体中的生命周期\n\n结构体包含引用时，需要生命周期注解：\n\n含义：ImportantExcerpt 实例的生命周期不能超过 part 字段引用的数据。\n\n方法中的生命周期\n\n静态生命周期\n\n'static 生命周期表示整个程序运行期间：\n\n字符串字面量默认是 'static，因为它们被存储在程序的二进制文件中。\n\n谨慎使用 'static：\n\n生命周期约束\n\n可以指定生命周期之间的关系：\n\n多个生命周期参数\n\n生命周期与泛型\n\n结合泛型和生命周期：\n\n实践示例\n\n示例 1：解析配置\n\n示例 2：迭代器实现\n\n常见错误与修复\n\n错误 1：返回值生命周期不明确\n\n错误 2：返回局部变量的引用\n\n错误 3：结构体缺少生命周期注解\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n练习题\n\n练习 1：修复生命周期错误\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n练习 2：结构体生命周期\n\n实现一个包含字符串切片的结构体：\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n小结\n\n- ✅ 生命周期确保引用始终有效\n- ✅ 使用 'a 语法标注生命周期\n- ✅ 编译器可以通过省略规则自动推导生命周期\n- ✅ 结构体包含引用时需要生命周期注解\n- ✅ 'static 表示整个程序生命周期\n- ✅ 生命周期在编译时检查，零运行时开销\n\n下一步，我们将学习模式匹配。\n\n</LearnLayout>",
+    "headings": [
+      "为什么需要生命周期？",
+      "生命周期注解语法",
+      "生命周期省略规则",
+      "结构体中的生命周期",
+      "方法中的生命周期",
+      "静态生命周期",
+      "生命周期约束",
+      "多个生命周期参数",
+      "生命周期与泛型",
+      "实践示例",
+      "常见错误与修复",
+      "实践建议",
+      "练习题",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/macros",
+    "title": "宏系统 - Vision-RS",
+    "description": "Rust 的宏编程",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n宏系统\n\n宏（Macro）在编译时展开代码，提供元编程能力。\n\n声明宏\n\n使用 macro_rules! 定义声明宏：\n\n带参数的宏\n\n模式匹配\n\n常用的内置宏\n\nprintln! 和 format!\n\nvec!\n\npanic!\n\nassert! 和 debug_assert!\n\n派生宏\n\n使用 #[derive] 自动实现 trait：\n\n属性宏\n\n过程宏（高级）\n\n过程宏需要单独的 crate：\n\n使用：\n\n宏调试\n\n使用 cargo expand 查看宏展开结果：\n\n宏 vs 函数\n\n| 特性     | 宏        | 函数     |\n| -------- | --------- | -------- |\n| 调用语法 | name!() | name() |\n| 展开时机 | 编译时    | 运行时   |\n| 参数个数 | 可变      | 固定     |\n| 参数类型 | 任意      | 固定     |\n| 卫生性   | 有        | 无关     |\n\n小结\n\n- ✅ 宏在编译时展开代码\n- ✅ macro_rules! 定义声明宏\n- ✅ 派生宏自动实现 trait\n- ✅ 过程宏提供高级元编程\n- ✅ 宏比函数更灵活，但更难调试\n\n</LearnLayout>",
+    "headings": [
+      "声明宏",
+      "常用的内置宏",
+      "派生宏",
+      "属性宏",
+      "过程宏（高级）",
+      "宏调试",
+      "宏 vs 函数",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/memory-layout",
+    "title": "内存布局 - Vision-RS",
+    "description": "Rust 的内存布局与对齐",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n内存布局\n\n理解 Rust 如何在内存中组织数据是编写高效代码的关键。\n\n基本类型的大小\n\n结构体布局\n\n内存对齐\n\nRust 会自动添加填充（padding）以满足对齐要求：\n\n枚举的布局\n\n零大小类型（ZST）\n\nZST 的优势：\n\n- 不占用内存\n- 编译器可以优化掉\n\n3D 内存布局可视化\n\n<MemoryLayout3D scenario=\"stack\" />\n\n胖指针\n\n某些类型的引用包含额外元数据：\n\n表示优化\n\nOption<&T> 优化\n\nRust 利用引用不能为 NULL 的特性，用 NULL 表示 None。\n\n非零类型\n\n内存布局属性\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n小结\n\n- ✅ 不同类型有不同的内存大小\n- ✅ 结构体会有对齐填充\n- ✅ 优化字段顺序可以减少内存使用\n- ✅ ZST 不占用内存\n- ✅ Rust 对某些类型做了表示优化\n- ✅ 使用 mem::size_of 检查大小\n\n</LearnLayout>",
+    "headings": [
+      "基本类型的大小",
+      "结构体布局",
+      "内存对齐",
+      "枚举的布局",
+      "零大小类型（ZST）",
+      "3D 内存布局可视化",
+      "胖指针",
+      "表示优化",
+      "内存布局属性",
+      "实践建议",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/ownership",
+    "title": "所有权系统 - Vision-RS",
+    "description": "深入理解 Rust 的所有权系统",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n所有权系统\n\n所有权(Ownership)是 Rust 最独特也是最核心的特性。它使得 Rust 能够在没有垃圾回收器的情况下保证内存安全。\n\n什么是所有权？\n\n在 Rust 中，每个值都有一个所有者(owner)。所有权系统遵循三条基本规则：\n\n1. Rust 中的每个值都有一个所有者\n2. 同一时刻，一个值只能有一个所有者\n3. 当所有者离开作用域时，值将被自动释放\n\n基本示例\n\n让我们通过代码来理解所有权：\n\n发生了什么？\n\n当我们执行 let s2 = s1 时：\n\n- 不是复制数据(这会很昂贵)\n- 而是转移了所有权\n- s1 变为无效，不能再使用\n- s2 成为新的所有者\n\n内存布局\n\n让我们可视化一下 String 在内存中的表示：\n\n> 重要：移动操作后，s1 的指针被失效，防止双重释放(double\n> free)问题。\n\n克隆(Clone)\n\n如果确实需要深拷贝堆上的数据，可以使用 clone 方法：\n\n⚠️ 注意：clone 可能会很昂贵，因为它会复制堆上的所有数据。\n\n栈上的数据：复制(Copy)\n\n对于存储在栈上的简单类型，Rust 会自动复制而不是移动：\n\n这些类型实现了 Copy trait：\n\n- 所有整数类型(i32, u64 等)\n- 布尔类型 bool\n- 浮点类型(f32, f64)\n- 字符类型 char\n- 元组(如果所有成员都是 Copy 的)\n\n函数与所有权\n\n传递值到函数\n\n将值传递给函数会移动或复制，和赋值一样：\n\n返回值与所有权\n\n函数也可以转移所有权：\n\n为什么需要所有权？\n\n所有权系统解决了几个关键问题：\n\n| 问题     | 传统语言的解决方案 | Rust 的方案 |\n| -------- | ------------------ | ----------- |\n| 内存泄漏 | 垃圾回收器(GC)     | 编译时检查  |\n| 悬垂指针 | 运行时检查         | 编译时检查  |\n| 数据竞争 | 锁和同步原语       | 编译时检查  |\n| 双重释放 | 引用计数           | 编译时检查  |\n\n✨ 核心优势：零成本抽象 + 内存安全 + 无需 GC\n\n小结\n\n- 所有权是 Rust 的核心特性\n- 默认情况下，赋值和传参会移动所有权\n- Copy 类型会被复制而不是移动\n- 使用 clone() 可以显式深拷贝\n- 当所有者离开作用域，值会被自动释放\n\n下一步，我们将学习借用(Borrowing)，这是一种在不获取所有权的情况下使用值的方式。\n\n</LearnLayout>",
+    "headings": [
+      "什么是所有权？",
+      "基本示例",
+      "内存布局",
+      "克隆(Clone)",
+      "栈上的数据：复制(Copy)",
+      "函数与所有权",
+      "为什么需要所有权？",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/pattern-matching",
+    "title": "模式匹配 - Vision-RS",
+    "description": "Rust 的模式匹配与解构",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n模式匹配\n\n模式匹配是 Rust 最强大的控制流工具之一。\n\nmatch 表达式\n\nmatch 必须穷尽\n\nif let 模式\n\nwhile let 循环\n\n解构\n\n解构结构体\n\n解构枚举\n\n解构元组\n\n模式守卫\n\n@ 绑定\n\n小结\n\n- ✅ match 必须穷尽所有可能\n- ✅ if let 用于只关心一种模式\n- ✅ 可以解构结构体、枚举、元组\n- ✅ 模式守卫添加额外条件\n- ✅ @ 绑定在模式中创建变量\n\n</LearnLayout>",
+    "headings": [
+      "match 表达式",
+      "if let 模式",
+      "while let 循环",
+      "解构",
+      "模式守卫",
+      "@ 绑定",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/traits",
+    "title": "Trait - Vision-RS",
+    "description": "Rust 的 Trait 系统",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\nTrait\n\nTrait 类似于其他语言中的接口（interface），定义共享行为。\n\n定义 Trait\n\n默认实现\n\nTrait 作为参数\n\n返回实现 Trait 的类型\n\nTrait 关系可视化\n\n<TraitRelationship />\n\n孤儿规则\n\n只有当 trait 或类型至少有一个在本地 crate 时，才能为类型实现 trait：\n\n标准库常用 Trait\n\nClone 和 Copy\n\nDebug 和 Display\n\nPartialEq 和 Eq\n\nTrait 对象\n\n静态分发 vs 动态分发：\n\n- impl Trait：静态分发，编译时确定，零开销\n- dyn Trait：动态分发，运行时确定，有虚表开销\n\n关联类型\n\nTrait 继承\n\n小结\n\n- ✅ Trait 定义共享行为\n- ✅ 可以有默认实现\n- ✅ 使用 impl Trait 或 Trait bound 作为参数\n- ✅ dyn Trait 实现动态分发\n- ✅ 孤儿规则防止冲突\n- ✅ 标准库提供了许多常用 Trait\n\n</LearnLayout>",
+    "headings": [
+      "定义 Trait",
+      "默认实现",
+      "Trait 作为参数",
+      "返回实现 Trait 的类型",
+      "Trait 关系可视化",
+      "孤儿规则",
+      "标准库常用 Trait",
+      "Trait 对象",
+      "关联类型",
+      "Trait 继承",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/types",
+    "title": "数据类型 - Vision-RS",
+    "description": "Rust 的标量类型与复合类型详解",
+    "category": "concepts",
+    "content": "{/ markdownlint-disable MD046 /}\n\n<LearnLayout>\n\n数据类型\n\nRust 是静态类型（statically typed）语言，编译时必须知道所有变量的类型。\n\n类型系统概览\n\n<MermaidDiagram\n  chart={`\ngraph TD\n    A[Rust 类型系统] --> B[标量类型<br/>Scalar Types]\n    A --> C[复合类型<br/>Compound Types]\n\n    B --> B1[整数<br/>Integers]\n    B --> B2[浮点数<br/>Floats]\n    B --> B3[布尔<br/>Boolean]\n    B --> B4[字符<br/>Character]\n\n    C --> C1[元组<br/>Tuple]\n    C --> C2[数组<br/>Array]\n\n    B1 --> B1A[有符号: i8, i16, i32, i64, i128, isize]\n    B1 --> B1B[无符号: u8, u16, u32, u64, u128, usize]\n\n    B2 --> B2A[f32: 单精度]\n    B2 --> B2B[f64: 双精度]\n\n    style B fill:#8aadf4,stroke:#8aadf4,color:#24273a\n    style C fill:#a6da95,stroke:#a6da95,color:#24273a\n\n`} />\n\n标量类型\n\n标量类型代表单个值。Rust 有四种主要的标量类型：\n\n1. 整数类型\n\n整数是没有小数部分的数字：\n\n| 长度    | 有符号  | 无符号  | 范围（有符号）   | 范围（无符号） |\n| ------- | ------- | ------- | ---------------- | -------------- |\n| 8-bit   | i8    | u8    | -128 ~ 127       | 0 ~ 255        |\n| 16-bit  | i16   | u16   | -32,768 ~ 32,767 | 0 ~ 65,535     |\n| 32-bit  | i32   | u32   | -2³¹ ~ 2³¹-1     | 0 ~ 2³²-1      |\n| 64-bit  | i64   | u64   | -2⁶³ ~ 2⁶³-1     | 0 ~ 2⁶⁴-1      |\n| 128-bit | i128  | u128  | -2¹²⁷ ~ 2¹²⁷-1   | 0 ~ 2¹²⁸-1     |\n| arch    | isize | usize | 取决于架构       | 取决于架构     |\n\n整数溢出：\n\n2. 浮点类型\n\nRust 有两种浮点类型：f32（单精度）和 f64（双精度，默认）：\n\n⚠️ 注意：浮点数遵循 IEEE-754 标准，可能有精度问题。\n\n3. 布尔类型\n\n布尔类型只有两个值：true 和 false，占用 1 字节：\n\n4. 字符类型\n\nchar 类型代表一个 Unicode 标量值，占用 4 字节：\n\nchar vs 字符串：\n\n复合类型\n\n复合类型可以将多个值组合成一个类型。\n\n1. 元组（Tuple）\n\n元组可以组合不同类型的值：\n\n元组的内存布局：\n\n<MemoryLayout3D scenario=\"stack\" />\n\n2. 数组（Array）\n\n数组中的所有元素必须是相同类型，且长度固定：\n\n数组 vs Vec：\n\n越界访问：\n\n切片类型\n\n切片（slice）是对连续序列的引用，没有所有权：\n\n类型转换\n\nRust 不会隐式转换数值类型：\n\n安全转换：\n\n类型别名\n\n使用 type 关键字创建类型别名：\n\n类型推导\n\nRust 的类型推导非常强大：\n\n内存大小\n\n查看类型的内存大小：\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n练习题\n\n练习 1：计算内存占用\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n练习 2：类型转换\n\n修复以下代码：\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n小结\n\n- ✅ Rust 是静态类型语言，编译时确定类型\n- ✅ 标量类型：整数、浮点数、布尔、字符\n- ✅ 复合类型：元组、数组\n- ✅ 整数默认 i32，浮点数默认 f64\n- ✅ char 是 4 字节的 Unicode 标量值\n- ✅ 数组长度固定，栈分配；Vec 长度动态，堆分配\n- ✅ 不会隐式类型转换，使用 as 显式转换\n- ✅ 使用 std::mem::size_of 查看类型大小\n\n下一步，我们将深入学习 Rust 的所有权系统。\n\n</LearnLayout>",
+    "headings": [
+      "类型系统概览",
+      "标量类型",
+      "复合类型",
+      "切片类型",
+      "类型转换",
+      "类型别名",
+      "类型推导",
+      "内存大小",
+      "实践建议",
+      "练习题",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/concepts/variables",
+    "title": "变量与常量 - Vision-RS",
+    "description": "Rust 中的变量绑定、可变性与常量",
+    "category": "concepts",
+    "content": "<LearnLayout>\n\n变量与常量\n\n在 Rust 中，变量绑定默认是不可变的（immutable）。这是 Rust 安全性保证的基石之一。\n\n变量绑定\n\n使用 let 关键字创建变量绑定：\n\n不可变性（Immutability）\n\n默认情况下，变量是不可变的：\n\n为什么默认不可变？\n\n- 🔒 安全性: 防止意外修改\n- 🚀 并发: 多线程环境下更安全\n- 🧠 可读性: 代码更容易理解\n- ⚡ 优化: 编译器可以做更多优化\n\n可变变量\n\n使用 mut 关键字声明可变变量：\n\n<MermaidDiagram\n  chart={`\nstateDiagram-v2\n    [*] --> Immutable: let x = 5\n    [*] --> Mutable: let mut x = 5\n\n    Immutable --> [*]: 只能读取\n    Mutable --> Modified: x = 6\n    Modified --> [*]: 可以修改\n\n    note right of Immutable\n        默认不可变\n        更安全\n    end note\n\n    note right of Mutable\n        显式声明可变\n        需要 mut 关键字\n    end note\n\n`} />\n\n变量遮蔽（Shadowing）\n\nRust 允许用相同名称声明新变量，\"遮蔽\"旧变量：\n\n遮蔽 vs 可变性\n\n遮蔽的优势：\n\n1. 可以改变类型：\n\n2. 保持不可变性：\n\n<MermaidDiagram\n  chart={`\ngraph TD\n    A[let x = 5] --> B[第一个 x<br/>值: 5]\n    B --> C[let x = x + 1]\n    C --> D[第二个 x<br/>值: 6<br/>遮蔽第一个 x]\n    D --> E[作用域结束]\n    E --> F[第二个 x 被销毁]\n\n    style B fill:#8aadf4,stroke:#8aadf4,color:#24273a\n    style D fill:#a6da95,stroke:#a6da95,color:#24273a\n\n`} />\n\n常量（Constants）\n\n常量使用 const 关键字声明，并且必须标注类型：\n\n常量的特点\n\n| 特性     | 常量                   | 不可变变量       |\n| -------- | ---------------------- | ---------------- |\n| 关键字   | const                | let            |\n| 类型标注 | 必须               | 可选（类型推导） |\n| 作用域   | 可以是全局         | 通常是局部       |\n| 值       | 编译时确定         | 运行时确定       |\n| 表达式   | 只能是常量表达式   | 任意表达式       |\n| 命名规范 | SCREAMING_SNAKE_CASE | snake_case     |\n\n常量 vs 变量\n\n类型推导\n\nRust 有强大的类型推导能力：\n\n数字分隔符\n\n为了提高可读性，可以在数字中使用下划线：\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n内存视角\n\n变量绑定在内存中的表示：\n\n栈上的布局：\n\n练习题\n\n练习 1：修复编译错误\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n练习 2：使用遮蔽\n\n将字符串转换为数字，使用遮蔽技术：\n\n<details>\n<summary>查看答案</summary>\n\n</details>\n\n小结\n\n- ✅ Rust 中的变量默认不可变\n- ✅ 使用 mut 关键字声明可变变量\n- ✅ 遮蔽允许重新绑定变量，可以改变类型\n- ✅ 常量用 const 声明，必须标注类型，编译时求值\n- ✅ 不可变性带来安全性、并发性和优化优势\n- ✅ 优先使用不可变，只在必要时使用可变\n\n下一步，我们将学习 Rust 的数据类型系统。\n\n</LearnLayout>",
+    "headings": [
+      "变量绑定",
+      "可变变量",
+      "变量遮蔽（Shadowing）",
+      "常量（Constants）",
+      "类型推导",
+      "数字分隔符",
+      "实践建议",
+      "内存视角",
+      "练习题",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/crates/tokio",
+    "title": "Tokio - 异步运行时深度解析",
+    "description": "Tokio 运行时架构与核心概念",
+    "category": "crates",
+    "content": "<LearnLayout>\n\nTokio - Rust 异步运行时\n\nTokio 是 Rust 生态中最流行的异步运行时，为编写高性能异步程序提供基础设施。\n\n什么是 Tokio？\n\nTokio 是一个事件驱动的非阻塞 I/O 平台，用于编写异步应用程序。\n\n核心组件\n\n- Runtime：任务执行器和调度器\n- Reactor：I/O 事件监听器（基于 mio）\n- Async I/O：异步网络、文件系统操作\n- Synchronization：异步同步原语\n- Timers：异步定时器\n\nRuntime 架构\n\n<RuntimeVisualization />\n\n多线程运行时\n\n单线程运行时\n\nasync/await 基础\n\nasync 函数\n\nasync 块\n\nFuture Trait\n\n<FutureStateMachine />\n\nFuture 定义\n\n并发执行\n\nspawn 任务\n\njoin! 宏\n\nselect! 宏\n\n异步 I/O\n\nTCP Server\n\nChannels\n\nmpsc Channel\n\noneshot Channel\n\n同步原语\n\nMutex\n\n性能对比\n\n异步 vs 同步\n\n优势：\n\n- 异步版本可以并发处理多个请求\n- 不阻塞线程，充分利用资源\n- 适合 I/O 密集型任务\n\n小结\n\n- ✅ Tokio 是 Rust 最流行的异步运行时\n- ✅ 基于 Future + Reactor 模式\n- ✅ 提供多线程任务调度（工作窃取）\n- ✅ 丰富的异步 I/O 和同步原语\n- ✅ 适合高并发 I/O 密集型应用\n- ✅ 零成本抽象，性能接近手写状态机\n\n探索更多：Runtime 架构 | 任务调度 |\nReactor 模式\n\n</LearnLayout>",
+    "headings": [
+      "什么是 Tokio？",
+      "Runtime 架构",
+      "async/await 基础",
+      "Future Trait",
+      "并发执行",
+      "异步 I/O",
+      "Channels",
+      "同步原语",
+      "性能对比",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/crates/tokio/reactor",
+    "title": "Reactor 模式",
+    "description": "Tokio 的 I/O 事件处理机制",
+    "category": "crates",
+    "content": "<LearnLayout>\n\nReactor 模式\n\nReactor 是 Tokio 处理 I/O 事件的核心组件，基于 mio 库实现。\n\n架构\n\n<ReactorPattern />\n\n组件\n\n- Event Loop：持续监听 I/O 事件\n- Reactor：基于 mio，使用 epoll/kqueue/IOCP\n- Waker：唤醒等待的 Future\n\nI/O 注册\n\nWaker 机制\n\n工作流程\n\nmio 集成\n\n平台差异\n\n| 平台      | I/O 多路复用 |\n| --------- | ------------ |\n| Linux     | epoll    |\n| macOS/BSD | kqueue   |\n| Windows   | IOCP     |\n\nmio 示例\n\n性能特性\n\n零拷贝\n\nTokio 支持零拷贝 I/O：\n\n批量处理\n\nReactor 一次 poll 可以处理多个就绪事件：\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n小结\n\n- ✅ Reactor 监听 I/O 事件\n- ✅ Waker 唤醒等待的任务\n- ✅ 基于 mio，跨平台支持\n- ✅ 零拷贝，高性能\n- ✅ 批量处理事件\n\n</LearnLayout>",
+    "headings": [
+      "架构",
+      "I/O 注册",
+      "Waker 机制",
+      "mio 集成",
+      "性能特性",
+      "实践建议",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/crates/tokio/runtime",
+    "title": "Tokio Runtime 架构",
+    "description": "Tokio 运行时内部实现详解",
+    "category": "crates",
+    "content": "<LearnLayout>\n\nRuntime 架构\n\nTokio Runtime 是任务执行的核心，负责调度和执行异步任务。\n\nRuntime 类型\n\n多线程 Runtime\n\n当前线程 Runtime\n\n工作窃取调度器\n\n<RuntimeVisualization />\n\n队列层级\n\n1. 本地队列：每个线程独享，LIFO\n2. 全局队列：所有线程共享，FIFO\n3. 窃取：从其他线程队尾窃取\n\n调度策略\n\n配置选项\n\n线程池大小\n\n线程命名\n\n小结\n\n- ✅ 多线程 Runtime 使用工作窃取算法\n- ✅ 单线程 Runtime 适合嵌入式场景\n- ✅ 支持自定义配置\n- ✅ 自动负载均衡\n\n</LearnLayout>",
+    "headings": [
+      "Runtime 类型",
+      "工作窃取调度器",
+      "配置选项",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/crates/tokio/scheduling",
+    "title": "Tokio 任务调度",
+    "description": "工作窃取算法详解",
+    "category": "crates",
+    "content": "<LearnLayout>\n\n任务调度\n\nTokio 使用工作窃取算法实现高效的任务调度。\n\n工作窃取算法\n\n<TaskScheduling />\n\n原理\n\n- 本地优先：线程优先执行自己的任务\n- 队尾窃取：空闲线程从繁忙线程队尾窃取\n- 减少竞争：双端队列，两端操作\n\n优势\n\n✓ 负载均衡：自动平衡各线程任务✓ 缓存友好：优先本地任务✓\n低开销：减少锁竞争\n\nspawn vs spawn_blocking\n\nspawn (异步任务)\n\nspawn_blocking (阻塞任务)\n\n区别：\n\n- spawn：运行在 Worker 线程，不应阻塞\n- spawn_blocking：运行在独立线程池，可以阻塞\n\nTask优先级\n\nTokio 使用 LIFO 策略处理本地任务：\n\nYield\n\n主动让出 CPU：\n\n小结\n\n- ✅ 工作窃取实现负载均衡\n- ✅ 区分异步和阻塞任务\n- ✅ 高效利用多核 CPU\n- ✅ 支持主动让出 CPU\n\n</LearnLayout>",
+    "headings": [
+      "工作窃取算法",
+      "spawn vs spawn_blocking",
+      "Task优先级",
+      "Yield",
+      "小结"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-0-meta/0-1-reference-position",
+    "title": "0.1 Rust Reference 在语言体系中的地位",
+    "description": "Part 0 · 如何\"正确地理解 Rust 规范\" - 0.1 Rust Reference 在语言体系中的地位",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n0.1 Rust Reference 在语言体系中的地位\n\n参考资料\n\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>\n`",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-1-static-world/1-1-crates-items",
+    "title": "1.1 Rust 程序由什么构成",
+    "description": "Part 1 · Rust 程序的\"静态世界\"总览 - 1.1 Rust 程序由什么构成",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n1.1 Rust 程序由什么构成\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-1-static-world/1-2-namespaces-paths-visibility",
+    "title": "1.2 命名空间、路径与可见性",
+    "description": "Part 1 · Rust 程序的\"静态世界\"总览 - 1.2 命名空间、路径与可见性",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n1.2 命名空间、路径与可见性\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-10-concurrency/10-1-send-sync",
+    "title": "10.1 Send / Sync 的真正语义",
+    "description": "Part 10 · 并发模型：类型系统防止数据竞争 - 10.1 Send / Sync 的真正语义",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n10.1 Send / Sync 的真正语义\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-11-async/11-1-async-desugaring",
+    "title": "11.1 async 的编译期展开模型",
+    "description": "Part 11 · Async / Future：语言级状态机生成 - 11.1 async 的编译期展开模型",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n11.1 async 的编译期展开模型\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-11-async/11-2-pin-self-referential",
+    "title": "11.2 Pin、自引用与不变量",
+    "description": "Part 11 · Async / Future：语言级状态机生成 - 11.2 Pin、自引用与不变量",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n11.2 Pin、自引用与不变量\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-12-unsafe/12-1-unsafe-capabilities",
+    "title": "12.1 Unsafe 能做什么，不能做什么",
+    "description": "Part 12 · Unsafe Rust：责任的显式转移 - 12.1 Unsafe 能做什么，不能做什么",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n12.1 Unsafe 能做什么，不能做什么\n\n参考资料\n\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-12-unsafe/12-2-safe-abstraction",
+    "title": "12.2 Safe Abstraction 的构建原则",
+    "description": "Part 12 · Unsafe Rust：责任的显式转移 - 12.2 Safe Abstraction 的构建原则",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n12.2 Safe Abstraction 的构建原则\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-13-macros/13-1-macro-compilation",
+    "title": "13.1 Macro 的编译阶段位置",
+    "description": "Part 13 · 宏与编译期元编程 - 13.1 Macro 的编译阶段位置",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n13.1 Macro 的编译阶段位置\n\n参考资料\n\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-13-macros/13-2-macro-vs-generics",
+    "title": "13.2 宏 vs 泛型 vs const generics",
+    "description": "Part 13 · 宏与编译期元编程 - 13.2 宏 vs 泛型 vs const generics",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n13.2 宏 vs 泛型 vs const generics\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-14-compile-runtime/14-1-compile-time",
+    "title": "14.1 Rust 把什么问题前移到了编译期",
+    "description": "Part 14 · 编译期 vs 运行期的最终分界 - 14.1 Rust 把什么问题前移到了编译期",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n14.1 Rust 把什么问题前移到了编译期\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-14-compile-runtime/14-2-runtime",
+    "title": "14.2 哪些问题刻意留在运行期",
+    "description": "Part 14 · 编译期 vs 运行期的最终分界 - 14.2 哪些问题刻意留在运行期",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n14.2 哪些问题刻意留在运行期\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-2-expression-model/2-1-expression-oriented",
+    "title": "2.1 表达式导向语言的真正含义",
+    "description": "Part 2 · 表达式模型：Rust 为什么\"不是 C++\" - 2.1 表达式导向语言的真正含义",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n2.1 表达式导向语言的真正含义\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-2-expression-model/2-2-control-flow",
+    "title": "2.2 控制流 ≠ 流程控制",
+    "description": "Part 2 · 表达式模型：Rust 为什么\"不是 C++\" - 2.2 控制流 ≠ 流程控制",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n2.2 控制流 ≠ 流程控制\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-3-type-system/3-1-type-responsibility",
+    "title": "3.1 Rust 类型系统的真正职责",
+    "description": "Part 3 · 类型系统不是\"类型\"，而是\"约束集合\" - 3.1 Rust 类型系统的真正职责",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n3.1 Rust 类型系统的真正职责\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-3-type-system/3-2-special-types",
+    "title": "3.2 特殊类型与边界类型",
+    "description": "Part 3 · 类型系统不是\"类型\"，而是\"约束集合\" - 3.2 特殊类型与边界类型",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n3.2 特殊类型与边界类型\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-4-ownership/4-1-ownership-semantics",
+    "title": "4.1 所有权的形式化语义",
+    "description": "Part 4 · 所有权模型 - 4.1 所有权的形式化语义",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n4.1 所有权的形式化语义\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-4-ownership/4-2-move-copy-borrow",
+    "title": "4.2 Move / Copy / Borrow 的三态模型",
+    "description": "Part 4 · 所有权模型 - 4.2 Move / Copy / Borrow 的三态模型",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n4.2 Move / Copy / Borrow 的三态模型\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-1-borrow-checker",
+    "title": "5.1 Borrow Checker 的真实目标",
+    "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.1 Borrow Checker 的真实目标",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n5.1 Borrow Checker 的真实目标\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-2-lifetime-relations",
+    "title": "5.2 生命周期不是时间，是关系",
+    "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.2 生命周期不是时间，是关系",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n5.2 生命周期不是时间，是关系\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-3-hrtb",
+    "title": "5.3 高阶生命周期 (HRTB)",
+    "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.3 高阶生命周期 (HRTB)",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n5.3 高阶生命周期 (HRTB)\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-6-patterns/6-1-patterns-first-class",
+    "title": "6.1 Pattern 是一等公民",
+    "description": "Part 6 · 模式系统：Rust 的\"控制结构核心\" - 6.1 Pattern 是一等公民",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n6.1 Pattern 是一等公民\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-6-patterns/6-2-exhaustiveness-refutability",
+    "title": "6.2 穷尽性与可反驳性",
+    "description": "Part 6 · 模式系统：Rust 的\"控制结构核心\" - 6.2 穷尽性与可反驳性",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n6.2 穷尽性与可反驳性\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-7-traits/7-1-trait-three-roles",
+    "title": "7.1 Trait 的三重身份",
+    "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.1 Trait 的三重身份",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n7.1 Trait 的三重身份\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-7-traits/7-2-coherence-orphan-rule",
+    "title": "7.2 Impl、Coherence 与 Orphan Rule",
+    "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.2 Impl、Coherence 与 Orphan Rule",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n7.2 Impl、Coherence 与 Orphan Rule\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-7-traits/7-3-static-dynamic-dispatch",
+    "title": "7.3 静态分发 vs 动态分发",
+    "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.3 静态分发 vs 动态分发",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n7.3 静态分发 vs 动态分发\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-8-generics/8-1-monomorphization",
+    "title": "8.1 泛型代码如何变成机器码",
+    "description": "Part 8 · 泛型与单态化：零成本抽象的代价 - 8.1 泛型代码如何变成机器码",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n8.1 泛型代码如何变成机器码\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-8-generics/8-2-associated-types",
+    "title": "8.2 Associated Types vs 泛型参数",
+    "description": "Part 8 · 泛型与单态化：零成本抽象的代价 - 8.2 Associated Types vs 泛型参数",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n8.2 Associated Types vs 泛型参数\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-9-memory-model/9-1-memory-abstraction",
+    "title": "9.1 Rust 的内存抽象层次",
+    "description": "Part 9 · 内存模型与 Interior Mutability - 9.1 Rust 的内存抽象层次",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n9.1 Rust 的内存抽象层次\n\n参考资料\n\n- The Rust Reference\n- The Rust Reference\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "参考资料",
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  },
+  {
+    "slug": "learn/mental-model/part-9-memory-model/9-2-interior-mutability",
+    "title": "9.2 Interior Mutability 的合法性来源",
+    "description": "Part 9 · 内存模型与 Interior Mutability - 9.2 Interior Mutability 的合法性来源",
+    "category": "mental-model",
+    "content": "<LearnLayout>\n\n9.2 Interior Mutability 的合法性来源\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
+    "headings": [
+      "文字叙述",
+      "图形表示",
+      "动画演示",
+      "代码示例",
+      "应用场景",
+      "总结",
+      "我的理解"
+    ]
+  }
+]

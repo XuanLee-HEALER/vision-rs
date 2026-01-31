@@ -1,8 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearch } from '@/components/search/SearchProvider.client';
 
 export default function Banner() {
+  const { open } = useSearch();
+
   return (
     <header id="site-header" className="h-14 border-b border-overlay0/10 bg-mantle">
       <div className="flex h-full items-center gap-3">
@@ -17,7 +20,10 @@ export default function Banner() {
 
         {/* Search - 居中，响应式宽度 */}
         <div className="flex flex-1 items-center justify-center px-4">
-          <button className="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-overlay0/30 bg-surface0/30 px-3 text-sm text-subtext0 transition-colors hover:border-overlay0/50">
+          <button
+            onClick={open}
+            className="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-overlay0/30 bg-surface0/30 px-3 text-sm text-subtext0 transition-colors hover:border-overlay0/50"
+          >
             <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
