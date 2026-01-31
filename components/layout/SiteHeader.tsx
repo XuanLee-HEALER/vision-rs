@@ -5,9 +5,9 @@ import Link from 'next/link';
 export default function Banner() {
   return (
     <header id="site-header" className="h-14 border-b border-overlay0/10 bg-mantle">
-      <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between gap-3 px-4 md:px-6">
-        {/* Logo - 响应式 */}
-        <Link href="/" className="flex shrink-0 items-center gap-2">
+      <div className="flex h-full items-center gap-3">
+        {/* Logo - 固定左侧，与侧边栏内容对齐 (p-6 = 24px) */}
+        <Link href="/" className="flex shrink-0 items-center gap-2 pl-6">
           {/* 移动端：只显示 V-RS */}
           <span className="text-sm font-medium text-text md:hidden">V-RS</span>
           {/* 桌面端：显示完整 Logo */}
@@ -15,26 +15,28 @@ export default function Banner() {
           <span className="hidden text-xs text-subtext0 md:block">v1.0</span>
         </Link>
 
-        {/* Search - 响应式宽度 */}
-        <button className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-overlay0/30 bg-surface0/30 px-3 text-sm text-subtext0 transition-colors hover:border-overlay0/50 md:w-96 md:flex-none">
-          <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <span className="truncate">搜索文档...</span>
-          <kbd className="ml-auto hidden text-xs md:inline">⌘K</kbd>
-        </button>
+        {/* Search - 居中，响应式宽度 */}
+        <div className="flex flex-1 items-center justify-center px-4">
+          <button className="flex h-9 w-full max-w-md items-center gap-2 rounded-md border border-overlay0/30 bg-surface0/30 px-3 text-sm text-subtext0 transition-colors hover:border-overlay0/50">
+            <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <span className="truncate">搜索文档...</span>
+            <kbd className="ml-auto hidden text-xs md:inline">⌘K</kbd>
+          </button>
+        </div>
 
-        {/* Actions - 只显示 GitHub */}
+        {/* GitHub - 固定右侧 */}
         <a
           href="https://github.com/XuanLee-HEALER/vision-rs"
           target="_blank"
           rel="noopener noreferrer"
-          className="shrink-0 text-subtext0 transition-colors hover:text-text"
+          className="shrink-0 pr-6 text-subtext0 transition-colors hover:text-text"
           aria-label="GitHub"
         >
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
