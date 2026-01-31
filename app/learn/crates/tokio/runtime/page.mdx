@@ -1,0 +1,104 @@
+import LearnLayout from '@/components/LearnLayout';
+import RuntimeVisualization from '@/components/tokio/RuntimeVisualization';
+
+export const metadata = {
+  title: 'Tokio Runtime 架构',
+  description: 'Tokio 运行时内部实现详解'
+};
+
+<LearnLayout>
+
+# Runtime 架构
+
+Tokio Runtime 是任务执行的核心，负责调度和执行异步任务。
+
+## Runtime 类型
+
+### 多线程 Runtime
+
+```rust
+let rt = tokio::runtime::Builder::new_multi_thread()
+    .worker_threads(4)  // Worker 线程数
+    .thread_name("my-tokio")
+    .enable_all()
+    .build()
+    .unwrap();
+```
+
+### 当前线程 Runtime
+
+```rust
+let rt = tokio::runtime::Builder::new_current_thread()
+    .enable_all()
+    .build()
+    .unwrap();
+```
+
+## 工作窃取调度器
+
+<RuntimeVisualization />
+
+### 队列层级
+
+1. **本地队列**：每个线程独享，LIFO
+2. **全局队列**：所有线程共享，FIFO
+3. **窃取**：从其他线程队尾窃取
+
+### 调度策略
+
+```rust
+// 1. 优先本地队列
+if let Some(task) = local_queue.pop() {
+    task.run();
+}
+// 2. 检查全局队列
+else if let Some(task) = global_queue.pop() {
+    task.run();
+}
+// 3. 窃取其他线程任务
+else {
+    for other in workers {
+        if let Some(task) = other.steal() {
+            task.run();
+            break;
+        }
+    }
+}
+```
+
+## 配置选项
+
+### 线程池大小
+
+```rust
+// 默认：CPU 核心数
+Runtime::new()  // 使用所有核心
+
+// 自定义
+Builder::new_multi_thread()
+    .worker_threads(8)
+    .build()
+```
+
+### 线程命名
+
+```rust
+Builder::new_multi_thread()
+    .thread_name_fn(|| {
+        static ATOMIC_ID: AtomicUsize = AtomicUsize::new(0);
+        let id = ATOMIC_ID.fetch_add(1, Ordering::SeqCst);
+        format!("my-pool-{}", id)
+    })
+    .build()
+```
+
+## 小结
+
+- ✅ 多线程 Runtime 使用工作窃取算法
+- ✅ 单线程 Runtime 适合嵌入式场景
+- ✅ 支持自定义配置
+- ✅ 自动负载均衡
+
+</LearnLayout>
+
+export default ({ children }) => <>{children}</>;
