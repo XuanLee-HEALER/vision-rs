@@ -1,6 +1,5 @@
 import {jsx as _jsx, jsxs as _jsxs} from "react/jsx-runtime";
 import LearnLayout from '@/components/LearnLayout';
-import MermaidDiagram from '@/components/MermaidDiagram';
 export const metadata = {
   title: '模式匹配 - Vision-RS',
   description: 'Rust 的模式匹配与解构'

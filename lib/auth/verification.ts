@@ -60,7 +60,7 @@ export async function verifyCode(email: string, code: string): Promise<boolean> 
   }
 
   if (!data) {
-    console.log('❌ No verification data found for:', email);
+    console.error('❌ No verification data found for:', email);
     return false;
   }
 
