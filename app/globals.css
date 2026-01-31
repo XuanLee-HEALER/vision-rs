@@ -9,6 +9,10 @@
 
   body {
     @apply bg-base text-subtext1 overflow-x-hidden;
+    font-family: theme('fontFamily.sans');
+    /* 中文排版优化 */
+    letter-spacing: 0.01em;
+    text-rendering: optimizeLegibility;
   }
 
   html {
@@ -64,12 +68,15 @@ pre {
   @apply mt-8 mb-8 rounded-lg border border-overlay0/30 bg-mantle p-6 overflow-x-auto;
   font-size: 14px;
   line-height: 1.6;
+  font-family: theme('fontFamily.mono');
+  border-radius: 12px;
+  padding: 16px 18px;
 }
 
 code {
   @apply bg-surface0/50 px-1.5 py-0.5 rounded text-sm;
   color: #c6a0f6 !important;
-  font-family: 'CaskaydiaCove Nerd Font Mono', monospace;
+  font-family: theme('fontFamily.mono');
 }
 
 pre code {
@@ -77,10 +84,19 @@ pre code {
   color: #f0f0f0 !important;
 }
 
+/* 行内代码更像"标签" */
+.prose :not(pre) > code {
+  font-size: 0.92em;
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
 /* ==================== MDX 内容样式 (Prose) ==================== */
 
 .prose {
   @apply max-w-none;
+  line-height: 1.75; /* 中文阅读更舒适 */
 }
 
 /* 标题 */
@@ -88,18 +104,21 @@ pre code {
   @apply text-4xl font-medium tracking-tight mb-6;
   color: #f0f0f0 !important;
   scroll-margin-top: 2rem;
+  letter-spacing: -0.02em; /* 中文标题更紧凑 */
 }
 
 .prose h2 {
   @apply text-2xl font-medium tracking-tight mt-16 mb-6 pb-4 border-b border-overlay0/10;
   color: #f0f0f0 !important;
   scroll-margin-top: 2rem;
+  letter-spacing: -0.02em;
 }
 
 .prose h3 {
   @apply text-xl font-medium mt-12 mb-4;
   color: #f0f0f0 !important;
   scroll-margin-top: 2rem;
+  letter-spacing: -0.02em;
 }
 
 .prose h4 {
@@ -112,6 +131,7 @@ pre code {
 .prose p {
   @apply text-base leading-relaxed mb-6;
   color: #e0e0e0 !important;
+  letter-spacing: 0.01em; /* 段落保持正常字间距 */
 }
 
 /* 链接 */

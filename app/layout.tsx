@@ -1,6 +1,23 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { SearchProvider } from '@/components/search/SearchProvider.client';
+import { Inter, JetBrains_Mono } from 'next/font/google';
+
+// 配置 Inter 字体（西文/数字）
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+// 配置 JetBrains Mono 字体（代码）
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-mono',
+});
 
 export const metadata: Metadata = {
   title: 'Vision-RS - 深入学习 Rust 编程语言',
@@ -14,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head></head>
       <body className="bg-base text-subtext1 antialiased">
         <SearchProvider>{children}</SearchProvider>

@@ -27,6 +27,36 @@
 
 ---
 
+## 快速开始
+
+**首次运行**:
+
+```bash
+# 1. 安装依赖
+pnpm install
+
+# 2. 配置环境变量
+cp .env.local.example .env.local
+# 编辑 .env.local，至少设置：
+# - ADMIN_EMAILS (你的邮箱)
+# - SESSION_SECRET (运行: openssl rand -base64 32)
+# - RESEND_API_KEY (从 https://resend.com 获取)
+
+# 3. 启动开发服务器
+pnpm dev  # 或使用 just dev
+# 访问 http://localhost:3000
+```
+
+**日常开发**:
+
+```bash
+just check              # 提交前必运行（lint + format + typecheck）
+just dev                # 启动开发服务器
+just new-chapter <name> # 创建新 MDX 章节
+```
+
+---
+
 ## 技术栈
 
 ### 前端
@@ -50,7 +80,75 @@
 - **CI/CD**: 自动部署（Push to main）
 - **域名**: 自定义域名支持
 
+---
+
+## 项目结构
+
+```text
+app/
+├── (site)/          # 公开网站（学习内容）
+│   └── learn/       # MDX 教学内容
+├── admin/           # 管理后台（需登录）
+└── api/             # API 路由
+
+components/          # 可复用 UI 组件
+features/            # 功能模块（搜索、3D 可视化等）
+lib/                 # 工具函数和配置
+docs/                # 项目文档
+scripts/             # 构建脚本
+```
+
+**关键文件**:
+
+- `app/globals.css` - 全局样式（Catppuccin 主题）
+- `mdx-components.tsx` - MDX 自定义组件
+- `scripts/generate-learn-index.ts` - 自动生成学习内容索引
+- `scripts/generate-search-index.ts` - 生成全文搜索索引（Fuse.js）
+- `scripts/compile-mdx.mjs` - MDX 预编译（代码高亮、语法检查）
+
+**核心功能**:
+
+- **MDX 教学系统**: app/(site)/learn/ 下的 MDX 文件自动生成导航
+- **全文搜索**: 基于 Fuse.js 的模糊搜索，索引在构建时生成
+- **3D 可视化**: 使用 React Three Fiber (features/ 目录)
+- **管理后台**: 邮箱验证码登录（Resend + Iron Session）
+
+---
+
 ## How To
+
+### MDX 内容管理
+
+**创建新章节**:
+
+```bash
+just new-chapter pattern-matching  # 创建 app/(site)/learn/pattern-matching/page.mdx
+```
+
+**MDX frontmatter 要求**:
+
+```mdx
+---
+title: '章节标题'
+description: '简短描述'
+order: 1
+---
+
+# 章节内容
+```
+
+**预构建脚本** (pnpm build 时自动运行):
+
+- `generate-learn-index.ts` - 扫描 MDX 文件，生成导航索引
+- `generate-search-index.ts` - 生成全文搜索索引（Fuse.js）
+- `compile-mdx.mjs` - 预编译 MDX（代码高亮、语法检查）
+
+**手动重新生成索引**:
+
+```bash
+pnpm generate-index   # 重新生成学习内容索引
+pnpm generate-search  # 重新生成搜索索引
+```
 
 ### 配置管理
 
@@ -168,127 +266,38 @@ just new-chapter <name>     # 创建新章节
 
 #### Vercel CLI - 运维部署
 
-安装（如果没有）:
-
-```bash
-# 使用 pnpm
-pnpm add -g vercel
-
-# 或使用 npm
-npm i -g vercel
-```
-
 **初次设置**:
 
 ```bash
-# 登录（已完成）
-vercel login
-
-# 连接项目到 Vercel
-vercel link
-
-# 拉取环境变量到本地
-vercel env pull
+vercel login          # 登录 Vercel
+vercel link           # 连接项目
+vercel env pull       # 拉取环境变量到本地
 ```
 
-**部署管理**:
+**日常部署**:
 
 ```bash
-# 创建预览部署（测试）
-vercel
-
-# 部署到生产环境
-vercel --prod
-
-# 列出所有部署
-vercel list
-
-# 查看部署详情
-vercel inspect <deployment-url>
-
-# 删除部署
-vercel remove <deployment-id>
-
-# 查看实时日志
-vercel logs <deployment-url>
-
-# 查看实时日志（跟踪模式）
-vercel logs <deployment-url> -f
+vercel                # 预览部署（测试）
+vercel --prod         # 生产部署
+just deploy-prod      # 或使用 just 快捷方式
 ```
 
-**环境变量管理**:
+**环境变量**:
 
 ```bash
-# 列出所有环境变量
-vercel env ls
-
-# 添加环境变量
-vercel env add <name>
-# 交互式选择环境（production/preview/development）
-
-# 删除环境变量
-vercel env rm <name>
-
-# 拉取环境变量到本地 .env.local
-vercel env pull
-
-# 拉取特定环境的变量
-vercel env pull .env.production.local --environment=production
+vercel env ls         # 列出所有环境变量
+vercel env add        # 添加变量（交互式）
+vercel env pull       # 拉取到本地 .env.local
 ```
 
-**项目和域名**:
+**常用命令**:
 
 ```bash
-# 查看当前账户
-vercel whoami
-
-# 列出所有项目
-vercel projects ls
-
-# 列出域名
-vercel domains ls
-
-# 添加自定义域名
-vercel domains add <domain>
-
-# 删除域名
-vercel domains rm <domain>
+vercel logs --follow  # 查看实时日志
+vercel list           # 列出所有部署
 ```
 
-**本地开发**:
-
-```bash
-# 启动 Vercel 开发服务器（模拟生产环境）
-vercel dev
-
-# 指定端口
-vercel dev --listen 3001
-```
-
-**常用运维场景**:
-
-```bash
-# 1. 快速预览部署（测试新功能）
-vercel
-
-# 2. 生产部署
-vercel --prod
-
-# 3. 查看最新部署日志
-vercel logs --follow
-
-# 4. 回滚到之前的部署
-vercel list                    # 找到要回滚的部署
-vercel promote <deployment-url> # 提升为生产环境
-
-# 5. 同步环境变量
-vercel env pull                # 拉取到本地
-vercel env add MY_VAR          # 添加新变量
-
-# 6. 清理旧部署
-vercel list                    # 查看所有部署
-vercel remove <deployment-id>  # 删除不需要的
-```
+详细命令参考：[Vercel 部署指南](./docs/VERCEL_DEPLOYMENT_GUIDE.md)
 
 ### 开发模式特性
 
@@ -305,3 +314,21 @@ vercel remove <deployment-id>  # 删除不需要的
 1. 推送代码到 GitHub
 2. Vercel 自动构建部署
 3. 访问预览/生产 URL
+
+---
+
+## 常见问题 (Gotchas)
+
+- **MDX 编译失败**: 检查 frontmatter 格式，确保包含 title 和 description
+- **搜索索引未更新**: 运行 `pnpm generate-search` 手动重新生成
+- **开发环境 404**: 新增 MDX 文件可能需要重启服务器才能识别
+- **管理后台登录失败**:
+  - 确保 `RESEND_API_KEY` 有效
+  - 检查邮箱是否在 `ADMIN_EMAILS` 环境变量中
+  - 开发环境下会自动跳过鉴权
+- **类型错误**: 提交前运行 `just typecheck` 检查 TypeScript 类型
+- **Lint 错误**: 运行 `just lint-fix` 自动修复，或手动解决后再提交
+- **构建失败**:
+  - 检查是否所有 MDX 文件都有有效的 frontmatter
+  - 运行 `pnpm compile-mdx` 查看详细错误信息
+  - 确保没有语法错误或导入错误

@@ -37,6 +37,7 @@ next-env.d.ts
 
 # Claude Code local settings (keep settings.json for shared config)
 .claude/settings.local.json
+.claude/hookify.*.local.md
 
 # Serena cache
 .serena/cache/
