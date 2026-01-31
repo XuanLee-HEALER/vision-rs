@@ -34,9 +34,50 @@ vision-rs/
 2. MDX 内容渲染 - 支持 Markdown + React 组件
 3. 代码高亮 - 使用 Shiki 和 Catppuccin 主题
 4. 响应式设计 - 桌面/平板/移动端适配
+5. 管理后台 - 内容可见性管理（开发模式自动跳过鉴权）
+
+## 开发工具配置
+
+### 代码质量工具
+- **ESLint**: 已配置，用于 TypeScript/JavaScript 代码检查
+- **Markdownlint**: 已配置，用于 Markdown 文件检查
+- **Prettier**: 代码格式化工具
+
+### Claude Code Hooks
+- **format-code hook**: 在 Edit/Write 后自动运行
+  - TypeScript/JavaScript: 运行 prettier + eslint
+  - Markdown: 运行 prettier + markdownlint
+  - 配置文件: `.claude/hooks/format-code.sh`
+
+### 开发模式特性
+- **管理后台鉴权**: 开发模式下自动跳过（lib/auth/session.ts）
+- **热重载**: Next.js 自动支持
 
 ## 设计规范
 - 极简主义设计
 - Catppuccin Macchiato 配色
 - 侧边栏宽度: 280px
 - 内容区最大宽度: 900px
+
+## 环境配置说明
+
+### 环境文件结构
+- `.env.local.example` - 配置模板（提交到 Git）
+- `.env.local` - 本地实际配置（不提交，在 .gitignore 中）
+
+### 必需的环境变量
+
+#### 本地开发最小配置
+1. `ADMIN_EMAILS` - 管理员邮箱白名单
+2. `SESSION_SECRET` - Session 加密密钥（用 `openssl rand -base64 32` 生成）
+3. `RESEND_API_KEY` - Resend 邮件服务 API Key
+
+#### 生产环境完整配置
+上述三项 + 以下配置：
+4. `KV_URL` / `KV_REST_API_URL` / `KV_REST_API_TOKEN` - Vercel KV 存储
+5. `GITHUB_TOKEN` / `GITHUB_OWNER` / `GITHUB_REPO` / `GITHUB_BRANCH` - GitHub API
+6. `NEXT_PUBLIC_SITE_URL` - 站点 URL（可选）
+
+### 配置文件位置
+- 本地: `/Users/lixuan/Documents/project/vision-rs/.env.local`
+- 生产: Vercel Dashboard → Settings → Environment Variables

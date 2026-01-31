@@ -68,7 +68,7 @@
 
 ```
 名称: SESSION_SECRET
-值: <生成的随机字符串>
+值: <生成的随机字符串> SIgU5zmpEf5JUNwIFhCqsR2YLksjnCqrdlguSGUhN7I=
 环境: Production, Preview, Development
 ```
 
@@ -86,6 +86,7 @@ openssl rand -base64 32
 ```
 名称: RESEND_API_KEY
 值: re_xxxxxxxxxxxxx
+re_fPe7eQH6_74t8zABycGQBhe638Xeekn5b
 环境: Production, Preview, Development
 ```
 
@@ -317,8 +318,8 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 
 ## 环境变量总结
 
-| 变量名                        | 必需  | 说明             | 示例                      |
-| ----------------------------- | ----- | ---------------- | ------------------------- |
+| 变量名                        | 必需 | 说明             | 示例                      |
+| ----------------------------- | ---- | ---------------- | ------------------------- |
 | `ADMIN_EMAILS`                | ✅ 是 | 管理员邮箱白名单 | `admin@example.com`       |
 | `SESSION_SECRET`              | ✅ 是 | Session 加密密钥 | `openssl rand -base64 32` |
 | `RESEND_API_KEY`              | ✅ 是 | Resend API 密钥  | `re_xxxxx`                |

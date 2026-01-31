@@ -39,4 +39,16 @@ case "$EXT" in
         ;;
 esac
 
+# 对 Markdown 文件运行 markdownlint 检查（仅报告，不阻塞）
+case "$EXT" in
+    md|mdx)
+        if command -v npx &> /dev/null && [ -f "node_modules/.bin/markdownlint" ]; then
+            LINT_OUTPUT=$(npx markdownlint "$FILE_PATH" 2>/dev/null || true)
+            if [ -n "$LINT_OUTPUT" ]; then
+                echo "{\"additionalContext\": \"Markdownlint warnings for $FILE_PATH:\n$LINT_OUTPUT\"}"
+            fi
+        fi
+        ;;
+esac
+
 exit 0
