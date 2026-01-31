@@ -6,6 +6,22 @@ interface VerificationData {
   createdAt: number;
 }
 
+// 开发环境的内存存储 - 使用 global 确保跨模块共享
+const globalForDev = global as typeof globalThis & {
+  __dev_verification_storage?: Map<string, VerificationData>;
+};
+
+if (!globalForDev.__dev_verification_storage) {
+  globalForDev.__dev_verification_storage = new Map<string, VerificationData>();
+}
+
+const devStorage = globalForDev.__dev_verification_storage;
+
+// 检查是否可以使用 KV
+const hasKV = () => {
+  return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+};
+
 /**
  * 生成 6 位数字验证码
  */
@@ -14,7 +30,7 @@ export function generateCode(): string {
 }
 
 /**
- * 保存验证码到 KV 存储,有效期 5 分钟
+ * 保存验证码,有效期 5 分钟
  */
 export async function saveVerificationCode(email: string, code: string) {
   const key = `auth:code:${email}`;
@@ -24,8 +40,18 @@ export async function saveVerificationCode(email: string, code: string) {
     createdAt: Date.now(),
   };
 
-  // 5 分钟过期
-  await kv.setex(key, 300, JSON.stringify(data));
+  if (hasKV()) {
+    // 使用 Vercel KV
+    await kv.setex(key, 300, JSON.stringify(data));
+  } else {
+    // 使用内存存储（开发环境）
+    devStorage.set(key, data);
+
+    // 5 分钟后自动清除
+    setTimeout(() => {
+      devStorage.delete(key);
+    }, 300000);
+  }
 }
 
 /**
@@ -34,29 +60,68 @@ export async function saveVerificationCode(email: string, code: string) {
  */
 export async function verifyCode(email: string, code: string): Promise<boolean> {
   const key = `auth:code:${email}`;
-  const dataStr = await kv.get<string>(key);
+  let data: VerificationData | null = null;
 
-  if (!dataStr) {
+  if (hasKV()) {
+    // 使用 Vercel KV
+    const dataStr = await kv.get<string>(key);
+    if (dataStr) {
+      data = JSON.parse(dataStr);
+    }
+  } else {
+    // 使用内存存储（开发环境）
+    data = devStorage.get(key) || null;
+    console.log('🔍 Verify code debug:', {
+      key,
+      inputCode: code,
+      storedCode: data?.code,
+      hasData: !!data,
+      storageSize: devStorage.size,
+    });
+  }
+
+  if (!data) {
+    console.log('❌ No verification data found for:', email);
     return false;
   }
 
-  const data: VerificationData = JSON.parse(dataStr);
+  // 检查是否过期（5 分钟）
+  if (Date.now() - data.createdAt > 300000) {
+    if (hasKV()) {
+      await kv.del(key);
+    } else {
+      devStorage.delete(key);
+    }
+    return false;
+  }
 
   // 检查尝试次数
   if (data.attempts >= 3) {
-    await kv.del(key);
+    if (hasKV()) {
+      await kv.del(key);
+    } else {
+      devStorage.delete(key);
+    }
     throw new Error('Too many attempts');
   }
 
   // 验证码不匹配
   if (data.code !== code) {
     data.attempts += 1;
-    await kv.setex(key, 300, JSON.stringify(data));
+    if (hasKV()) {
+      await kv.setex(key, 300, JSON.stringify(data));
+    } else {
+      devStorage.set(key, data);
+    }
     return false;
   }
 
   // 验证成功,删除验证码
-  await kv.del(key);
+  if (hasKV()) {
+    await kv.del(key);
+  } else {
+    devStorage.delete(key);
+  }
   return true;
 }
 

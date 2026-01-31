@@ -3,8 +3,6 @@ import { Resend } from 'resend';
 import { generateCode, saveVerificationCode, isAdminEmail } from '@/lib/auth/verification';
 
 export async function POST(req: NextRequest) {
-  // 延迟初始化 Resend,避免构建时报错
-  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const { email } = await req.json();
 
@@ -21,7 +19,22 @@ export async function POST(req: NextRequest) {
     const code = generateCode();
     await saveVerificationCode(email, code);
 
-    // 发送邮件
+    // 开发环境：打印验证码到控制台
+    const isDevelopment = process.env.NODE_ENV === 'development' || !process.env.RESEND_API_KEY;
+
+    if (isDevelopment) {
+      console.log('\n========================================');
+      console.log('📧 验证码邮件 (开发模式)');
+      console.log('========================================');
+      console.log(`收件人: ${email}`);
+      console.log(`验证码: ${code}`);
+      console.log(`有效期: 5 分钟`);
+      console.log('========================================\n');
+      return NextResponse.json({ success: true, dev: true });
+    }
+
+    // 生产环境：发送真实邮件
+    const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from: 'Vision-RS <noreply@' + (process.env.RESEND_DOMAIN || 'your-domain.com') + '>',
       to: email,
