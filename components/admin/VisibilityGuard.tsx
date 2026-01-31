@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import { getVisibility } from '@/lib/visibility';
 import { isAdmin } from '@/lib/auth/check-admin';
 import VisibilityBanner from './VisibilityBanner';
@@ -9,12 +8,15 @@ interface VisibilityGuardProps {
 }
 
 /**
- * Server Component to check content visibility
+ * Server Component to check content visibility (Soft Hide Strategy)
  *
  * Rules:
  * 1. If visible: render normally
- * 2. If hidden + not admin: return 404
- * 3. If hidden + admin: show VisibilityBanner + render content
+ * 2. If hidden + not admin: show banner with "unreleased" message + render content
+ * 3. If hidden + admin: show banner with "admin preview" message + render content
+ *
+ * Note: This is "soft hide" - content is still accessible via direct URL,
+ * but shows a banner to indicate it's not publicly listed.
  */
 export default async function VisibilityGuard({ slug, children }: VisibilityGuardProps) {
   const visible = await getVisibility(slug);
@@ -24,18 +26,13 @@ export default async function VisibilityGuard({ slug, children }: VisibilityGuar
     return <>{children}</>;
   }
 
-  // Content is hidden - check if user is admin
+  // Content is hidden - check if user is admin for different banner text
   const adminLoggedIn = await isAdmin();
 
-  if (!adminLoggedIn) {
-    // Hidden content + not admin = 404
-    notFound();
-  }
-
-  // Hidden content + admin = show banner + render content
+  // Hidden content = show banner + render content (soft hide)
   return (
     <>
-      <VisibilityBanner visible={false} className="mb-6" />
+      <VisibilityBanner visible={false} isAdmin={adminLoggedIn} className="mb-6" />
       {children}
     </>
   );

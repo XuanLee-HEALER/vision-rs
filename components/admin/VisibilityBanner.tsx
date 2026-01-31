@@ -1,13 +1,22 @@
 interface VisibilityBannerProps {
   visible: boolean;
+  isAdmin?: boolean;
   className?: string;
 }
 
 /**
  * Banner to indicate content visibility status
  * Only shown when content is hidden (visible: false)
+ *
+ * Shows different messages for:
+ * - Admin users: "Hidden content - admin preview"
+ * - Regular users: "Content not yet released"
  */
-export default function VisibilityBanner({ visible, className = '' }: VisibilityBannerProps) {
+export default function VisibilityBanner({
+  visible,
+  isAdmin = false,
+  className = '',
+}: VisibilityBannerProps) {
   if (visible) {
     return null;
   }
@@ -34,10 +43,21 @@ export default function VisibilityBanner({ visible, className = '' }: Visibility
         <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
       <div className="flex-1">
-        <p className="text-sm font-medium text-yellow">此内容当前不可见</p>
-        <p className="mt-1 text-xs text-subtext0">
-          该页面已设置为隐藏状态，普通用户无法访问。你作为管理员可以预览此内容。
-        </p>
+        {isAdmin ? (
+          <>
+            <p className="text-sm font-medium text-yellow">此内容当前不可见</p>
+            <p className="mt-1 text-xs text-subtext0">
+              该页面已设置为隐藏状态，普通用户无法通过导航和搜索发现此页面。你作为管理员可以预览此内容。
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm font-medium text-yellow">内容尚未发布</p>
+            <p className="mt-1 text-xs text-subtext0">
+              此内容正在编写中，尚未正式发布。你可以阅读当前版本，但内容可能不完整或随时更新。
+            </p>
+          </>
+        )}
       </div>
     </div>
   );
