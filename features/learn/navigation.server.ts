@@ -1,5 +1,6 @@
 import { NavSection } from './types';
 import { MENTAL_MODEL_CONFIG } from './mental-model-config';
+import { getBatchVisibility } from '@/lib/visibility';
 
 /**
  * 生成导航树（纯配置，不再扫描文件系统）
@@ -72,15 +73,77 @@ export async function generateNavigation(): Promise<NavSection[]> {
 }
 
 /**
- * 获取导航数据（缓存版本）
+ * Filter hidden items from navigation based on visibility settings
+ *
+ * Note: If KV is not configured (local development), returns unfiltered navigation
  */
-let cachedNavigation: NavSection[] | null = null;
+async function filterHiddenItems(sections: NavSection[]): Promise<NavSection[]> {
+  // Check if KV is configured
+  const kvConfigured = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
 
-export async function getNavigation(): Promise<NavSection[]> {
-  if (cachedNavigation) {
-    return cachedNavigation;
+  if (!kvConfigured) {
+    // KV not configured - return all items (local development)
+    return sections;
   }
 
-  cachedNavigation = await generateNavigation();
-  return cachedNavigation;
+  try {
+    // Collect all hrefs to check visibility
+    const allHrefs: string[] = [];
+
+    sections.forEach((section) => {
+      if (section.href) allHrefs.push(section.href);
+      if (section.items) {
+        section.items.forEach((item) => {
+          if (item.href) allHrefs.push(item.href);
+        });
+      }
+    });
+
+    // Convert hrefs to slugs (remove leading slash)
+    const slugs = allHrefs.map((href) => href.replace(/^\//, ''));
+
+    // Get visibility status for all slugs
+    const visibilityMap = await getBatchVisibility(slugs);
+
+    // Filter sections and items
+    return sections
+      .map((section) => {
+        const sectionSlug = section.href?.replace(/^\//, '') || '';
+        const sectionVisible = visibilityMap[sectionSlug] !== false;
+
+        // Filter items if present
+        const filteredItems = section.items
+          ? section.items.filter((item) => {
+              const itemSlug = item.href?.replace(/^\//, '') || '';
+              return visibilityMap[itemSlug] !== false;
+            })
+          : undefined;
+
+        return {
+          ...section,
+          items: filteredItems,
+        };
+      })
+      .filter((section) => {
+        // Keep section if it has visible items or the section itself should be visible
+        const hasVisibleItems = section.items && section.items.length > 0;
+        const sectionSlug = section.href?.replace(/^\//, '') || '';
+        const sectionVisible = visibilityMap[sectionSlug] !== false;
+
+        return hasVisibleItems || sectionVisible;
+      });
+  } catch (error) {
+    console.error('Error filtering navigation:', error);
+    // Fail open - return all items if filtering fails
+    return sections;
+  }
+}
+
+/**
+ * Get navigation data (with visibility filtering)
+ */
+export async function getNavigation(): Promise<NavSection[]> {
+  const navigation = await generateNavigation();
+  const filtered = await filterHiddenItems(navigation);
+  return filtered;
 }
