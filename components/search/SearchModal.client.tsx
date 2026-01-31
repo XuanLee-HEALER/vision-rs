@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Fuse from 'fuse.js';
 
@@ -41,6 +41,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchIndex, setSearchIndex] = useState<SearchIndexItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const selectedItemRef = useRef<HTMLButtonElement>(null);
 
   // Load search index
   useEffect(() => {
@@ -124,6 +125,16 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedItemRef.current) {
+      selectedItemRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [selectedIndex]);
+
   // Reset state when closing
   useEffect(() => {
     if (!isOpen) {
@@ -184,6 +195,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {results.map((result, index) => (
                 <button
                   key={result.slug}
+                  ref={index === selectedIndex ? selectedItemRef : null}
                   onClick={() => {
                     router.push(`/${result.slug}`);
                     onClose();
