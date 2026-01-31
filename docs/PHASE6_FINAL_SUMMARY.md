@@ -24,7 +24,7 @@
 
 ### 2. 可见性守卫组件
 
-**`components/admin/VisibilityGuard.tsx`** (38 行)
+**`components/visibility/VisibilityGuard.tsx`** (38 行)
 
 服务端组件，用于页面级可见性检查：
 
@@ -270,7 +270,7 @@ pnpm build
 ### 新建
 
 - `lib/auth/check-admin.ts` (27 行) - 管理员身份检查
-- `components/admin/VisibilityGuard.tsx` (38 行) - 页面级可见性守卫
+- `components/visibility/VisibilityGuard.tsx` (38 行) - 页面级可见性守卫
 - `app/sitemap.ts` (69 行) - Sitemap 生成器
 
 ### 修改
@@ -402,7 +402,7 @@ Phase 6 成功实现了导航过滤和 Sitemap 生成：
 **关键文件清单**:
 
 - `lib/auth/check-admin.ts` (27 行)
-- `components/admin/VisibilityGuard.tsx` (38 行)
+- `components/visibility/VisibilityGuard.tsx` (38 行)
 - `app/sitemap.ts` (69 行)
 - `features/learn/navigation.server.ts` (+60 行修改)
 

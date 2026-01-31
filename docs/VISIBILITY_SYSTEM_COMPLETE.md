@@ -37,7 +37,7 @@ Level 3: SEO 控制（构建时）
 └─ 状态: ✅ 已实施
 
 Level 4: 页面守卫（运行时）
-├─ 组件: components/admin/VisibilityGuard.tsx
+├─ 组件: components/visibility/VisibilityGuard.tsx
 ├─ 功能: 软隐藏策略（banner + 内容）
 ├─ 集成: 专用 Layout（3 个目录）
 └─ 状态: ✅ 已实施
@@ -78,7 +78,7 @@ export async function getAllVisibility(): Promise<VisibilityRecord[]>;
 
 ### 3. 前端组件
 
-**VisibilityGuard** (components/admin/VisibilityGuard.tsx)
+**VisibilityGuard** (components/visibility/VisibilityGuard.tsx)
 
 ```typescript
 // 软隐藏策略
@@ -100,7 +100,7 @@ export default async function VisibilityGuard({ slug, children }) {
 }
 ```
 
-**VisibilityBanner** (components/admin/VisibilityBanner.tsx)
+**VisibilityBanner** (components/visibility/VisibilityBanner.tsx)
 
 - 管理员: 「此内容当前不可见」+ 管理员预览说明
 - 普通用户: 「内容尚未发布」+ 编写中提示
@@ -256,8 +256,8 @@ export const config = {
 
 ### 组件 (2 个文件)
 
-- `components/admin/VisibilityGuard.tsx` (38 行) - 页面级守卫
-- `components/admin/VisibilityBanner.tsx` (62 行) - 状态横幅
+- `components/visibility/VisibilityGuard.tsx` (38 行) - 页面级守卫
+- `components/visibility/VisibilityBanner.tsx` (62 行) - 状态横幅
 
 ### 管理后台 (2 个文件)
 

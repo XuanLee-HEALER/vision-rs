@@ -51,7 +51,7 @@ export const config = {
 
 ```typescript
 import { headers } from 'next/headers';
-import VisibilityGuard from '@/components/admin/VisibilityGuard';
+import VisibilityGuard from '@/components/visibility/VisibilityGuard';
 
 export default async function ConceptsLayout({
   children,
@@ -300,7 +300,7 @@ pnpm lint
 集成 VisibilityMeta 添加 robots noindex：
 
 ```tsx
-import { generateVisibilityMetadata } from '@/components/admin/VisibilityMeta';
+import { generateVisibilityMetadata } from '@/components/visibility/VisibilityMeta';
 
 export async function generateMetadata() {
   const visible = await getVisibility('learn/concepts/ownership');

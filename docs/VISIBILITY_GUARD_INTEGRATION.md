@@ -50,7 +50,7 @@ VisibilityGuard 是一个服务端组件，用于实现**软隐藏**策略：
 ```mdx
 // app/(site)/learn/concepts/ownership/page.mdx
 import LearnLayout from '@/components/LearnLayout';
-import VisibilityGuard from '@/components/admin/VisibilityGuard';
+import VisibilityGuard from '@/components/visibility/VisibilityGuard';
 
 export const metadata = {
   title: '所有权系统',
@@ -79,7 +79,7 @@ export const metadata = {
 
 ```typescript
 import { headers } from 'next/headers';
-import VisibilityGuard from '@/components/admin/VisibilityGuard';
+import VisibilityGuard from '@/components/visibility/VisibilityGuard';
 
 export default async function ConceptsLayout({
   children,
@@ -133,7 +133,7 @@ export const config = {
 1. 修改 `components/layout/LearnLayout.tsx`:
 
 ```typescript
-import VisibilityGuard from '@/components/admin/VisibilityGuard';
+import VisibilityGuard from '@/components/visibility/VisibilityGuard';
 
 interface LearnLayoutProps {
   children: React.ReactNode;
@@ -260,7 +260,7 @@ export default async function LearnLayout({ children, slug }: LearnLayoutProps) 
 1. **SEO 保护**: 集成 VisibilityMeta 添加 robots noindex
 
    ```tsx
-   import { generateVisibilityMetadata } from '@/components/admin/VisibilityMeta';
+   import { generateVisibilityMetadata } from '@/components/visibility/VisibilityMeta';
 
    export async function generateMetadata() {
      const visible = await getVisibility('learn/concepts/ownership');

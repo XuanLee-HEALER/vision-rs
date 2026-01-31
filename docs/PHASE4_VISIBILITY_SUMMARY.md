@@ -68,7 +68,7 @@ interface ContentItem {
 
 ### 3. 可见性提示组件
 
-**`components/admin/VisibilityBanner.tsx`** (45 行)
+**`components/visibility/VisibilityBanner.tsx`** (45 行)
 
 - **显示条件**: 仅当 `visible: false` 时显示
 - **样式**: 黄色警告横幅（Catppuccin yellow）
@@ -77,7 +77,7 @@ interface ContentItem {
 
 ### 4. SEO 元数据辅助函数
 
-**`components/admin/VisibilityMeta.tsx`** (32 行)
+**`components/visibility/VisibilityMeta.tsx`** (32 行)
 
 - **功能**: 根据可见性生成 SEO metadata
 - **隐藏内容的 robots 标签**:
@@ -213,8 +213,8 @@ pnpm tsx scripts/generate-learn-index.ts
 
 - [x] **生成内容索引**: `scripts/generate-learn-index.ts` 已实现
 - [x] **KV 存储结构**: `lib/visibility.ts` 已实现
-- [x] **VisibilityBanner 组件**: `components/admin/VisibilityBanner.tsx` 已实现
-- [x] **SEO 优化**: `components/admin/VisibilityMeta.tsx` 已实现
+- [x] **VisibilityBanner 组件**: `components/visibility/VisibilityBanner.tsx` 已实现
+- [x] **SEO 优化**: `components/visibility/VisibilityMeta.tsx` 已实现
 
 ### ✅ 验收标准达成
 
@@ -268,8 +268,8 @@ Phase 4 成功实现了可见性系统的基础设施：
 
 - `scripts/generate-learn-index.ts` (新建, 213 行)
 - `lib/visibility.ts` (新建, 121 行)
-- `components/admin/VisibilityBanner.tsx` (新建, 45 行)
-- `components/admin/VisibilityMeta.tsx` (新建, 32 行)
+- `components/visibility/VisibilityBanner.tsx` (新建, 45 行)
+- `components/visibility/VisibilityMeta.tsx` (新建, 32 行)
 - `app/(site)/learn/_index.generated.json` (生成, 46 项)
 
 **代码质量**:
