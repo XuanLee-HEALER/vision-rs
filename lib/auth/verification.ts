@@ -1,26 +1,19 @@
-import { kv } from '@vercel/kv';
-
 interface VerificationData {
   code: string;
   attempts: number;
   createdAt: number;
 }
 
-// 开发环境的内存存储 - 使用 global 确保跨模块共享
-const globalForDev = global as typeof globalThis & {
-  __dev_verification_storage?: Map<string, VerificationData>;
+// 使用 global 确保跨模块共享内存存储
+const globalForVerification = global as typeof globalThis & {
+  __verification_storage?: Map<string, VerificationData>;
 };
 
-if (!globalForDev.__dev_verification_storage) {
-  globalForDev.__dev_verification_storage = new Map<string, VerificationData>();
+if (!globalForVerification.__verification_storage) {
+  globalForVerification.__verification_storage = new Map<string, VerificationData>();
 }
 
-const devStorage = globalForDev.__dev_verification_storage;
-
-// 检查是否可以使用 KV
-const hasKV = () => {
-  return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
-};
+const storage = globalForVerification.__verification_storage;
 
 /**
  * 生成 6 位数字验证码
@@ -30,7 +23,7 @@ export function generateCode(): string {
 }
 
 /**
- * 保存验证码,有效期 5 分钟
+ * 保存验证码，有效期 5 分钟
  */
 export async function saveVerificationCode(email: string, code: string) {
   const key = `auth:code:${email}`;
@@ -40,18 +33,12 @@ export async function saveVerificationCode(email: string, code: string) {
     createdAt: Date.now(),
   };
 
-  if (hasKV()) {
-    // 使用 Vercel KV
-    await kv.setex(key, 300, JSON.stringify(data));
-  } else {
-    // 使用内存存储（开发环境）
-    devStorage.set(key, data);
+  storage.set(key, data);
 
-    // 5 分钟后自动清除
-    setTimeout(() => {
-      devStorage.delete(key);
-    }, 300000);
-  }
+  // 5 分钟后自动清除
+  setTimeout(() => {
+    storage.delete(key);
+  }, 300000);
 }
 
 /**
@@ -60,23 +47,15 @@ export async function saveVerificationCode(email: string, code: string) {
  */
 export async function verifyCode(email: string, code: string): Promise<boolean> {
   const key = `auth:code:${email}`;
-  let data: VerificationData | null = null;
+  const data = storage.get(key) || null;
 
-  if (hasKV()) {
-    // 使用 Vercel KV
-    const dataStr = await kv.get<string>(key);
-    if (dataStr) {
-      data = JSON.parse(dataStr);
-    }
-  } else {
-    // 使用内存存储（开发环境）
-    data = devStorage.get(key) || null;
+  if (process.env.NODE_ENV === 'development') {
     console.log('🔍 Verify code debug:', {
       key,
       inputCode: code,
       storedCode: data?.code,
       hasData: !!data,
-      storageSize: devStorage.size,
+      storageSize: storage.size,
     });
   }
 
@@ -87,41 +66,25 @@ export async function verifyCode(email: string, code: string): Promise<boolean> 
 
   // 检查是否过期（5 分钟）
   if (Date.now() - data.createdAt > 300000) {
-    if (hasKV()) {
-      await kv.del(key);
-    } else {
-      devStorage.delete(key);
-    }
+    storage.delete(key);
     return false;
   }
 
   // 检查尝试次数
   if (data.attempts >= 3) {
-    if (hasKV()) {
-      await kv.del(key);
-    } else {
-      devStorage.delete(key);
-    }
+    storage.delete(key);
     throw new Error('Too many attempts');
   }
 
   // 验证码不匹配
   if (data.code !== code) {
     data.attempts += 1;
-    if (hasKV()) {
-      await kv.setex(key, 300, JSON.stringify(data));
-    } else {
-      devStorage.set(key, data);
-    }
+    storage.set(key, data);
     return false;
   }
 
-  // 验证成功,删除验证码
-  if (hasKV()) {
-    await kv.del(key);
-  } else {
-    devStorage.delete(key);
-  }
+  // 验证成功，删除验证码
+  storage.delete(key);
   return true;
 }
 

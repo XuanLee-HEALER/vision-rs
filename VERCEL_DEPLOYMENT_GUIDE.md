@@ -115,9 +115,9 @@ re_fPe7eQH6_74t8zABycGQBhe638Xeekn5b
 - 用于生成 Sitemap
 - 如果不设置，默认使用 Vercel 提供的 URL
 
-### 3.2 Vercel KV（必需 - 用于内容可见性存储）
+### 3.2 Edge Config（必需 - 用于内容可见性存储）
 
-#### 创建 Vercel KV 数据库
+#### 创建 Edge Config 数据库
 
 1. 在 Vercel Dashboard 中，进入 **Storage** 标签
 2. 点击 **"Create Database"**
@@ -128,22 +128,22 @@ re_fPe7eQH6_74t8zABycGQBhe638Xeekn5b
 
 #### 连接 KV 到项目
 
-1. 进入刚创建的 KV 数据库
+1. 进入刚创建的 Edge Config
 2. 点击 **".env.local"** 标签
 3. 复制以下环境变量：
-   - `KV_URL`
-   - `KV_REST_API_URL`
-   - `KV_REST_API_TOKEN`
-   - `KV_REST_API_READ_ONLY_TOKEN`
+   - `EDGE_CONFIG`
+   - `EDGE_CONFIG`
+   - `VERCEL_API_TOKEN`
+   - ``
 
 4. 回到项目设置 → **Environment Variables**
 5. 添加这些变量：
 
 ```
-KV_URL=redis://...
-KV_REST_API_URL=https://...
-KV_REST_API_TOKEN=...
-KV_REST_API_READ_ONLY_TOKEN=...
+EDGE_CONFIG=redis://...
+EDGE_CONFIG=https://...
+VERCEL_API_TOKEN=...
+=...
 
 环境: Production, Preview, Development
 ```
@@ -304,7 +304,7 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 
 **问题 3: KV 连接失败**
 
-- 确认 KV 数据库已创建
+- 确认 Edge Config已创建
 - 确认环境变量正确配置
 - 检查 Function Logs 中的错误信息
 
@@ -323,10 +323,10 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 | `ADMIN_EMAILS`                | ✅ 是 | 管理员邮箱白名单 | `admin@example.com`       |
 | `SESSION_SECRET`              | ✅ 是 | Session 加密密钥 | `openssl rand -base64 32` |
 | `RESEND_API_KEY`              | ✅ 是 | Resend API 密钥  | `re_xxxxx`                |
-| `KV_URL`                      | ✅ 是 | Vercel KV URL    | `redis://...`             |
-| `KV_REST_API_URL`             | ✅ 是 | KV REST API URL  | `https://...`             |
-| `KV_REST_API_TOKEN`           | ✅ 是 | KV API Token     | `Axxxxx`                  |
-| `KV_REST_API_READ_ONLY_TOKEN` | ❌ 否 | KV 只读 Token    | `Axxxxx`                  |
+| `EDGE_CONFIG`                      | ✅ 是 | Edge Config URL    | `redis://...`             |
+| `EDGE_CONFIG`             | ✅ 是 | KV REST API URL  | `https://...`             |
+| `VERCEL_API_TOKEN`           | ✅ 是 | KV API Token     | `Axxxxx`                  |
+| `` | ❌ 否 | KV 只读 Token    | `Axxxxx`                  |
 | `NEXT_PUBLIC_SITE_URL`        | ❌ 否 | 站点 URL         | `https://vision-rs.com`   |
 
 ---
@@ -387,7 +387,7 @@ Vercel 会自动监听 GitHub 仓库的 `main` 分支：
 - 函数执行: < 1 秒
 - **适合免费套餐** ✅
 
-### Vercel KV 免费套餐
+### Edge Config 免费套餐
 
 **包含**：
 
@@ -428,7 +428,7 @@ Vercel 会自动监听 GitHub 仓库的 `main` 分支：
 - 团队协作功能
 - 更多带宽和构建时间
 
-### Vercel KV Pro
+### Edge Config Pro
 
 - 更大存储（1 GB+）
 - 更多命令配额
@@ -472,7 +472,7 @@ Vercel 会自动监听 GitHub 仓库的 `main` 分支：
 
 - [Next.js 部署](https://vercel.com/docs/frameworks/nextjs)
 - [环境变量](https://vercel.com/docs/concepts/projects/environment-variables)
-- [Vercel KV](https://vercel.com/docs/storage/vercel-kv)
+- [Edge Config](https://vercel.com/docs/storage/vercel-kv)
 
 **Resend 文档**：
 

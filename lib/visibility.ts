@@ -1,10 +1,10 @@
-import { kv } from '@vercel/kv';
+import { get } from '@vercel/edge-config';
 
 /**
- * KV storage structure for content visibility
+ * Edge Config storage structure for content visibility
  *
- * Key format: "visibility:{slug}"
- * Value: { visible: boolean, updatedAt: string, updatedBy: string }
+ * Key: "visibility"
+ * Value: Record<slug, VisibilityRecord>
  */
 
 export interface VisibilityRecord {
@@ -13,20 +13,89 @@ export interface VisibilityRecord {
   updatedBy: string; // Admin email
 }
 
-const VISIBILITY_PREFIX = 'visibility:';
+type VisibilityMap = Record<string, VisibilityRecord>;
+
+/**
+ * Get all visibility records from Edge Config
+ */
+async function getAllVisibilityFromEdgeConfig(): Promise<VisibilityMap> {
+  try {
+    const data = await get<VisibilityMap>('visibility');
+    return data || {};
+  } catch (error) {
+    console.error('Error reading visibility from Edge Config:', error);
+    return {};
+  }
+}
+
+/**
+ * Update Edge Config via Vercel API
+ */
+async function updateEdgeConfigViaAPI(data: VisibilityMap): Promise<void> {
+  const edgeConfigId = process.env.EDGE_CONFIG?.match(/ecfg_[a-z0-9]+/)?.[0];
+  const token = process.env.VERCEL_API_TOKEN;
+
+  if (!edgeConfigId || !token) {
+    throw new Error(
+      'Missing EDGE_CONFIG or VERCEL_API_TOKEN. Cannot update Edge Config without these credentials.'
+    );
+  }
+
+  const response = await fetch(`https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      items: [
+        {
+          operation: 'upsert',
+          key: 'visibility',
+          value: data,
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to update Edge Config: ${error}`);
+  }
+}
 
 /**
  * Get visibility status for a content item
- * Default to visible if not found in KV
  */
 export async function getVisibility(slug: string): Promise<boolean> {
   try {
-    const record = await kv.get<VisibilityRecord>(`${VISIBILITY_PREFIX}${slug}`);
-    return record?.visible ?? true; // Default visible
+    const allVisibility = await getAllVisibilityFromEdgeConfig();
+    return allVisibility[slug]?.visible ?? true;
   } catch (error) {
     console.error(`Error getting visibility for ${slug}:`, error);
-    return true; // Fail open - show content on error
+    return true;
   }
+}
+
+/**
+ * Get visibility status for multiple items
+ */
+export async function getBatchVisibility(slugs: string[]): Promise<Record<string, boolean>> {
+  const allVisibility = await getAllVisibilityFromEdgeConfig();
+  const results: Record<string, boolean> = {};
+
+  slugs.forEach((slug) => {
+    results[slug] = allVisibility[slug]?.visible ?? true;
+  });
+
+  return results;
+}
+
+/**
+ * Get all visibility records
+ */
+export async function getAllVisibility(): Promise<Record<string, VisibilityRecord>> {
+  return await getAllVisibilityFromEdgeConfig();
 }
 
 /**
@@ -37,72 +106,24 @@ export async function setVisibility(
   visible: boolean,
   updatedBy: string
 ): Promise<void> {
-  const record: VisibilityRecord = {
+  const allVisibility = await getAllVisibilityFromEdgeConfig();
+
+  allVisibility[slug] = {
     visible,
     updatedAt: new Date().toISOString(),
     updatedBy,
   };
 
-  await kv.set(`${VISIBILITY_PREFIX}${slug}`, record);
-}
-
-/**
- * Get visibility status for multiple items
- * Returns a map of slug -> visible
- */
-export async function getBatchVisibility(slugs: string[]): Promise<Record<string, boolean>> {
-  const results: Record<string, boolean> = {};
-
-  // Use pipeline for efficient batch operations
-  const pipeline = kv.pipeline();
-  slugs.forEach((slug) => {
-    pipeline.get<VisibilityRecord>(`${VISIBILITY_PREFIX}${slug}`);
-  });
-
-  const records = await pipeline.exec();
-
-  slugs.forEach((slug, index) => {
-    const record = records[index] as VisibilityRecord | null;
-    results[slug] = record?.visible ?? true;
-  });
-
-  return results;
-}
-
-/**
- * Get all visibility records (for admin dashboard)
- */
-export async function getAllVisibility(): Promise<Record<string, VisibilityRecord>> {
-  const keys = await kv.keys(`${VISIBILITY_PREFIX}*`);
-  const records: Record<string, VisibilityRecord> = {};
-
-  if (keys.length === 0) {
-    return records;
-  }
-
-  const pipeline = kv.pipeline();
-  keys.forEach((key) => {
-    pipeline.get<VisibilityRecord>(key);
-  });
-
-  const values = await pipeline.exec();
-
-  keys.forEach((key, index) => {
-    const slug = key.replace(VISIBILITY_PREFIX, '');
-    const record = values[index] as VisibilityRecord | null;
-    if (record) {
-      records[slug] = record;
-    }
-  });
-
-  return records;
+  await updateEdgeConfigViaAPI(allVisibility);
 }
 
 /**
  * Delete visibility record (reset to default visible)
  */
 export async function deleteVisibility(slug: string): Promise<void> {
-  await kv.del(`${VISIBILITY_PREFIX}${slug}`);
+  const allVisibility = await getAllVisibilityFromEdgeConfig();
+  delete allVisibility[slug];
+  await updateEdgeConfigViaAPI(allVisibility);
 }
 
 /**
@@ -112,17 +133,16 @@ export async function batchSetVisibility(
   updates: Array<{ slug: string; visible: boolean }>,
   updatedBy: string
 ): Promise<void> {
-  const pipeline = kv.pipeline();
+  const allVisibility = await getAllVisibilityFromEdgeConfig();
   const timestamp = new Date().toISOString();
 
   updates.forEach(({ slug, visible }) => {
-    const record: VisibilityRecord = {
+    allVisibility[slug] = {
       visible,
       updatedAt: timestamp,
       updatedBy,
     };
-    pipeline.set(`${VISIBILITY_PREFIX}${slug}`, record);
   });
 
-  await pipeline.exec();
+  await updateEdgeConfigViaAPI(allVisibility);
 }

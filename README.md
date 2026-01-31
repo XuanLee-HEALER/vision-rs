@@ -198,14 +198,14 @@ Level 4: 页面守卫
 - **运行时**: Next.js Serverless Functions
 - **认证**: iron-session (加密 Cookie)
 - **邮件**: Resend API
-- **数据存储**: Vercel KV (Redis)
+- **数据存储**: Edge Config (Redis)
 - **部署**: Vercel
 
 ### 核心系统
 
 **可见性控制**：
 
-- `lib/visibility.ts` - KV 存储 CRUD
+- `lib/visibility.ts` - Edge Config 存储 CRUD
 - `components/visibility/VisibilityGuard.tsx` - 页面守卫
 - `components/visibility/VisibilityBanner.tsx` - 状态提示
 - `middleware.ts` - Pathname 传递
@@ -358,7 +358,7 @@ ADMIN_EMAILS=admin@example.com
 # Resend API Key（邮件验证码）
 RESEND_API_KEY=re_xxxxx
 
-# Vercel KV（内容可见性存储）
+# Edge Config（内容可见性存储）
 KV_REST_API_URL=https://xxx.vercel.com
 KV_REST_API_TOKEN=xxxxx
 
