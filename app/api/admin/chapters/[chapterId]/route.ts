@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth/session';
 import { getChapterInfo, getUnderstandingSection } from '@/lib/admin/mdx-editor';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ chapterId: string }> }

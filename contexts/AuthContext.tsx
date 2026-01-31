@@ -8,9 +8,9 @@ interface AuthUser {
 
 interface AuthContextType {
   user: AuthUser | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  token: string | null; // Kept for backward compatibility, always null now
+  login: (email: string, password: string) => Promise<void>; // Kept for backward compatibility, throws error
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -18,50 +18,51 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load token from localStorage on mount
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Check session on mount
+    checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Login failed');
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/auth/check');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isLoggedIn && data.email) {
+          setUser({ email: data.email });
+        } else {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Failed to check auth:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
-
-    const data = await response.json();
-    setToken(data.token);
-    setUser(data.user);
-
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const login = async (email: string, password: string) => {
+    // This method is kept for backward compatibility but is no longer used
+    // Users should use the email verification code flow instead
+    throw new Error('Password login is deprecated. Please use email verification code.');
+  };
+
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token: null, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -20,7 +20,7 @@ interface Article {
 }
 
 export default function EditArticlePage({ params }: { params: { id: string } }) {
-  const { user, token, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [article, setArticle] = useState<Article | null>(null);
   const [title, setTitle] = useState('');
@@ -40,18 +40,15 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (token) {
+    if (user) {
       fetchArticle();
     }
-  }, [token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const fetchArticle = async () => {
     try {
-      const response = await fetch(`/api/articles/${params.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(`/api/articles/${params.id}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch article');
@@ -84,7 +81,6 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title,
@@ -200,7 +196,9 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
             <label className="mb-2 block text-sm font-medium text-subtext1">Status</label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as any)}
+              onChange={(e) =>
+                setStatus(e.target.value as 'draft' | 'published' | 'hidden' | 'archived')
+              }
               className="w-full rounded-lg border border-overlay0 bg-surface0 px-4 py-2 text-text transition focus:border-blue focus:outline-none focus:ring-2 focus:ring-blue/20"
             >
               <option value="draft">Draft</option>

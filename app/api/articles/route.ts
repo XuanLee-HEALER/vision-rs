@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
-import { getAllArticles, saveArticleMetadata, type ArticleMetadata } from '@/lib/db';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { requireAuth } from '@/lib/auth/session';
+import { getAllArticles, saveArticle, type Article } from '@/lib/db';
 
-const CONTENT_DIR = path.join(process.cwd(), 'content', 'articles');
+export const dynamic = 'force-dynamic';
 
 // GET /api/articles - List all articles
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const user = await getAuthUser(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireAuth();
 
     const articles = await getAllArticles();
 
@@ -34,10 +29,7 @@ export async function GET(request: NextRequest) {
 // POST /api/articles - Create new article
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthUser(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireAuth();
 
     const { title, slug, content, status, category, tags } = await request.json();
 
@@ -48,10 +40,11 @@ export async function POST(request: NextRequest) {
     const id = Date.now().toString();
     const now = Date.now();
 
-    const article: ArticleMetadata = {
+    const article: Article = {
       id,
       title,
       slug,
+      content,
       status: status || 'draft',
       category: category || '',
       tags: tags || [],
@@ -60,14 +53,12 @@ export async function POST(request: NextRequest) {
       order: 0,
     };
 
-    // Save metadata to KV
-    await saveArticleMetadata(article);
+    // Save complete article to KV
+    await saveArticle(article);
 
-    // Save content to filesystem
-    await fs.mkdir(CONTENT_DIR, { recursive: true });
-    await fs.writeFile(path.join(CONTENT_DIR, `${id}.mdx`), content, 'utf-8');
-
-    return NextResponse.json({ article }, { status: 201 });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { content: _content, ...metadata } = article;
+    return NextResponse.json({ article: metadata }, { status: 201 });
   } catch (error) {
     console.error('Create article error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

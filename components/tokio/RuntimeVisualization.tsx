@@ -16,7 +16,7 @@ interface Task {
 }
 
 export default function RuntimeVisualization() {
-  const [threads, setThreads] = useState<Thread[]>([
+  const [threads] = useState<Thread[]>([
     { id: 0, tasks: [{ id: 't1', name: 'HTTP Request', duration: 3 }], isIdle: false },
     { id: 1, tasks: [{ id: 't2', name: 'DB Query', duration: 2 }], isIdle: false },
     { id: 2, tasks: [], isIdle: true },
@@ -30,9 +30,7 @@ export default function RuntimeVisualization() {
 
   return (
     <div className="my-8 p-6 bg-mantle rounded-lg border border-overlay0/30">
-      <h3 className="text-lg font-semibold text-text mb-4">
-        Tokio Runtime 架构可视化
-      </h3>
+      <h3 className="text-lg font-semibold text-text mb-4">Tokio Runtime 架构可视化</h3>
 
       <div className="space-y-6">
         {/* 全局队列 */}
@@ -61,23 +59,17 @@ export default function RuntimeVisualization() {
             <motion.div
               key={thread.id}
               className={`p-4 rounded-lg border ${
-                thread.isIdle
-                  ? 'bg-surface0/30 border-overlay0/30'
-                  : 'bg-surface0 border-green/30'
+                thread.isIdle ? 'bg-surface0/30 border-overlay0/30' : 'bg-surface0 border-green/30'
               }`}
               animate={{
                 borderColor: thread.isIdle ? '#6e738d' : '#a6da95',
               }}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-subtext1">
-                  线程 {thread.id}
-                </span>
+                <span className="text-xs font-semibold text-subtext1">线程 {thread.id}</span>
                 <span
                   className={`text-xs px-2 py-1 rounded ${
-                    thread.isIdle
-                      ? 'bg-overlay0/30 text-overlay1'
-                      : 'bg-green/20 text-green'
+                    thread.isIdle ? 'bg-overlay0/30 text-overlay1' : 'bg-green/20 text-green'
                   }`}
                 >
                   {thread.isIdle ? '空闲' : '运行中'}
@@ -93,18 +85,12 @@ export default function RuntimeVisualization() {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                   >
-                    <div className="font-mono text-green truncate">
-                      {task.name}
-                    </div>
-                    <div className="text-subtext0 text-xs mt-1">
-                      {task.duration}s
-                    </div>
+                    <div className="font-mono text-green truncate">{task.name}</div>
+                    <div className="text-subtext0 text-xs mt-1">{task.duration}s</div>
                   </motion.div>
                 ))}
                 {thread.tasks.length === 0 && (
-                  <div className="text-xs text-overlay1 italic text-center py-4">
-                    本地队列为空
-                  </div>
+                  <div className="text-xs text-overlay1 italic text-center py-4">本地队列为空</div>
                 )}
               </div>
             </motion.div>
@@ -116,9 +102,7 @@ export default function RuntimeVisualization() {
           <div className="flex items-start gap-3">
             <span className="text-2xl">⚡</span>
             <div>
-              <div className="text-sm font-semibold text-text mb-1">
-                工作窃取（Work Stealing）
-              </div>
+              <div className="text-sm font-semibold text-text mb-1">工作窃取（Work Stealing）</div>
               <div className="text-xs text-subtext1">
                 当线程 2 和 3 空闲时，它们会从线程 0 和 1 的本地队列中
                 <strong className="text-blue">窃取</strong>

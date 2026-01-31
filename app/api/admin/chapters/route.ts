@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth/session';
 import { getAllChapters } from '@/lib/admin/mdx-editor';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await requireAuth();

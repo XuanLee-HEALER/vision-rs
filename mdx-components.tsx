@@ -5,7 +5,7 @@ import MemoryLayout3D from '@/components/MemoryLayout3D';
 import MermaidDiagram from '@/components/MermaidDiagram';
 import OwnershipFlow from '@/components/OwnershipFlow';
 import TraitRelationship from '@/components/TraitRelationship';
-import LearnLayout from '@/components/LearnLayout';
+import LearnLayout from '@/components/layout/LearnLayout';
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { generateCode, saveVerificationCode, isAdminEmail } from '@/lib/auth/verification';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();

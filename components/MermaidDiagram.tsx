@@ -23,6 +23,7 @@ export default function MermaidDiagram({ chart, className = '' }: MermaidDiagram
     mermaid.initialize({
       startOnLoad: false,
       theme: 'dark',
+      securityLevel: 'strict',
       themeVariables: {
         primaryColor: '#8aadf4',
         primaryTextColor: '#cad3f5',
