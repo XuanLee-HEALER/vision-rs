@@ -27,6 +27,7 @@ export async function generateNavigation(): Promise<NavSection[]> {
       items: [
         { title: '变量与常量', href: '/learn/concepts/variables' },
         { title: '数据类型', href: '/learn/concepts/types' },
+        { title: '所有权系统', href: '/learn/concepts/ownership' },
         { title: '借用与引用', href: '/learn/concepts/borrowing' },
         { title: '生命周期', href: '/learn/concepts/lifetimes' },
         { title: '泛型', href: '/learn/concepts/generics' },

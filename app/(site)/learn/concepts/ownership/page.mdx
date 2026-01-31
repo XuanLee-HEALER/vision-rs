@@ -1,10 +1,11 @@
----
-title: '所有权系统'
-description: '深入理解 Rust 的所有权系统'
-category: 'concepts'
-order: 3
-tags: ['ownership', 'memory', 'core-concept']
----
+import LearnLayout from '@/components/LearnLayout';
+
+export const metadata = {
+  title: '所有权系统 - Vision-RS',
+  description: '深入理解 Rust 的所有权系统',
+};
+
+<LearnLayout>
 
 # 所有权系统
 
@@ -176,3 +177,5 @@ fn takes_and_gives_back(a_string: String) -> String {
 - 当所有者离开作用域，值会被自动释放
 
 下一步，我们将学习**借用**(Borrowing)，这是一种在不获取所有权的情况下使用值的方式。
+
+</LearnLayout>
