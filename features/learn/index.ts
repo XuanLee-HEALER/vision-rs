@@ -9,9 +9,6 @@ export type {
   BreadcrumbItem,
 } from './types';
 
-// Server-side loaders
-export { getAllLessonSlugs, getLesson, getLessonsByCategory } from './loader.server';
-
 // Navigation
 export { generateNavigation, getNavigation } from './navigation.server';
 

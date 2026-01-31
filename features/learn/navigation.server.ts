@@ -1,17 +1,12 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import { NavSection, NavItem, NavSubsection, LessonFrontmatter } from './types';
+import { NavSection } from './types';
 import { MENTAL_MODEL_CONFIG } from './mental-model-config';
 
-const CONTENT_DIR = path.join(process.cwd(), 'content/learn');
-
 /**
- * 从 content/ 目录扫描并生成导航树
+ * 生成导航树（纯配置，不再扫描文件系统）
  */
 export async function generateNavigation(): Promise<NavSection[]> {
-  const sections: Record<string, NavSection> = {
-    'mental-model': {
+  const sections: NavSection[] = [
+    {
       title: 'Rust 心智世界',
       icon: '',
       href: '/learn/mental-model',
@@ -20,7 +15,7 @@ export async function generateNavigation(): Promise<NavSection[]> {
         href: `/learn/mental-model/${part.slug}`,
       })),
     },
-    concepts: {
+    {
       title: 'Rust 核心概念',
       icon: '🔤',
       href: '/learn/concepts',
@@ -39,7 +34,7 @@ export async function generateNavigation(): Promise<NavSection[]> {
         { title: '内存布局', href: '/learn/concepts/memory-layout' },
       ],
     },
-    'data-structures': {
+    {
       title: '数据结构',
       icon: '📦',
       href: '/learn/data-structures',
@@ -54,7 +49,7 @@ export async function generateNavigation(): Promise<NavSection[]> {
         },
       ],
     },
-    crates: {
+    {
       title: '三方库原理',
       icon: '🔧',
       href: '/learn/crates',
@@ -65,67 +60,15 @@ export async function generateNavigation(): Promise<NavSection[]> {
         },
       ],
     },
-    network: {
+    {
       title: '网络编程 & 分布式',
       icon: '🌐',
       href: '/learn/network',
       items: [],
     },
-  };
+  ];
 
-  if (!fs.existsSync(CONTENT_DIR)) {
-    return Object.values(sections);
-  }
-
-  // 遍历所有 MDX 文件
-  const categories = fs.readdirSync(CONTENT_DIR, { withFileTypes: true });
-
-  for (const category of categories) {
-    if (!category.isDirectory()) continue;
-
-    const categoryPath = path.join(CONTENT_DIR, category.name);
-    const files = fs.readdirSync(categoryPath, { withFileTypes: true });
-
-    for (const file of files) {
-      if (!file.isFile() || !file.name.endsWith('.mdx')) continue;
-
-      const filePath = path.join(categoryPath, file.name);
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-      const { data } = matter(fileContent);
-      const frontmatter = data as LessonFrontmatter;
-
-      const slug = `${category.name}/${file.name.replace(/\.mdx$/, '')}`;
-      const navItem: NavItem = {
-        title: frontmatter.title,
-        href: `/learn/${slug}`,
-      };
-
-      // 根据分类添加到对应的 section
-      const section = sections[category.name];
-      if (section) {
-        if (section.items) {
-          section.items.push(navItem);
-        }
-      }
-    }
-  }
-
-  // 对每个 section 的 items 排序
-  for (const [key, section] of Object.entries(sections)) {
-    if (section.items) {
-      // mental-model 已经在 config 中按正确顺序定义，不需要重新排序
-      if (key === 'mental-model') {
-        continue;
-      }
-
-      // 其他 section 按标题排序
-      section.items.sort((a, b) => {
-        return a.title.localeCompare(b.title, 'zh-CN');
-      });
-    }
-  }
-
-  return Object.values(sections);
+  return sections;
 }
 
 /**
