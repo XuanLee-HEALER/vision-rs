@@ -87,7 +87,7 @@ async function filterHiddenItems(sections: NavSection[]): Promise<NavSection[]> 
   }
 
   try {
-    // Collect all hrefs to check visibility
+    // Collect all hrefs to check visibility (including subsections)
     const allHrefs: string[] = [];
 
     sections.forEach((section) => {
@@ -95,6 +95,16 @@ async function filterHiddenItems(sections: NavSection[]): Promise<NavSection[]> 
       if (section.items) {
         section.items.forEach((item) => {
           if (item.href) allHrefs.push(item.href);
+        });
+      }
+      // Also collect hrefs from subsections
+      if (section.subsections) {
+        section.subsections.forEach((subsection) => {
+          if (subsection.items) {
+            subsection.items.forEach((item) => {
+              if (item.href) allHrefs.push(item.href);
+            });
+          }
         });
       }
     });
@@ -105,7 +115,7 @@ async function filterHiddenItems(sections: NavSection[]): Promise<NavSection[]> 
     // Get visibility status for all slugs
     const visibilityMap = await getBatchVisibility(slugs);
 
-    // Filter sections and items
+    // Filter sections, items, and subsections
     return sections
       .map((section) => {
         const sectionSlug = section.href?.replace(/^\//, '') || '';
@@ -119,18 +129,35 @@ async function filterHiddenItems(sections: NavSection[]): Promise<NavSection[]> 
             })
           : undefined;
 
+        // Filter subsections if present
+        const filteredSubsections = section.subsections
+          ? section.subsections
+              .map((subsection) => ({
+                ...subsection,
+                items: subsection.items
+                  ? subsection.items.filter((item) => {
+                      const itemSlug = item.href?.replace(/^\//, '') || '';
+                      return visibilityMap[itemSlug] !== false;
+                    })
+                  : [],
+              }))
+              .filter((subsection) => subsection.items.length > 0)
+          : undefined;
+
         return {
           ...section,
           items: filteredItems,
+          subsections: filteredSubsections,
         };
       })
       .filter((section) => {
-        // Keep section if it has visible items or the section itself should be visible
+        // Keep section if it has visible items/subsections or the section itself should be visible
         const hasVisibleItems = section.items && section.items.length > 0;
+        const hasVisibleSubsections = section.subsections && section.subsections.length > 0;
         const sectionSlug = section.href?.replace(/^\//, '') || '';
         const sectionVisible = visibilityMap[sectionSlug] !== false;
 
-        return hasVisibleItems || sectionVisible;
+        return hasVisibleItems || hasVisibleSubsections || sectionVisible;
       });
   } catch (error) {
     console.error('Error filtering navigation:', error);

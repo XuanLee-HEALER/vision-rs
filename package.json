@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "tsx scripts/generate-learn-index.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-index": "tsx scripts/generate-learn-index.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.0.1",
@@ -48,6 +50,7 @@
     "postcss": "^8",
     "prettier": "^3.8.1",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
