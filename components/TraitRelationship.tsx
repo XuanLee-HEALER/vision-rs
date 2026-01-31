@@ -195,12 +195,7 @@ export default function TraitRelationship() {
             borderRadius: '8px',
           }}
         />
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={16}
-          size={1}
-          color="#363a4f"
-        />
+        <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#363a4f" />
       </ReactFlow>
 
       <div className="absolute bottom-4 left-4 bg-surface0/90 backdrop-blur px-4 py-2 rounded-lg border border-overlay0/30">

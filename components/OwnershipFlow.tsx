@@ -137,9 +137,7 @@ export default function OwnershipFlow({ autoPlay = false }: OwnershipFlowProps) 
             >
               s1
             </div>
-            <span className="mt-2 text-sm text-subtext0">
-              {step.moved ? '已失效' : '拥有'}
-            </span>
+            <span className="mt-2 text-sm text-subtext0">{step.moved ? '已失效' : '拥有'}</span>
           </motion.div>
 
           {/* 箭头动画 */}

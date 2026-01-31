@@ -67,9 +67,7 @@ export default function FutureStateMachine() {
   return (
     <div className="my-8 p-6 bg-mantle rounded-lg border border-overlay0/30">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-text">
-          Future 状态机
-        </h3>
+        <h3 className="text-lg font-semibold text-text">Future 状态机</h3>
         <div className="flex gap-2">
           <button
             onClick={nextState}
@@ -95,16 +93,12 @@ export default function FutureStateMachine() {
             <div key={state} className="flex items-center">
               <motion.div
                 className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center border-2 ${
-                  currentState === state
-                    ? 'border-4 shadow-lg'
-                    : 'border-2 opacity-40'
+                  currentState === state ? 'border-4 shadow-lg' : 'border-2 opacity-40'
                 }`}
                 style={{
                   borderColor: stateInfoMap[state].color,
                   backgroundColor:
-                    currentState === state
-                      ? `${stateInfoMap[state].color}20`
-                      : 'transparent',
+                    currentState === state ? `${stateInfoMap[state].color}20` : 'transparent',
                 }}
                 animate={{
                   scale: currentState === state ? 1.1 : 1,
@@ -159,20 +153,14 @@ export default function FutureStateMachine() {
           }}
         >
           <div className="flex items-start gap-3">
-            <div
-              className="text-2xl"
-              style={{ color: info.color }}
-            >
+            <div className="text-2xl" style={{ color: info.color }}>
               {currentState === 'pending' && '⏳'}
               {currentState === 'polling' && '🔄'}
               {currentState === 'ready' && '✅'}
               {currentState === 'completed' && '🎉'}
             </div>
             <div>
-              <div
-                className="text-sm font-semibold mb-1"
-                style={{ color: info.color }}
-              >
+              <div className="text-sm font-semibold mb-1" style={{ color: info.color }}>
                 {info.state.toUpperCase()}
               </div>
               <div className="text-sm text-subtext1">{info.description}</div>
@@ -183,9 +171,7 @@ export default function FutureStateMachine() {
         {/* 代码示例 */}
         <div className="grid md:grid-cols-2 gap-4">
           <div className="p-4 bg-crust rounded border border-overlay0/30">
-            <div className="text-xs font-semibold text-subtext1 mb-2">
-              📝 代码示例
-            </div>
+            <div className="text-xs font-semibold text-subtext1 mb-2">📝 代码示例</div>
             <pre className="text-xs text-green font-mono">
               {`async fn fetch_data() {
   let future = reqwest::get(url);
@@ -201,9 +187,7 @@ export default function FutureStateMachine() {
           </div>
 
           <div className="p-4 bg-crust rounded border border-overlay0/30">
-            <div className="text-xs font-semibold text-subtext1 mb-2">
-              🔍 Poll 机制
-            </div>
+            <div className="text-xs font-semibold text-subtext1 mb-2">🔍 Poll 机制</div>
             <div className="text-xs text-subtext1 space-y-2">
               <div>
                 <code className="text-blue">Poll::Pending</code>：资源未就绪，注册 Waker
@@ -211,45 +195,38 @@ export default function FutureStateMachine() {
               <div>
                 <code className="text-green">Poll::Ready(T)</code>：完成，返回结果
               </div>
-              <div className="text-overlay1 italic mt-2">
-                Waker 会在资源就绪时唤醒任务
-              </div>
+              <div className="text-overlay1 italic mt-2">Waker 会在资源就绪时唤醒任务</div>
             </div>
           </div>
         </div>
 
         {/* 状态转换规则 */}
         <div className="p-4 bg-surface0/50 rounded-lg border border-overlay0/30">
-          <div className="text-sm font-semibold text-text mb-3">
-            ⚙️ 状态转换规则
-          </div>
+          <div className="text-sm font-semibold text-text mb-3">⚙️ 状态转换规则</div>
           <div className="grid md:grid-cols-2 gap-3 text-xs">
             <div>
               <span className="text-overlay2">1. </span>
               <span className="text-subtext1">
-                <strong className="text-text">Pending → Polling</strong>:
-                执行器开始轮询 Future
+                <strong className="text-text">Pending → Polling</strong>: 执行器开始轮询 Future
               </span>
             </div>
             <div>
               <span className="text-overlay2">2. </span>
               <span className="text-subtext1">
-                <strong className="text-text">Polling → Pending</strong>:
-                返回 Poll::Pending，等待唤醒
+                <strong className="text-text">Polling → Pending</strong>: 返回
+                Poll::Pending，等待唤醒
               </span>
             </div>
             <div>
               <span className="text-overlay2">3. </span>
               <span className="text-subtext1">
-                <strong className="text-text">Polling → Ready</strong>:
-                资源就绪，准备完成
+                <strong className="text-text">Polling → Ready</strong>: 资源就绪，准备完成
               </span>
             </div>
             <div>
               <span className="text-overlay2">4. </span>
               <span className="text-subtext1">
-                <strong className="text-text">Ready → Completed</strong>:
-                返回 Poll::Ready(T)
+                <strong className="text-text">Ready → Completed</strong>: 返回 Poll::Ready(T)
               </span>
             </div>
           </div>

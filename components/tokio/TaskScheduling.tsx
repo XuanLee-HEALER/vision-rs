@@ -107,9 +107,7 @@ export default function TaskScheduling() {
   return (
     <div className="my-8 p-6 bg-mantle rounded-lg border border-overlay0/30">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-text">
-          任务调度与工作窃取
-        </h3>
+        <h3 className="text-lg font-semibold text-text">任务调度与工作窃取</h3>
         <div className="flex gap-2">
           <button
             onClick={simulateWorkStealing}
@@ -130,17 +128,15 @@ export default function TaskScheduling() {
                 worker.isStealing
                   ? 'bg-yellow/10 border-yellow/50'
                   : worker.queue.length === 0
-                  ? 'bg-surface0/30 border-overlay0/30'
-                  : 'bg-surface0 border-overlay0'
+                    ? 'bg-surface0/30 border-overlay0/30'
+                    : 'bg-surface0 border-overlay0'
               }`}
               animate={{
                 scale: worker.isStealing ? 1.05 : 1,
               }}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-subtext1">
-                  Worker {worker.id}
-                </span>
+                <span className="text-xs font-semibold text-subtext1">Worker {worker.id}</span>
                 <span className="text-xs px-2 py-1 rounded bg-blue/20 text-blue">
                   {worker.queue.length} 任务
                 </span>
@@ -169,9 +165,7 @@ export default function TaskScheduling() {
                           >
                             {task.name}
                           </div>
-                          <div className="text-xs text-subtext0">
-                            {task.priority}
-                          </div>
+                          <div className="text-xs text-subtext0">{task.priority}</div>
                         </div>
                         {index === 0 && (
                           <button
@@ -217,9 +211,7 @@ export default function TaskScheduling() {
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🔄</span>
                 <div className="flex-1">
-                  <div className="text-sm font-semibold text-yellow mb-1">
-                    工作窃取进行中
-                  </div>
+                  <div className="text-sm font-semibold text-yellow mb-1">工作窃取进行中</div>
                   <div className="text-xs text-subtext1">
                     Worker {stealInfo.to} 正在从 Worker {stealInfo.from} 窃取任务{' '}
                     <code className="text-blue">{stealInfo.task.name}</code>
@@ -240,9 +232,7 @@ export default function TaskScheduling() {
         {/* 说明 */}
         <div className="grid md:grid-cols-2 gap-4">
           <div className="p-4 bg-surface0/50 rounded-lg border border-overlay0/30">
-            <div className="text-sm font-semibold text-text mb-3">
-              🎯 工作窃取策略
-            </div>
+            <div className="text-sm font-semibold text-text mb-3">🎯 工作窃取策略</div>
             <div className="text-xs text-subtext1 space-y-2">
               <div className="flex items-start gap-2">
                 <span className="text-blue">•</span>
@@ -268,9 +258,7 @@ export default function TaskScheduling() {
           </div>
 
           <div className="p-4 bg-surface0/50 rounded-lg border border-overlay0/30">
-            <div className="text-sm font-semibold text-text mb-3">
-              ⚡ 性能优势
-            </div>
+            <div className="text-sm font-semibold text-text mb-3">⚡ 性能优势</div>
             <div className="text-xs text-subtext1 space-y-2">
               <div className="flex items-start gap-2">
                 <span className="text-green">✓</span>
@@ -296,9 +284,7 @@ export default function TaskScheduling() {
 
         {/* 算法伪代码 */}
         <div className="p-4 bg-crust rounded-lg border border-overlay0/30">
-          <div className="text-xs font-semibold text-subtext1 mb-3">
-            📝 算法伪代码
-          </div>
+          <div className="text-xs font-semibold text-subtext1 mb-3">📝 算法伪代码</div>
           <pre className="text-xs text-green font-mono leading-relaxed">
             {`loop {
     // 1. 尝试从本地队列头部取任务

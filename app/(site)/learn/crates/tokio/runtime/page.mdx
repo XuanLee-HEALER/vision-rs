@@ -3,7 +3,7 @@ import RuntimeVisualization from '@/components/tokio/RuntimeVisualization';
 
 export const metadata = {
   title: 'Tokio Runtime 架构',
-  description: 'Tokio 运行时内部实现详解'
+  description: 'Tokio 运行时内部实现详解',
 };
 
 <LearnLayout>
@@ -23,7 +23,7 @@ let rt = tokio::runtime::Builder::new_multi_thread()
     .enable_all()
     .build()
     .unwrap();
-```
+```text
 
 ### 当前线程 Runtime
 
@@ -32,7 +32,7 @@ let rt = tokio::runtime::Builder::new_current_thread()
     .enable_all()
     .build()
     .unwrap();
-```
+```text
 
 ## 工作窃取调度器
 
@@ -64,7 +64,7 @@ else {
         }
     }
 }
-```
+```text
 
 ## 配置选项
 
@@ -78,7 +78,7 @@ Runtime::new()  // 使用所有核心
 Builder::new_multi_thread()
     .worker_threads(8)
     .build()
-```
+```text
 
 ### 线程命名
 
@@ -90,7 +90,7 @@ Builder::new_multi_thread()
         format!("my-pool-{}", id)
     })
     .build()
-```
+```text
 
 ## 小结
 

@@ -48,20 +48,22 @@ function MemoryBlock({
           emissiveIntensity={hovered || isHighlighted ? 0.3 : 0.1}
         />
       </Box>
-      <Text
-        position={[0, 0, 0.6]}
-        fontSize={0.3}
-        color="#cad3f5"
-        anchorX="center"
-        anchorY="middle"
-      >
+      <Text position={[0, 0, 0.6]} fontSize={0.3} color="#cad3f5" anchorX="center" anchorY="middle">
         {label}
       </Text>
     </group>
   );
 }
 
-function Arrow({ start, end, color = '#8aadf4' }: { start: [number, number, number]; end: [number, number, number]; color?: string }) {
+function Arrow({
+  start,
+  end,
+  color = '#8aadf4',
+}: {
+  start: [number, number, number];
+  end: [number, number, number];
+  color?: string;
+}) {
   const direction = new THREE.Vector3(end[0] - start[0], end[1] - start[1], end[2] - start[2]);
   const length = direction.length();
   const midpoint: [number, number, number] = [
@@ -76,11 +78,7 @@ function Arrow({ start, end, color = '#8aadf4' }: { start: [number, number, numb
         <cylinderGeometry args={[0.05, 0.05, length, 8]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <Cone
-        position={end}
-        args={[0.15, 0.3, 8]}
-        rotation={[Math.PI / 2, 0, 0]}
-      >
+      <Cone position={end} args={[0.15, 0.3, 8]} rotation={[Math.PI / 2, 0, 0]}>
         <meshStandardMaterial color={color} />
       </Cone>
     </group>
@@ -144,18 +142,8 @@ function MemoryScene({ scenario = 'ownership' }: MemoryLayout3DProps) {
             onClick={() => setSelectedBlock('ptr')}
             isHighlighted={selectedBlock === 'ptr'}
           />
-          <MemoryBlock
-            position={[0, 1, 0]}
-            color="#8bd5ca"
-            label="len: 5"
-            size={[1.5, 0.5, 1]}
-          />
-          <MemoryBlock
-            position={[0, 0, 0]}
-            color="#8bd5ca"
-            label="cap: 5"
-            size={[1.5, 0.5, 1]}
-          />
+          <MemoryBlock position={[0, 1, 0]} color="#8bd5ca" label="len: 5" size={[1.5, 0.5, 1]} />
+          <MemoryBlock position={[0, 0, 0]} color="#8bd5ca" label="cap: 5" size={[1.5, 0.5, 1]} />
           <Text position={[0, 3, 0]} fontSize={0.3} color="#cad3f5">
             栈
           </Text>
@@ -177,9 +165,7 @@ function MemoryScene({ scenario = 'ownership' }: MemoryLayout3DProps) {
         </group>
 
         {/* 指针箭头 */}
-        {selectedBlock === 'ptr' && (
-          <Arrow start={[-2.25, 2, 0]} end={[2, 2, 0]} color="#8aadf4" />
-        )}
+        {selectedBlock === 'ptr' && <Arrow start={[-2.25, 2, 0]} end={[2, 2, 0]} color="#8aadf4" />}
       </>
     );
   }
@@ -263,9 +249,7 @@ export default function MemoryLayout3D({ scenario = 'ownership' }: MemoryLayout3
       </Canvas>
 
       <div className="absolute bottom-4 left-4 bg-surface0/90 backdrop-blur px-4 py-2 rounded-lg border border-overlay0/30">
-        <p className="text-xs text-subtext1">
-          💡 拖动旋转 | 滚轮缩放 | 点击高亮
-        </p>
+        <p className="text-xs text-subtext1">💡 拖动旋转 | 滚轮缩放 | 点击高亮</p>
       </div>
     </div>
   );

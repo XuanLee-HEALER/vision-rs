@@ -3,7 +3,7 @@ import ReactorPattern from '@/components/tokio/ReactorPattern';
 
 export const metadata = {
   title: 'Reactor 模式',
-  description: 'Tokio 的 I/O 事件处理机制'
+  description: 'Tokio 的 I/O 事件处理机制',
 };
 
 <LearnLayout>
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-```
+```text
 
 ## Waker 机制
 
@@ -64,17 +64,17 @@ impl Future for MyFuture {
 
 // I/O 就绪时，Reactor 调用
 waker.wake();  // 唤醒任务，重新 poll
-```
+```text
 
 ## mio 集成
 
 ### 平台差异
 
-| 平台 | I/O 多路复用 |
-|------|-------------|
-| Linux | **epoll** |
-| macOS/BSD | **kqueue** |
-| Windows | **IOCP** |
+| 平台      | I/O 多路复用 |
+| --------- | ------------ |
+| Linux     | **epoll**    |
+| macOS/BSD | **kqueue**   |
+| Windows   | **IOCP**     |
 
 ### mio 示例
 
@@ -109,7 +109,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 }
-```
+```text
 
 ## 性能特性
 
@@ -128,7 +128,7 @@ async fn send_file(socket: &mut TcpStream) -> io::Result<()> {
     tokio::io::copy(&mut file, socket).await?;
     Ok(())
 }
-```
+```text
 
 ### 批量处理
 
@@ -144,7 +144,7 @@ loop {
         handle_event(event);
     }
 }
-```
+```text
 
 ## 实践建议
 
@@ -166,7 +166,7 @@ async fn safe_connect() -> Result<TcpStream, io::Error> {
         }
     }
 }
-```
+```text
 
 ### ❌ 避免做法
 
@@ -181,7 +181,7 @@ async fn bad_example() {
 async fn good_example() {
     let data = tokio::fs::read_to_string("file.txt").await.unwrap();
 }
-```
+```text
 
 ## 小结
 

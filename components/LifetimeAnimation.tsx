@@ -81,9 +81,7 @@ export default function LifetimeAnimation({ code }: LifetimeAnimationProps) {
                 <span className="text-xs text-text">结束</span>
               </div>
             </motion.div>
-            <div className="mt-1 text-xs text-subtext0">
-              从第 2 行到函数结束（第 9 行）
-            </div>
+            <div className="mt-1 text-xs text-subtext0">从第 2 行到函数结束（第 9 行）</div>
           </div>
 
           {/* 'b 生命周期 */}
@@ -109,9 +107,7 @@ export default function LifetimeAnimation({ code }: LifetimeAnimationProps) {
                 <span className="text-xs text-text">结束</span>
               </div>
             </motion.div>
-            <div className="mt-1 text-xs text-subtext0">
-              从第 5 行到第 7 行（块结束）
-            </div>
+            <div className="mt-1 text-xs text-subtext0">从第 5 行到第 7 行（块结束）</div>
           </div>
 
           {/* 悬垂引用警告 */}
@@ -126,9 +122,10 @@ export default function LifetimeAnimation({ code }: LifetimeAnimationProps) {
               <div>
                 <div className="text-sm font-semibold text-red mb-1">编译错误！</div>
                 <div className="text-xs text-subtext1">
-                  变量 <code className="text-red">r</code> 引用了 <code className="text-green">x</code>，
-                  但 <code className="text-green">x</code> 的生命周期 'b 比 <code className="text-red">r</code> 的生命周期 'a 短。
-                  当执行到第 8 行时，<code className="text-green">x</code> 已被释放，
+                  变量 <code className="text-red">r</code> 引用了{' '}
+                  <code className="text-green">x</code>， 但 <code className="text-green">x</code>{' '}
+                  的生命周期 'b 比 <code className="text-red">r</code> 的生命周期 'a 短。 当执行到第
+                  8 行时，<code className="text-green">x</code> 已被释放，
                   <code className="text-red">r</code> 变成了悬垂引用。
                 </div>
               </div>

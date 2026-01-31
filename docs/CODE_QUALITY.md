@@ -60,17 +60,66 @@ published: true/false（可选，默认 true）
 
 ### MUST 遵守的规则
 
-- **MUST** 使用 Markdownlint 检查文档
+- **MUST** 在提交前运行 `pnpm markdownlint` 并修复所有错误
 - **MUST** 标题使用 ATX 风格（`#` 而非下划线）
 - **MUST** 列表缩进使用 2 空格
 - **MUST** 代码块使用围栏式（\`\`\`）而非缩进式
+- **MUST** 所有代码块必须指定语言（如 \`\`\`bash、\`\`\`typescript）
+- **MUST** 使用标题而非加粗文本作为章节分隔（MD036）
 - **MUST** 文件以空行结尾
 
 ### MUST NOT 违反的规则
 
+- **MUST NOT** 使用缩进式代码块（必须使用围栏式 \`\`\`）
+- **MUST NOT** 代码块不指定语言（MD040）
+- **MUST NOT** 在标题末尾使用标点符号（MD026，除非确实需要）
+- **MUST NOT** 使用加粗/斜体代替标题（MD036）
 - **MUST NOT** 使用 HTML 标签（除非 Markdown 无法表达）
-- **MUST NOT** 硬编码行宽（MD013 禁用）
 - **MUST NOT** 在文档中暴露真实的 API Keys 或敏感信息
+
+### 常见 Markdownlint 错误及修复
+
+**MD040 - 代码块缺少语言标识**：
+
+```markdown
+<!-- ❌ 错误 -->
+
+\`\`\`
+code here
+\`\`\`
+
+<!-- ✅ 正确 -->
+
+\`\`\`bash
+code here
+\`\`\`
+```
+
+**MD046 - 代码块风格不一致**：
+
+```markdown
+<!-- ❌ 错误 - 缩进式 -->
+
+    code here
+
+<!-- ✅ 正确 - 围栏式 -->
+
+\`\`\`rust
+code here
+\`\`\`
+```
+
+**MD036 - 加粗代替标题**：
+
+```markdown
+<!-- ❌ 错误 -->
+
+**重要章节**
+
+<!-- ✅ 正确 -->
+
+## 重要章节
+```
 
 ### 链接规范
 
@@ -116,10 +165,18 @@ just lint-fix
 - [ ] 运行 `pnpm lint` 无错误
 - [ ] 运行 `pnpm format-check` 通过
 - [ ] 运行 `pnpm typecheck` 无错误
+- [ ] 运行 `pnpm markdownlint "**/*.md" "**/*.mdx"` 无错误
 - [ ] 删除所有 `console.log` 和调试代码
 - [ ] 检查是否有敏感信息（API Keys、密码）
 - [ ] MDX 文件包含正确的 frontmatter
 - [ ] 提交信息清晰描述变更内容
+
+**或使用快捷命令**：
+
+```bash
+just check  # 运行 lint + format-check + typecheck
+pnpm markdownlint "**/*.md" "**/*.mdx" --ignore node_modules --ignore .next
+```
 
 ---
 

@@ -3,7 +3,7 @@ import TaskScheduling from '@/components/tokio/TaskScheduling';
 
 export const metadata = {
   title: 'Tokio 任务调度',
-  description: '工作窃取算法详解'
+  description: '工作窃取算法详解',
 };
 
 <LearnLayout>
@@ -24,9 +24,8 @@ Tokio 使用工作窃取算法实现高效的任务调度。
 
 ### 优势
 
-✓ **负载均衡**：自动平衡各线程任务
-✓ **缓存友好**：优先本地任务
-✓ **低开销**：减少锁竞争
+✓ **负载均衡**：自动平衡各线程任务✓ **缓存友好**：优先本地任务✓
+**低开销**：减少锁竞争
 
 ## spawn vs spawn_blocking
 
@@ -38,7 +37,7 @@ tokio::spawn(async {
     let data = fetch_from_network().await;
     println!("Data: {}", data);
 });
-```
+```text
 
 ### spawn_blocking (阻塞任务)
 
@@ -47,9 +46,10 @@ tokio::task::spawn_blocking(|| {
     // CPU 密集或阻塞操作
     expensive_computation()
 });
-```
+```text
 
 **区别**：
+
 - `spawn`：运行在 Worker 线程，不应阻塞
 - `spawn_blocking`：运行在独立线程池，可以阻塞
 
@@ -61,7 +61,7 @@ Tokio 使用 LIFO 策略处理本地任务：
 // 新任务被添加到队列头部
 tokio::spawn(async { /* Task 1 */ });
 tokio::spawn(async { /* Task 2 */ });  // 会先执行
-```
+```text
 
 ## Yield
 
@@ -79,7 +79,7 @@ async fn cooperative_task() {
         }
     }
 }
-```
+```text
 
 ## 小结
 

@@ -2,11 +2,15 @@
 
 <div align="center">
 
+<!-- markdownlint-disable MD036 -->
+
 **通过图文并茂的方式深入学习 Rust 编程语言**
+
+<!-- markdownlint-enable MD036 -->
 
 一个专注于 Rust 语言核心概念和标准库详解的在线学习平台
 
-[开始学习](#快速开始) · [特色功能](#特色功能) · [技术架构](#技术架构) · [贡献指南](#贡献)
+[开始学习](#快速开始) · [特色功能](#核心特色) · [技术架构](#技术架构) · [贡献](#贡献)
 
 </div>
 
@@ -30,78 +34,78 @@ Vision-RS 是一个现代化的 Rust 学习平台，旨在通过**图文结合**
 
 通过 14 个 Part，30 个章节构建完整的 Rust 心智模型：
 
-**Part 0: Meta（元认知）**
+#### Part 0: Meta（元认知）
 
 - 参考资料的定位和使用
 
-**Part 1: 静态世界总览**
+#### Part 1: 静态世界总览
 
 - Crates、Items、模块系统
 - 命名空间、路径、可见性
 
-**Part 2: 表达式模型**
+#### Part 2: 表达式模型
 
 - 表达式导向的编程思维
 - 控制流与表达式
 
-**Part 3: 类型系统**
+#### Part 3: 类型系统
 
 - 类型的职责与边界
 - 特殊类型（单元类型、Never 类型等）
 
-**Part 4: 所有权系统**
+#### Part 4: 所有权系统
 
 - 所有权语义深入解析
 - Move、Copy、Borrow 的本质
 
-**Part 5: 借用与生命周期**
+#### Part 5: 借用与生命周期
 
 - Borrow Checker 工作原理
 - 生命周期关系推导
 - Higher-Ranked Trait Bounds (HRTB)
 
-**Part 6: 模式匹配**
+#### Part 6: 模式匹配
 
 - 模式作为一等公民
 - 穷尽性与可反驳性
 
-**Part 7: Trait 系统**
+#### Part 7: Trait 系统
 
 - Trait 的三重角色
 - Coherence 与 Orphan Rule
 - 静态分发与动态分发
 
-**Part 8: 泛型系统**
+#### Part 8: 泛型系统
 
 - 单态化（Monomorphization）
 - 关联类型
 
-**Part 9: 内存模型**
+#### Part 9: 内存模型
 
 - 内存抽象层次
 - 内部可变性模式
 
-**Part 10: 并发模型**
+#### Part 10: 并发模型
 
 - Send 与 Sync
 - 并发安全保证
 
-**Part 11: 异步编程**
+#### Part 11: 异步编程
 
 - Async/Await 脱糖
 - Pin 与自引用结构
 
-**Part 12: Unsafe Rust**
+#### Part 12: Unsafe Rust
 
 - Unsafe 能力边界
 - 安全抽象构建
 
-**Part 13: 宏系统**
+#### Part 13: 宏系统
 
 - 宏编译期展开
 - 宏 vs 泛型
 
-**Part 14: 编译期与运行时**
+#### Part 14: 编译期与运行时
 
 - 编译期计算
 - 运行时行为
@@ -142,7 +146,7 @@ Vision-RS 是一个现代化的 Rust 学习平台，旨在通过**图文结合**
 
 **四层可见性控制架构**：
 
-```
+```text
 Level 0: 索引生成
   └─ 自动生成内容索引（prebuild）
 
@@ -268,7 +272,7 @@ pnpm lint
 
 ## 项目结构
 
-```
+```text
 vision-rs/
 ├── app/                           # Next.js App Router
 │   ├── (site)/                   # 网站路由组
@@ -526,7 +530,11 @@ MDX 结合了 Markdown 的简洁性和 React 组件的交互性，非常适合�
 
 <div align="center">
 
+<!-- markdownlint-disable MD036 -->
+
 **用心构建 Rust 心智模型，让学习更系统**
+
+<!-- markdownlint-enable MD036 -->
 
 ⭐ 如果这个项目对你有帮助，欢迎 Star 支持！
 

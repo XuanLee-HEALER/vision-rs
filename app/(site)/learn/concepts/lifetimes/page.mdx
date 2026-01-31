@@ -4,7 +4,7 @@ import MermaidDiagram from '@/components/MermaidDiagram';
 
 export const metadata = {
   title: '生命周期 - Vision-RS',
-  description: 'Rust 的生命周期注解与生命周期规则'
+  description: 'Rust 的生命周期注解与生命周期规则',
 };
 
 <LearnLayout>
@@ -28,9 +28,10 @@ fn main() {
                           //          |
     println!("r: {}", r); //          |  ❌ 编译错误！
 }                         // ---------+
-```
+```text
 
-**错误原因**：`x` 的生命周期 'b 比 `r` 的生命周期 'a 短，当尝试使用 `r` 时，`x` 已被释放。
+**错误原因**：`x` 的生命周期 'b 比 `r` 的生命周期 'a 短，当尝试使用 `r` 时，`x`
+已被释放。
 
 <LifetimeAnimation />
 
@@ -42,7 +43,7 @@ fn main() {
 &i32        // 普通引用
 &'a i32     // 带有显式生命周期的引用
 &'a mut i32 // 带有显式生命周期的可变引用
-```
+```text
 
 ### 函数中的生命周期
 
@@ -62,7 +63,7 @@ fn main() {
     let result = longest(string1.as_str(), string2);
     println!("最长的字符串是: {}", result);
 }
-```
+```text
 
 **含义**：返回值的生命周期与参数中生命周期**较短的**那个相同。
 
@@ -80,8 +81,8 @@ sequenceDiagram
     longest->>Main: 返回引用（生命周期 = min(x, y)）
 
     note over longest: 返回值生命周期<br/>取决于较短的输入
-  `}
-/>
+
+`} />
 
 ## 生命周期省略规则
 
@@ -93,15 +94,16 @@ sequenceDiagram
 
 ```rust
 fn foo(x: &i32)  // 实际是 fn foo<'a>(x: &'a i32)
-```
+```text
 
 2. **规则 2**：如果只有一个输入生命周期，赋予所有输出
 
 ```rust
 fn foo(x: &i32) -> &i32  // 实际是 fn foo<'a>(x: &'a i32) -> &'a i32
-```
+```text
 
-3. **规则 3**：如果有 `&self` 或 `&mut self`，返回值的生命周期是 `self` 的生命周期
+3. **规则 3**：如果有 `&self` 或 `&mut self`，返回值的生命周期是 `self`
+   的生命周期
 
 ```rust
 impl MyStruct {
@@ -109,7 +111,7 @@ impl MyStruct {
         &self.data
     }
 }
-```
+```text
 
 ### 需要显式标注的情况
 
@@ -122,7 +124,7 @@ fn longest(x: &str, y: &str) -> &str {  // ❌ 编译错误：无法推导返回
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {  // ✅
     if x.len() > y.len() { x } else { y }
 }
-```
+```text
 
 ## 结构体中的生命周期
 
@@ -143,7 +145,7 @@ fn main() {
 
     println!("{}", excerpt.part);
 }
-```
+```text
 
 **含义**：`ImportantExcerpt` 实例的生命周期不能超过 `part` 字段引用的数据。
 
@@ -160,7 +162,7 @@ impl<'a> ImportantExcerpt<'a> {
         self.part  // 返回值生命周期来自 self
     }
 }
-```
+```text
 
 ## 静态生命周期
 
@@ -168,7 +170,7 @@ impl<'a> ImportantExcerpt<'a> {
 
 ```rust
 let s: &'static str = "我有一个静态生命周期";  // 字符串字面量
-```
+```text
 
 **字符串字面量**默认是 `'static`，因为它们被存储在程序的二进制文件中。
 
@@ -184,7 +186,7 @@ fn get_str() -> &'static str {
 fn get_string() -> String {
     String::from("hello")
 }
-```
+```text
 
 ## 生命周期约束
 
@@ -195,7 +197,7 @@ fn longest_with_constraint<'a, 'b: 'a>(x: &'a str, y: &'b str) -> &'a str {
     // 'b: 'a 表示 'b 的生命周期至少与 'a 一样长
     x
 }
-```
+```text
 
 ## 多个生命周期参数
 
@@ -214,7 +216,7 @@ fn main() {
 
     println!("{}", result);  // ✅ 正常工作
 }
-```
+```text
 
 ## 生命周期与泛型
 
@@ -238,7 +240,7 @@ where
         y
     }
 }
-```
+```text
 
 ## 实践示例
 
@@ -266,7 +268,7 @@ fn main() {
 
     println!("连接到: {}", config.connection_string());
 }  // host 和 config 同时被释放，生命周期正确
-```
+```text
 
 ### 示例 2：迭代器实现
 
@@ -308,7 +310,7 @@ fn main() {
     let letters: Vec<_> = StrSplit::new(haystack, ",").collect();
     println!("{:?}", letters);  // ["a", "b", "c"]
 }
-```
+```text
 
 ## 常见错误与修复
 
@@ -323,7 +325,7 @@ fn longest(x: &str, y: &str) -> &str {  // ❌ 编译错误
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {  // ✅
     if x.len() > y.len() { x } else { y }
 }
-```
+```text
 
 ### 错误 2：返回局部变量的引用
 
@@ -337,7 +339,7 @@ fn get_str() -> &str {  // ❌ 编译错误
 fn get_string() -> String {  // ✅
     String::from("hello")
 }
-```
+```text
 
 ### 错误 3：结构体缺少生命周期注解
 
@@ -350,7 +352,7 @@ struct Excerpt {
 struct Excerpt<'a> {
     part: &'a str,  // ✅
 }
-```
+```text
 
 ## 实践建议
 
@@ -376,7 +378,7 @@ fn parse_config<'cfg>(input: &'cfg str) -> Config<'cfg> {
 struct Config<'cfg> {
     data: &'cfg str,
 }
-```
+```text
 
 ### ❌ 避免做法
 
@@ -397,7 +399,7 @@ fn bad() -> &str {
     let s = String::from("bad");
     &s  // 悬垂引用
 }
-```
+```text
 
 ## 练习题
 
@@ -407,7 +409,7 @@ fn bad() -> &str {
 fn longest(x: &str, y: &str) -> &str {
     if x.len() > y.len() { x } else { y }
 }
-```
+```text
 
 <details>
 <summary>查看答案</summary>
@@ -416,7 +418,7 @@ fn longest(x: &str, y: &str) -> &str {
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() { x } else { y }
 }
-```
+```text
 
 </details>
 
@@ -429,7 +431,7 @@ struct Book {
     title: &str,
     author: &str,
 }
-```
+```text
 
 <details>
 <summary>查看答案</summary>
@@ -451,7 +453,7 @@ fn main() {
 
     println!("{} by {}", book.title, book.author);
 }
-```
+```text
 
 </details>
 

@@ -18,6 +18,7 @@
    ```
 
 3. **MUST** 验证本地环境：
+
    ```bash
    pnpm build  # 确保构建成功
    ```
@@ -73,6 +74,7 @@ just dev-port 3001
    - 修复所有 Markdownlint 警告
 
 3. **手动验证**（如需要）
+
    ```bash
    just lint        # ESLint 检查
    just format      # 格式化
@@ -110,7 +112,7 @@ git push origin feature/your-feature-name
 
 - **MUST** 使用约定式提交格式：
 
-  ```
+  ```text
   <type>: <description>
 
   [optional body]
@@ -126,6 +128,7 @@ git push origin feature/your-feature-name
   - `chore`: 构建/工具变更
 
 - **示例**：
+
   ```bash
   git commit -m "feat: 添加 Edge Config 支持"
   git commit -m "fix: 修复管理后台登录问题"
@@ -214,6 +217,7 @@ just check  # 运行 lint + format-check + typecheck
 3. **编写内容** - 遵守 MDX 规范
 
 4. **生成索引**（自动）
+
    ```bash
    # 构建时自动运行
    pnpm build

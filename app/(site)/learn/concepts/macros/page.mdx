@@ -2,7 +2,7 @@ import LearnLayout from '@/components/LearnLayout';
 
 export const metadata = {
   title: '宏系统 - Vision-RS',
-  description: 'Rust 的宏编程'
+  description: 'Rust 的宏编程',
 };
 
 <LearnLayout>
@@ -25,7 +25,7 @@ macro_rules! say_hello {
 fn main() {
     say_hello!();  // 展开为 println!("Hello!");
 }
-```
+```text
 
 ### 带参数的宏
 
@@ -45,7 +45,7 @@ fn main() {
     foo();  // "函数 "foo" 被调用"
     bar();  // "函数 "bar" 被调用"
 }
-```
+```text
 
 ### 模式匹配
 
@@ -66,7 +66,7 @@ fn main() {
     let v = vec_of_strings!["hello", "world"];
     println!("{:?}", v);  // ["hello", "world"]
 }
-```
+```text
 
 ## 常用的内置宏
 
@@ -77,7 +77,7 @@ fn main() {
     println!("Hello, {}!", "world");
     let s = format!("x = {}, y = {}", 10, 20);
 }
-```
+```text
 
 ### vec!
 
@@ -91,7 +91,7 @@ fn main() {
     v.push(2);
     v.push(3);
 }
-```
+```text
 
 ### panic!
 
@@ -99,7 +99,7 @@ fn main() {
 fn main() {
     panic!("发生了致命错误！");
 }
-```
+```text
 
 ### assert! 和 debug_assert!
 
@@ -116,7 +116,7 @@ fn main() {
 fn expensive_check() -> bool {
     true
 }
-```
+```text
 
 ## 派生宏
 
@@ -136,7 +136,7 @@ fn main() {
     println!("{:?}", p1);  // Debug
     assert_eq!(p1, p2);    // PartialEq
 }
-```
+```text
 
 ## 属性宏
 
@@ -153,7 +153,7 @@ mod tests {
         assert_eq!(2 + 2, 4);
     }
 }
-```
+```text
 
 ## 过程宏（高级）
 
@@ -168,7 +168,7 @@ pub fn hello_macro_derive(input: TokenStream) -> TokenStream {
     // 实现代码生成逻辑
     // ...
 }
-```
+```text
 
 使用：
 
@@ -181,7 +181,7 @@ struct Pancakes;
 fn main() {
     Pancakes::hello_macro();
 }
-```
+```text
 
 ## 宏调试
 
@@ -201,24 +201,24 @@ fn main() {
         println!("{}", x);
     }
 }
-```
+```text
 
 使用 `cargo expand` 查看宏展开结果：
 
 ```bash
 cargo install cargo-expand
 cargo expand
-```
+```text
 
 ## 宏 vs 函数
 
-| 特性 | 宏 | 函数 |
-|------|------|------|
+| 特性     | 宏        | 函数     |
+| -------- | --------- | -------- |
 | 调用语法 | `name!()` | `name()` |
-| 展开时机 | 编译时 | 运行时 |
-| 参数个数 | 可变 | 固定 |
-| 参数类型 | 任意 | 固定 |
-| 卫生性 | 有 | 无关 |
+| 展开时机 | 编译时    | 运行时   |
+| 参数个数 | 可变      | 固定     |
+| 参数类型 | 任意      | 固定     |
+| 卫生性   | 有        | 无关     |
 
 ## 小结
 

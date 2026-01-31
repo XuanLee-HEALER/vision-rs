@@ -86,8 +86,8 @@ export default function BorrowChecker() {
                   idx === currentStep
                     ? 'text-text font-semibold'
                     : idx < currentStep
-                    ? 'text-subtext1'
-                    : 'text-overlay0'
+                      ? 'text-subtext1'
+                      : 'text-overlay0'
                 }`}
               >
                 <span className="text-overlay1 mr-2">{scenario.line}</span>
@@ -102,19 +102,17 @@ export default function BorrowChecker() {
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             className={`p-4 rounded border ${
-              state.isValid
-                ? 'bg-teal/10 border-teal/30'
-                : 'bg-red/10 border-red/30'
+              state.isValid ? 'bg-teal/10 border-teal/30' : 'bg-red/10 border-red/30'
             }`}
           >
             <div className="flex items-start gap-2">
-              <span className="text-xl">
-                {state.isValid ? '✅' : '❌'}
-              </span>
+              <span className="text-xl">{state.isValid ? '✅' : '❌'}</span>
               <div>
-                <div className={`text-sm font-semibold mb-1 ${
-                  state.isValid ? 'text-teal' : 'text-red'
-                }`}>
+                <div
+                  className={`text-sm font-semibold mb-1 ${
+                    state.isValid ? 'text-teal' : 'text-red'
+                  }`}
+                >
                   {state.isValid ? '合法借用' : '借用冲突！'}
                 </div>
                 <div className="text-xs text-subtext1">{state.explanation}</div>
@@ -131,15 +129,19 @@ export default function BorrowChecker() {
               className="relative w-32 h-32 rounded-lg bg-blue/20 border-2 border-blue flex items-center justify-center"
               animate={{
                 borderColor: state.isValid ? '#8aadf4' : '#ed8796',
-                backgroundColor: state.isValid ? 'rgba(138, 173, 244, 0.2)' : 'rgba(237, 135, 150, 0.2)',
+                backgroundColor: state.isValid
+                  ? 'rgba(138, 173, 244, 0.2)'
+                  : 'rgba(237, 135, 150, 0.2)',
               }}
             >
               <div className="text-center">
                 <div className="text-2xl font-mono font-bold text-text">s</div>
                 <div className="text-xs text-subtext0 mt-1">
-                  {state.borrowType === 'none' ? '无借用' :
-                   state.borrowType === 'immutable' ? '不可变借用中' :
-                   '可变借用中'}
+                  {state.borrowType === 'none'
+                    ? '无借用'
+                    : state.borrowType === 'immutable'
+                      ? '不可变借用中'
+                      : '可变借用中'}
                 </div>
               </div>
 
@@ -190,14 +192,14 @@ export default function BorrowChecker() {
                         scale: { repeat: isConflict ? Infinity : 0, duration: 0.8 },
                       }}
                       className={`flex items-center gap-3 p-3 rounded border ${
-                        isConflict
-                          ? 'bg-red/10 border-red/30'
-                          : 'bg-surface0 border-overlay0/30'
+                        isConflict ? 'bg-red/10 border-red/30' : 'bg-surface0 border-overlay0/30'
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold ${
-                        isConflict ? 'bg-red/20 text-red' : 'bg-blue/20 text-blue'
-                      }`}>
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold ${
+                          isConflict ? 'bg-red/20 text-red' : 'bg-blue/20 text-blue'
+                        }`}
+                      >
                         {borrower}
                       </div>
                       <div className="flex-1">
@@ -206,9 +208,7 @@ export default function BorrowChecker() {
                           {borrower === 'r3' ? '&mut（可变引用）' : '&（不可变引用）'}
                         </div>
                       </div>
-                      {isConflict && (
-                        <span className="text-red">⚠️</span>
-                      )}
+                      {isConflict && <span className="text-red">⚠️</span>}
                     </motion.div>
                   );
                 })
@@ -226,7 +226,9 @@ export default function BorrowChecker() {
               <li className={currentStep === 3 ? 'text-red' : ''}>
                 ✗ 不可变引用存在时，不能有可变引用（&mut T）
               </li>
-              <li>✓ 只能有<strong>一个</strong>可变引用，且无其他引用</li>
+              <li>
+                ✓ 只能有<strong>一个</strong>可变引用，且无其他引用
+              </li>
             </ul>
           </div>
         </div>

@@ -52,7 +52,7 @@
 
 #### 1. 管理员邮箱（必需）
 
-```
+```text
 名称: ADMIN_EMAILS
 值: your-admin@example.com
 环境: Production, Preview, Development
@@ -66,7 +66,7 @@
 
 #### 2. Session 密钥（必需）
 
-```
+```text
 名称: SESSION_SECRET
 值: <生成的随机字符串> SIgU5zmpEf5JUNwIFhCqsR2YLksjnCqrdlguSGUhN7I=
 环境: Production, Preview, Development
@@ -83,7 +83,7 @@ openssl rand -base64 32
 
 #### 3. Resend API Key（必需 - 用于邮件验证码）
 
-```
+```text
 名称: RESEND_API_KEY
 值: re_xxxxxxxxxxxxx
 re_xxxxxxxxxxxxxxxxxxxxx
@@ -104,7 +104,7 @@ re_xxxxxxxxxxxxxxxxxxxxx
 
 #### 4. 站点 URL（可选，推荐）
 
-```
+```text
 名称: NEXT_PUBLIC_SITE_URL
 值: https://vision-rs.com
 环境: Production
@@ -138,7 +138,7 @@ re_xxxxxxxxxxxxxxxxxxxxx
 4. 回到项目设置 → **Environment Variables**
 5. 添加这些变量：
 
-```
+```text
 EDGE_CONFIG=https://edge-config.vercel.com/...
 EDGE_CONFIG=https://...
 VERCEL_API_TOKEN=...
@@ -166,7 +166,7 @@ vercel env pull
 
 **部署过程**：
 
-```
+```text
 1. Prebuild: 生成内容索引
 2. Build: Next.js 构建
 3. Deploy: 部署到 Vercel 边缘网络
@@ -199,17 +199,17 @@ vercel env pull
 
 Vercel 会提供 DNS 记录，在你的域名注册商处添加：
 
-**方式 1: A 记录**
+#### 方式 1: A 记录
 
-```
+```text
 Type: A
 Name: @
 Value: 76.76.21.21
 ```
 
-**方式 2: CNAME 记录**
+#### 方式 2: CNAME 记录
 
-```
+```text
 Type: CNAME
 Name: www
 Value: cname.vercel-dns.com
@@ -219,7 +219,7 @@ Value: cname.vercel-dns.com
 
 添加自定义域名后，更新 `NEXT_PUBLIC_SITE_URL`：
 
-```
+```text
 NEXT_PUBLIC_SITE_URL=https://vision-rs.com
 ```
 
@@ -290,24 +290,24 @@ Resend 提供免费的测试域名：`onboarding.resend.dev`
 
 ### 8.2 常见问题排查
 
-**问题 1: 构建失败**
+#### 问题 1: 构建失败
 
 - 检查 Build Logs 中的错误信息
 - 确认 `pnpm build` 在本地能成功运行
 - 检查依赖是否正确安装
 
-**问题 2: 环境变量未生效**
+#### 问题 2: 环境变量未生效
 
 - 确认环境变量已添加到正确的环境（Production/Preview/Development）
 - 重新部署以应用新的环境变量
 
-**问题 3: Edge Config 连接失败**
+#### 问题 3: Edge Config 连接失败
 
 - 确认 Edge Config已创建
 - 确认环境变量正确配置
 - 检查 Function Logs 中的错误信息
 
-**问题 4: 邮件发送失败**
+#### 问题 4: 邮件发送失败
 
 - 确认 RESEND_API_KEY 正确
 - 确认域名已验证（或使用测试域名）

@@ -4,7 +4,7 @@ import Mermaid from '@/components/MermaidDiagram';
 
 export const metadata = {
   title: '借用与引用 - Vision-RS',
-  description: 'Rust 的借用机制与引用规则'
+  description: 'Rust 的借用机制与引用规则',
 };
 
 <LearnLayout>
@@ -29,7 +29,7 @@ fn main() {
 fn calculate_length(s: &String) -> usize {
     s.len()
 }  // s 离开作用域，但不释放数据（因为没有所有权）
-```
+```text
 
 `&s1` 创建一个**指向** `s1` 的引用，但**不拥有**它。
 
@@ -43,8 +43,8 @@ graph LR
 
     style B fill:#8aadf4,stroke:#8aadf4,color:#24273a
     style C fill:#a6da95,stroke:#a6da95,color:#24273a
-  `}
-/>
+
+`} />
 
 ### 引用不可变
 
@@ -60,7 +60,7 @@ fn main() {
 fn change(some_string: &String) {
     // some_string.push_str(", world");  // ❌ 编译错误：不能修改引用的值
 }
-```
+```text
 
 ## 可变引用
 
@@ -78,7 +78,7 @@ fn main() {
 fn change(some_string: &mut String) {
     some_string.push_str(", world");  // ✅ 可以修改
 }
-```
+```text
 
 ### 可变引用的限制
 
@@ -93,7 +93,7 @@ fn main() {
 
     println!("{}", r1);
 }
-```
+```text
 
 **好处**：防止**数据竞争**（data race）。
 
@@ -109,7 +109,7 @@ fn main() {
 
     println!("{} and {}", r1, r2);
 }
-```
+```text
 
 ## 借用检查器可视化
 
@@ -131,7 +131,7 @@ fn main() {
     let r3 = &mut s;  // ✅ 可以创建可变引用
     println!("{}", r3);
 }
-```
+```text
 
 这个特性叫做**非词法作用域生命周期**（Non-Lexical Lifetimes, NLL）。
 
@@ -148,7 +148,7 @@ fn dangle() -> &String {  // ❌ 编译错误
     let s = String::from("hello");
     &s
 }  // s 离开作用域被释放，返回的引用指向无效内存
-```
+```text
 
 **修复方法**：返回所有权而不是引用：
 
@@ -161,7 +161,7 @@ fn no_dangle() -> String {  // ✅ 正确
     let s = String::from("hello");
     s  // 移动所有权
 }
-```
+```text
 
 ## 借用规则总结
 
@@ -183,8 +183,8 @@ graph TD
     style E fill:#a6da95,stroke:#a6da95,color:#24273a
     style F fill:#a6da95,stroke:#a6da95,color:#24273a
     style G fill:#ed8796,stroke:#ed8796,color:#24273a
-  `}
-/>
+
+`} />
 
 **三大规则**：
 
@@ -204,7 +204,7 @@ fn main() {
     assert_eq!(5, x);
     assert_eq!(5, *y);  // 解引用 y 获取值
 }
-```
+```text
 
 **自动解引用**：
 
@@ -218,7 +218,7 @@ fn main() {
     let r = &s;
     let len = r.len();  // 自动解引用 r，调用 String 的 len 方法
 }
-```
+```text
 
 ## 多重引用
 
@@ -232,7 +232,7 @@ fn main() {
 
     assert_eq!(5, **z);  // 两次解引用
 }
-```
+```text
 
 ## 切片（Slice）
 
@@ -252,7 +252,7 @@ fn main() {
 
     println!("{}", hello);
 }
-```
+```text
 
 **字符串字面量就是切片**：
 
@@ -260,7 +260,7 @@ fn main() {
 fn main() {
     let s: &str = "Hello, world!";  // &str 是字符串切片类型
 }
-```
+```text
 
 **数组切片**：
 
@@ -270,7 +270,7 @@ fn main() {
     let slice: &[i32] = &a[1..3];  // [2, 3]
     assert_eq!(slice, &[2, 3]);
 }
-```
+```text
 
 ## 实践示例
 
@@ -296,7 +296,7 @@ fn main() {
     // s.clear();  // ❌ 编译错误：不能在存在不可变借用时修改
     println!("第一个单词: {}", word);
 }
-```
+```text
 
 ### 示例 2：可变引用传递
 
@@ -310,7 +310,7 @@ fn main() {
     append_exclamation(&mut greeting);
     println!("{}", greeting);  // "Hello!"
 }
-```
+```text
 
 ## 引用的内存表示
 
@@ -323,11 +323,11 @@ fn main() {
     println!("r 的值（地址）: {:p}", r);
     println!("r 解引用的值: {}", *r);
 }
-```
+```text
 
 **内存布局**：
 
-```
+```text
 栈内存：
 ┌──────────────┐
 │  x: 42       │  ← i32，4 字节
@@ -336,16 +336,16 @@ fn main() {
 │  │           │
 │  └──> 指向 x
 └──────────────┘
-```
+```text
 
 ## 智能指针 vs 引用
 
-| 特性 | 引用 `&T` | 智能指针 `Box<T>` |
-|------|-----------|-------------------|
-| 所有权 | 无 | 有 |
-| 解引用 | `*r` | `*b` |
-| 实现 | 简单指针 | 堆分配 + Drop |
-| 大小 | 指针大小 | 指针大小（指向堆） |
+| 特性   | 引用 `&T` | 智能指针 `Box<T>`  |
+| ------ | --------- | ------------------ |
+| 所有权 | 无        | 有                 |
+| 解引用 | `*r`      | `*b`               |
+| 实现   | 简单指针  | 堆分配 + Drop      |
+| 大小   | 指针大小  | 指针大小（指向堆） |
 
 ```rust
 fn main() {
@@ -356,7 +356,7 @@ fn main() {
     println!("r: {}", *r);
     println!("b: {}", *b);
 }
-```
+```text
 
 ## 实践建议
 
@@ -389,7 +389,7 @@ fn first_word(s: &String) -> &str {
     // 返回切片而不是索引
     &s[..]
 }
-```
+```text
 
 ### ❌ 避免做法
 
@@ -409,7 +409,7 @@ fn create_dangling() -> &String {  // ❌ 悬垂引用
     let s = String::from("hello");
     &s  // s 在函数结束时被释放
 }
-```
+```text
 
 ## 练习题
 
@@ -422,7 +422,7 @@ fn main() {
     let r2 = &mut s;
     println!("{}, {}", r1, r2);
 }
-```
+```text
 
 <details>
 <summary>查看答案</summary>
@@ -436,7 +436,7 @@ fn main() {
     let r2 = &mut s;  // 现在可以创建可变引用
     println!("{}", r2);
 }
-```
+```text
 
 </details>
 
@@ -454,7 +454,7 @@ fn main() {
     reverse_string(&mut s);
     println!("{}", s);  // "olleh"
 }
-```
+```text
 
 <details>
 <summary>查看答案</summary>
@@ -469,7 +469,7 @@ fn main() {
     reverse_string(&mut s);
     println!("{}", s);  // "olleh"
 }
-```
+```text
 
 </details>
 
