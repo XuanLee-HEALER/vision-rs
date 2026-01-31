@@ -22,8 +22,11 @@ export default async function AdminPage() {
 
       {/* Content */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* 章节管理卡片 */}
-        <div className="rounded-lg border border-overlay0 bg-surface0 p-6 hover:bg-surface1 transition-colors">
+        {/* 可见性管理卡片 */}
+        <a
+          href="/admin/visibility"
+          className="rounded-lg border border-overlay0 bg-surface0 p-6 hover:bg-surface1 transition-colors"
+        >
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue/20">
             <svg
               className="h-6 w-6 text-blue"
@@ -35,19 +38,22 @@ export default async function AdminPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
               />
             </svg>
           </div>
-          <h2 className="text-lg font-semibold text-text mb-2">章节管理</h2>
-          <p className="text-sm text-subtext0 mb-4">编辑"我的理解"部分内容</p>
-          <a
-            href="/admin/chapters"
-            className="inline-flex items-center text-sm text-blue hover:text-blue/80"
-          >
+          <h2 className="text-lg font-semibold text-text mb-2">内容可见性</h2>
+          <p className="text-sm text-subtext0 mb-4">管理学习内容的显示/隐藏状态</p>
+          <span className="inline-flex items-center text-sm text-blue hover:text-blue/80">
             进入管理 →
-          </a>
-        </div>
+          </span>
+        </a>
 
         {/* 占位卡片 */}
         <div className="rounded-lg border border-overlay0 bg-surface0 p-6 opacity-50">
