@@ -42,3 +42,4 @@ next-env.d.ts
 # Serena cache
 .serena/cache/
 package-lock.json
+.playwright-mcp/
