@@ -11,26 +11,27 @@ export default function Banner() {
     <header id="site-header" className="h-14 border-b border-overlay0/10 bg-mantle">
       <div className="flex h-full items-center gap-3">
         {/* Logo - 固定左侧，与侧边栏内容对齐 (p-6 = 24px) */}
-        <Link href="/" className="flex shrink-0 items-center gap-3 pl-6">
-          {/* 移动端：显示图标 */}
+        <Link href="/" className="flex shrink-0 items-center pl-6">
+          {/* 移动端：显示简化 logo */}
           <Image
-            src="/logo-icon.png"
+            src="/logo-icon.svg"
             alt="V-RS"
-            width={40}
+            width={100}
             height={40}
-            className="h-10 w-auto md:hidden"
+            className="h-9 w-auto md:hidden"
             priority
+            unoptimized
           />
           {/* 桌面端：显示完整 Logo */}
           <Image
-            src="/logo.webp"
+            src="/logo.svg"
             alt="Vision-RS"
-            width={240}
-            height={131}
-            className="hidden h-11 w-auto md:block"
+            width={280}
+            height={60}
+            className="hidden h-10 w-auto md:block"
             priority
+            unoptimized
           />
-          <span className="hidden text-xs text-subtext0 md:block">v1.0</span>
         </Link>
 
         {/* Search - 居中，响应式宽度 */}
