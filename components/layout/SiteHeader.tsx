@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSearch } from '@/components/search/SearchProvider.client';
 
 export default function Banner() {
@@ -11,10 +12,24 @@ export default function Banner() {
       <div className="flex h-full items-center gap-3">
         {/* Logo - 固定左侧，与侧边栏内容对齐 (p-6 = 24px) */}
         <Link href="/" className="flex shrink-0 items-center gap-2 pl-6">
-          {/* 移动端：只显示 V-RS */}
-          <span className="text-sm font-medium text-text md:hidden">V-RS</span>
+          {/* 移动端：显示图标 */}
+          <Image
+            src="/logo-icon.png"
+            alt="V-RS"
+            width={32}
+            height={32}
+            className="md:hidden"
+            priority
+          />
           {/* 桌面端：显示完整 Logo */}
-          <span className="hidden text-sm font-medium text-text md:block">Vision-RS</span>
+          <Image
+            src="/logo.webp"
+            alt="Vision-RS"
+            width={120}
+            height={66}
+            className="hidden h-8 w-auto md:block"
+            priority
+          />
           <span className="hidden text-xs text-subtext0 md:block">v1.0</span>
         </Link>
 
