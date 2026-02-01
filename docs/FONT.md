@@ -3,6 +3,7 @@
 ## 变更概述
 
 将项目字体从 CaskaydiaCove Nerd Font Mono（编程字体）替换为性能优先的跨平台字体方案：
+
 - **西文/数字**: Inter (Google Fonts)
 - **代码**: JetBrains Mono (Google Fonts)
 - **中文**: 系统字体（苹方/微软雅黑/思源黑体）
@@ -17,7 +18,9 @@
 ## 修改文件
 
 ### 1. app/layout.tsx
-### 2. tailwind.config.ts  
+
+### 2. tailwind.config.ts
+
 ### 3. app/globals.css
 
 详见各文件的 Git diff。
@@ -54,7 +57,7 @@
 
 - 支持 TypeScript/React/JSX
 - scripts/ 和 .claude/ 目录允许 console 和 process
-- 未使用变量前缀 _ 会被忽略
+- 未使用变量前缀 \_ 会被忽略
 - React 自动检测版本
 
 ## 验证命令

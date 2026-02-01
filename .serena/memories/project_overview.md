@@ -9,6 +9,7 @@ Vision-RS 是一个**基于 Rust Reference 的深度学习平台**，旨在通�
 ## 技术栈
 
 ### 前端
+
 - **框架**: Next.js 16 (App Router + React 19)
 - **语言**: TypeScript (strict mode)
 - **样式**: Tailwind CSS
@@ -17,11 +18,13 @@ Vision-RS 是一个**基于 Rust Reference 的深度学习平台**，旨在通�
 - **代码高亮**: Shiki
 
 ### 后端服务
+
 - **邮件服务**: Resend (验证码登录)
 - **存储**: Edge Config (内容可见性管理)
 - **认证**: Iron Session (Cookie-based)
 
 ### 部署
+
 - **平台**: Vercel
 - **CI/CD**: 自动部署 (Push to main → 生产环境)
 - **域名**: 支持自定义域名
@@ -106,16 +109,19 @@ vision-rs/
 ## 环境变量
 
 ### 本地开发最小配置
+
 - `ADMIN_EMAILS` - 管理员邮箱白名单
 - `SESSION_SECRET` - Session 加密密钥 (`openssl rand -base64 32`)
 - `RESEND_API_KEY` - Resend 邮件服务 API Key
 
 ### 生产环境额外配置
+
 - `EDGE_CONFIG` - Edge Config 连接 URL (Vercel 自动注入)
 - `VERCEL_API_TOKEN` - 用于更新 Edge Config (Vercel 自动注入)
 - `NEXT_PUBLIC_SITE_URL` - 站点 URL (可选，用于 Sitemap)
 
 ### 配置文件位置
+
 - **本地**: `.env.local` (不提交到 Git)
 - **模板**: `.env.local.example` (提交到 Git)
 - **生产**: Vercel Dashboard → Settings → Environment Variables
@@ -136,10 +142,13 @@ vision-rs/
 ## 工具链
 
 ### 包管理器
+
 使用 **pnpm** (而非 npm/yarn)
 
 ### 任务执行器
+
 使用 **just** - 提供统一的开发命令接口
 
 ### 部署工具
+
 使用 **Vercel CLI** - 用于运维和环境变量管理

@@ -41,23 +41,34 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchIndex, setSearchIndex] = useState<SearchIndexItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const selectedItemRef = useRef<HTMLButtonElement>(null);
 
   // Load search index
+  const loadSearchIndex = useCallback(() => {
+    setIsLoading(true);
+    setLoadError(false);
+    fetch('/search-index.json')
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setSearchIndex(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load search index:', err);
+        setLoadError(true);
+        setIsLoading(false);
+      });
+  }, []);
+
   useEffect(() => {
-    if (isOpen && searchIndex.length === 0) {
-      fetch('/search-index.json')
-        .then((res) => res.json())
-        .then((data) => {
-          setSearchIndex(data);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.error('Failed to load search index:', err);
-          setIsLoading(false);
-        });
+    if (isOpen && searchIndex.length === 0 && !loadError) {
+      loadSearchIndex();
     }
-  }, [isOpen, searchIndex.length]);
+  }, [isOpen, searchIndex.length, loadError, loadSearchIndex]);
 
   // Initialize Fuse.js
   const fuse = useMemo(() => {
@@ -181,7 +192,18 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
         {/* Results */}
         <div className="max-h-96 overflow-y-auto p-2">
-          {isLoading ? (
+          {loadError ? (
+            <div className="py-8 text-center">
+              <div className="mb-2 text-sm text-red">搜索索引加载失败</div>
+              <div className="mb-4 text-xs text-subtext0">请检查网络连接后重试</div>
+              <button
+                onClick={loadSearchIndex}
+                className="rounded-md bg-blue px-4 py-2 text-sm text-base transition-colors hover:bg-blue/90"
+              >
+                重新加载
+              </button>
+            </div>
+          ) : isLoading ? (
             <div className="py-8 text-center text-sm text-subtext0">加载搜索索引...</div>
           ) : query.trim() && results.length === 0 ? (
             <div className="py-8 text-center text-sm text-subtext0">未找到相关内容</div>

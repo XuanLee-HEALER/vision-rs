@@ -258,15 +258,7 @@
     "description": "Tokio 的 I/O 事件处理机制",
     "category": "crates",
     "content": "<LearnLayout>\n\nReactor 模式\n\nReactor 是 Tokio 处理 I/O 事件的核心组件，基于 mio 库实现。\n\n架构\n\n<ReactorPattern />\n\n组件\n\n- Event Loop：持续监听 I/O 事件\n- Reactor：基于 mio，使用 epoll/kqueue/IOCP\n- Waker：唤醒等待的 Future\n\nI/O 注册\n\nWaker 机制\n\n工作流程\n\nmio 集成\n\n平台差异\n\n| 平台      | I/O 多路复用 |\n| --------- | ------------ |\n| Linux     | epoll    |\n| macOS/BSD | kqueue   |\n| Windows   | IOCP     |\n\nmio 示例\n\n性能特性\n\n零拷贝\n\nTokio 支持零拷贝 I/O：\n\n批量处理\n\nReactor 一次 poll 可以处理多个就绪事件：\n\n实践建议\n\n✅ 推荐做法\n\n❌ 避免做法\n\n小结\n\n- ✅ Reactor 监听 I/O 事件\n- ✅ Waker 唤醒等待的任务\n- ✅ 基于 mio，跨平台支持\n- ✅ 零拷贝，高性能\n- ✅ 批量处理事件\n\n</LearnLayout>",
-    "headings": [
-      "架构",
-      "I/O 注册",
-      "Waker 机制",
-      "mio 集成",
-      "性能特性",
-      "实践建议",
-      "小结"
-    ]
+    "headings": ["架构", "I/O 注册", "Waker 机制", "mio 集成", "性能特性", "实践建议", "小结"]
   },
   {
     "slug": "learn/crates/tokio/runtime",
@@ -274,12 +266,7 @@
     "description": "Tokio 运行时内部实现详解",
     "category": "crates",
     "content": "<LearnLayout>\n\nRuntime 架构\n\nTokio Runtime 是任务执行的核心，负责调度和执行异步任务。\n\nRuntime 类型\n\n多线程 Runtime\n\n当前线程 Runtime\n\n工作窃取调度器\n\n<RuntimeVisualization />\n\n队列层级\n\n1. 本地队列：每个线程独享，LIFO\n2. 全局队列：所有线程共享，FIFO\n3. 窃取：从其他线程队尾窃取\n\n调度策略\n\n配置选项\n\n线程池大小\n\n线程命名\n\n小结\n\n- ✅ 多线程 Runtime 使用工作窃取算法\n- ✅ 单线程 Runtime 适合嵌入式场景\n- ✅ 支持自定义配置\n- ✅ 自动负载均衡\n\n</LearnLayout>",
-    "headings": [
-      "Runtime 类型",
-      "工作窃取调度器",
-      "配置选项",
-      "小结"
-    ]
+    "headings": ["Runtime 类型", "工作窃取调度器", "配置选项", "小结"]
   },
   {
     "slug": "learn/crates/tokio/scheduling",
@@ -287,13 +274,7 @@
     "description": "工作窃取算法详解",
     "category": "crates",
     "content": "<LearnLayout>\n\n任务调度\n\nTokio 使用工作窃取算法实现高效的任务调度。\n\n工作窃取算法\n\n<TaskScheduling />\n\n原理\n\n- 本地优先：线程优先执行自己的任务\n- 队尾窃取：空闲线程从繁忙线程队尾窃取\n- 减少竞争：双端队列，两端操作\n\n优势\n\n✓ 负载均衡：自动平衡各线程任务✓ 缓存友好：优先本地任务✓\n低开销：减少锁竞争\n\nspawn vs spawn_blocking\n\nspawn (异步任务)\n\nspawn_blocking (阻塞任务)\n\n区别：\n\n- spawn：运行在 Worker 线程，不应阻塞\n- spawn_blocking：运行在独立线程池，可以阻塞\n\nTask优先级\n\nTokio 使用 LIFO 策略处理本地任务：\n\nYield\n\n主动让出 CPU：\n\n小结\n\n- ✅ 工作窃取实现负载均衡\n- ✅ 区分异步和阻塞任务\n- ✅ 高效利用多核 CPU\n- ✅ 支持主动让出 CPU\n\n</LearnLayout>",
-    "headings": [
-      "工作窃取算法",
-      "spawn vs spawn_blocking",
-      "Task优先级",
-      "Yield",
-      "小结"
-    ]
+    "headings": ["工作窃取算法", "spawn vs spawn_blocking", "Task优先级", "Yield", "小结"]
   },
   {
     "slug": "learn/mental-model/part-0-meta/0-1-reference-position",
@@ -335,15 +316,7 @@
     "description": "Part 1 · Rust 程序的\"静态世界\"总览 - 1.2 命名空间、路径与可见性",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n1.2 命名空间、路径与可见性\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-10-concurrency/10-1-send-sync",
@@ -385,15 +358,7 @@
     "description": "Part 11 · Async / Future：语言级状态机生成 - 11.2 Pin、自引用与不变量",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n11.2 Pin、自引用与不变量\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-12-unsafe/12-1-unsafe-capabilities",
@@ -418,15 +383,7 @@
     "description": "Part 12 · Unsafe Rust：责任的显式转移 - 12.2 Safe Abstraction 的构建原则",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n12.2 Safe Abstraction 的构建原则\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-13-macros/13-1-macro-compilation",
@@ -451,15 +408,7 @@
     "description": "Part 13 · 宏与编译期元编程 - 13.2 宏 vs 泛型 vs const generics",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n13.2 宏 vs 泛型 vs const generics\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-14-compile-runtime/14-1-compile-time",
@@ -467,15 +416,7 @@
     "description": "Part 14 · 编译期 vs 运行期的最终分界 - 14.1 Rust 把什么问题前移到了编译期",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n14.1 Rust 把什么问题前移到了编译期\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-14-compile-runtime/14-2-runtime",
@@ -483,15 +424,7 @@
     "description": "Part 14 · 编译期 vs 运行期的最终分界 - 14.2 哪些问题刻意留在运行期",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n14.2 哪些问题刻意留在运行期\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-2-expression-model/2-1-expression-oriented",
@@ -516,15 +449,7 @@
     "description": "Part 2 · 表达式模型：Rust 为什么\"不是 C++\" - 2.2 控制流 ≠ 流程控制",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n2.2 控制流 ≠ 流程控制\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-3-type-system/3-1-type-responsibility",
@@ -549,15 +474,7 @@
     "description": "Part 3 · 类型系统不是\"类型\"，而是\"约束集合\" - 3.2 特殊类型与边界类型",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n3.2 特殊类型与边界类型\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-4-ownership/4-1-ownership-semantics",
@@ -582,15 +499,7 @@
     "description": "Part 4 · 所有权模型 - 4.2 Move / Copy / Borrow 的三态模型",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n4.2 Move / Copy / Borrow 的三态模型\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-1-borrow-checker",
@@ -615,15 +524,7 @@
     "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.2 生命周期不是时间，是关系",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n5.2 生命周期不是时间，是关系\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-3-hrtb",
@@ -631,15 +532,7 @@
     "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.3 高阶生命周期 (HRTB)",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n5.3 高阶生命周期 (HRTB)\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-6-patterns/6-1-patterns-first-class",
@@ -664,15 +557,7 @@
     "description": "Part 6 · 模式系统：Rust 的\"控制结构核心\" - 6.2 穷尽性与可反驳性",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n6.2 穷尽性与可反驳性\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-7-traits/7-1-trait-three-roles",
@@ -697,15 +582,7 @@
     "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.2 Impl、Coherence 与 Orphan Rule",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n7.2 Impl、Coherence 与 Orphan Rule\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-7-traits/7-3-static-dynamic-dispatch",
@@ -713,15 +590,7 @@
     "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.3 静态分发 vs 动态分发",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n7.3 静态分发 vs 动态分发\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-8-generics/8-1-monomorphization",
@@ -746,15 +615,7 @@
     "description": "Part 8 · 泛型与单态化：零成本抽象的代价 - 8.2 Associated Types vs 泛型参数",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n8.2 Associated Types vs 泛型参数\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   },
   {
     "slug": "learn/mental-model/part-9-memory-model/9-1-memory-abstraction",
@@ -779,14 +640,6 @@
     "description": "Part 9 · 内存模型与 Interior Mutability - 9.2 Interior Mutability 的合法性来源",
     "category": "mental-model",
     "content": "<LearnLayout>\n\n9.2 Interior Mutability 的合法性来源\n\n文字叙述\n\n> 主要概念解释\n\n本节将深入探讨相关概念的核心要义。\n\n图形表示\n\n> 图表与示意图\n\n（此处应包含精心设计的示意图，帮助读者建立直观的理解）\n\n动画演示\n\n> 状态变化与推导过程（如适用）\n\n（通过动态演示展示概念的演变过程）\n\n代码示例\n\n> 最小但可推理的代码\n\n应用场景\n\n> 实际应用\n\n本节探讨的概念在实际开发中的应用场景包括：\n\n- 场景一\n- 场景二\n- 场景三\n\n总结\n\n> 关键要点\n\n本章核心要点：\n\n1. 要点一\n2. 要点二\n3. 要点三\n\n---\n\n我的理解\n\n> 此部分可通过管理后台编辑\n\n（在这里记录你的个人理解、心得体会和延伸思考）\n\n</LearnLayout>",
-    "headings": [
-      "文字叙述",
-      "图形表示",
-      "动画演示",
-      "代码示例",
-      "应用场景",
-      "总结",
-      "我的理解"
-    ]
+    "headings": ["文字叙述", "图形表示", "动画演示", "代码示例", "应用场景", "总结", "我的理解"]
   }
 ]

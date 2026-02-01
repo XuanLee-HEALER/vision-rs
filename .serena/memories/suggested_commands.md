@@ -3,6 +3,7 @@
 ## 包管理器 - pnpm (而非 npm)
 
 **基础命令**:
+
 ```bash
 # 安装依赖
 pnpm install
@@ -36,6 +37,7 @@ pnpm markdownlint "**/*.md" "**/*.mdx" --ignore node_modules --ignore .next
 ## 任务执行器 - just (推荐)
 
 **安装 just** (如果没有):
+
 ```bash
 # macOS
 brew install just
@@ -45,6 +47,7 @@ cargo install just
 ```
 
 **查看所有命令**:
+
 ```bash
 just  # 列出所有可用命令
 ```
@@ -142,6 +145,7 @@ just new-chapter <chapter-name>
 ## Vercel CLI - 运维部署
 
 **安装 Vercel CLI** (如果没有):
+
 ```bash
 # 使用 pnpm
 pnpm add -g vercel
@@ -297,6 +301,7 @@ git push origin feature/your-feature-name
 ### Commit Message 规范 (MUST)
 
 **格式**:
+
 ```
 <type>: <description>
 
@@ -304,6 +309,7 @@ git push origin feature/your-feature-name
 ```
 
 **Type 类型**:
+
 - `feat`: 新功能
 - `fix`: Bug 修复
 - `docs`: 文档更新
@@ -313,6 +319,7 @@ git push origin feature/your-feature-name
 - `chore`: 构建/工具变更
 
 **示例**:
+
 ```bash
 git commit -m "feat: 添加 Edge Config 支持"
 git commit -m "fix: 修复管理后台登录问题"

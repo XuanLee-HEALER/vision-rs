@@ -43,6 +43,7 @@ just dev
 ```
 
 **在浏览器中测试** (http://localhost:3000):
+
 - [ ] 首页正常显示
 - [ ] 侧边导航栏正常工作
 - [ ] 学习内容页面正常渲染
@@ -101,6 +102,7 @@ just dev
 ### Commit Message 规范 (MUST)
 
 **格式**:
+
 ```
 <type>: <description>
 
@@ -108,6 +110,7 @@ just dev
 ```
 
 **示例**:
+
 ```bash
 git commit -m "feat: 添加 XXX 功能"
 git commit -m "fix: 修复 XXX 问题"
