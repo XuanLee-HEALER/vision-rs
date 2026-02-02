@@ -1,370 +1,50 @@
 [
   {
-    "slug": "learn/concepts/borrowing",
-    "title": "借用与引用 - Vision-RS",
-    "description": "Rust 的借用机制与引用规则",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/borrowing/page.mdx",
+    "slug": "learn/data-structures",
+    "title": "数据结构 - Vision-RS",
+    "description": "数据结构是性能与可维护性之间的共同语言。在 Rust 中，数据结构不仅是算法载体，更与所有权、借用、内存布局、可变性边界深度绑定",
+    "category": "data-structures",
+    "filePath": "app/(site)/learn/data-structures/page.mdx",
     "type": "mdx"
   },
   {
-    "slug": "learn/concepts/error-handling",
-    "title": "错误处理 - Vision-RS",
-    "description": "Rust 的错误处理机制",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/error-handling/page.mdx",
+    "slug": "learn/distributed-systems",
+    "title": "分布式系统 - Vision-RS",
+    "description": "分布式系统是",
+    "category": "distributed-systems",
+    "filePath": "app/(site)/learn/distributed-systems/page.mdx",
     "type": "mdx"
   },
   {
-    "slug": "learn/concepts/generics",
-    "title": "泛型 - Vision-RS",
-    "description": "Rust 的泛型编程",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/generics/page.mdx",
+    "slug": "learn/network-protocols",
+    "title": "网络协议 - Vision-RS",
+    "description": "网络协议的本质是：在不可靠的媒介上建立可组合的",
+    "category": "network-protocols",
+    "filePath": "app/(site)/learn/network-protocols/page.mdx",
     "type": "mdx"
   },
   {
-    "slug": "learn/concepts/heap-stack",
-    "title": "堆与栈 - Vision-RS",
-    "description": "Rust 的堆栈内存管理",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/heap-stack/page.mdx",
+    "slug": "learn/rust-philosophy",
+    "title": "Rust 设计哲学 - Vision-RS",
+    "description": "Rust 的设计哲学围绕一个核心目标：在不牺牲性能的前提下，把",
+    "category": "rust-philosophy",
+    "filePath": "app/(site)/learn/rust-philosophy/page.mdx",
     "type": "mdx"
   },
   {
-    "slug": "learn/concepts/lifetimes",
-    "title": "生命周期 - Vision-RS",
-    "description": "Rust 的生命周期注解与生命周期规则",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/lifetimes/page.mdx",
+    "slug": "learn/rust-stdlib",
+    "title": "Rust 标准库 - Vision-RS",
+    "description": "标准库是 Rust 语言哲学的工程化落地：它不仅提供 API，更体现了",
+    "category": "rust-stdlib",
+    "filePath": "app/(site)/learn/rust-stdlib/page.mdx",
     "type": "mdx"
   },
   {
-    "slug": "learn/concepts/macros",
-    "title": "宏系统 - Vision-RS",
-    "description": "Rust 的宏编程",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/macros/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/concepts/memory-layout",
-    "title": "内存布局 - Vision-RS",
-    "description": "Rust 的内存布局与对齐",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/memory-layout/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/concepts/ownership",
-    "title": "所有权系统 - Vision-RS",
-    "description": "深入理解 Rust 的所有权系统",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/ownership/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/concepts/pattern-matching",
-    "title": "模式匹配 - Vision-RS",
-    "description": "Rust 的模式匹配与解构",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/pattern-matching/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/concepts/traits",
-    "title": "Trait - Vision-RS",
-    "description": "Rust 的 Trait 系统",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/traits/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/concepts/types",
-    "title": "数据类型 - Vision-RS",
-    "description": "Rust 的标量类型与复合类型详解",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/types/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/concepts/variables",
-    "title": "变量与常量 - Vision-RS",
-    "description": "Rust 中的变量绑定、可变性与常量",
-    "category": "concepts",
-    "filePath": "app/(site)/learn/concepts/variables/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/crates/tokio",
-    "title": "Tokio - 异步运行时深度解析",
-    "description": "Tokio 运行时架构与核心概念",
-    "category": "crates",
-    "filePath": "app/(site)/learn/crates/tokio/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/crates/tokio/reactor",
-    "title": "Reactor 模式",
-    "description": "Tokio 的 I/O 事件处理机制",
-    "category": "crates",
-    "filePath": "app/(site)/learn/crates/tokio/reactor/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/crates/tokio/runtime",
-    "title": "Tokio Runtime 架构",
-    "description": "Tokio 运行时内部实现详解",
-    "category": "crates",
-    "filePath": "app/(site)/learn/crates/tokio/runtime/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/crates/tokio/scheduling",
-    "title": "Tokio 任务调度",
-    "description": "工作窃取算法详解",
-    "category": "crates",
-    "filePath": "app/(site)/learn/crates/tokio/scheduling/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-0-meta/0-1-reference-position",
-    "title": "0.1 Rust Reference 在语言体系中的地位",
-    "description": "Part 0 · 如何\"正确地理解 Rust 规范\" - 0.1 Rust Reference 在语言体系中的地位",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-0-meta/0-1-reference-position/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-1-static-world/1-1-crates-items",
-    "title": "1.1 Rust 程序由什么构成",
-    "description": "Part 1 · Rust 程序的\"静态世界\"总览 - 1.1 Rust 程序由什么构成",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-1-static-world/1-1-crates-items/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-1-static-world/1-2-namespaces-paths-visibility",
-    "title": "1.2 命名空间、路径与可见性",
-    "description": "Part 1 · Rust 程序的\"静态世界\"总览 - 1.2 命名空间、路径与可见性",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-1-static-world/1-2-namespaces-paths-visibility/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-10-concurrency/10-1-send-sync",
-    "title": "10.1 Send / Sync 的真正语义",
-    "description": "Part 10 · 并发模型：类型系统防止数据竞争 - 10.1 Send / Sync 的真正语义",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-10-concurrency/10-1-send-sync/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-11-async/11-1-async-desugaring",
-    "title": "11.1 async 的编译期展开模型",
-    "description": "Part 11 · Async / Future：语言级状态机生成 - 11.1 async 的编译期展开模型",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-11-async/11-1-async-desugaring/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-11-async/11-2-pin-self-referential",
-    "title": "11.2 Pin、自引用与不变量",
-    "description": "Part 11 · Async / Future：语言级状态机生成 - 11.2 Pin、自引用与不变量",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-11-async/11-2-pin-self-referential/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-12-unsafe/12-1-unsafe-capabilities",
-    "title": "12.1 Unsafe 能做什么，不能做什么",
-    "description": "Part 12 · Unsafe Rust：责任的显式转移 - 12.1 Unsafe 能做什么，不能做什么",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-12-unsafe/12-1-unsafe-capabilities/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-12-unsafe/12-2-safe-abstraction",
-    "title": "12.2 Safe Abstraction 的构建原则",
-    "description": "Part 12 · Unsafe Rust：责任的显式转移 - 12.2 Safe Abstraction 的构建原则",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-12-unsafe/12-2-safe-abstraction/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-13-macros/13-1-macro-compilation",
-    "title": "13.1 Macro 的编译阶段位置",
-    "description": "Part 13 · 宏与编译期元编程 - 13.1 Macro 的编译阶段位置",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-13-macros/13-1-macro-compilation/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-13-macros/13-2-macro-vs-generics",
-    "title": "13.2 宏 vs 泛型 vs const generics",
-    "description": "Part 13 · 宏与编译期元编程 - 13.2 宏 vs 泛型 vs const generics",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-13-macros/13-2-macro-vs-generics/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-14-compile-runtime/14-1-compile-time",
-    "title": "14.1 Rust 把什么问题前移到了编译期",
-    "description": "Part 14 · 编译期 vs 运行期的最终分界 - 14.1 Rust 把什么问题前移到了编译期",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-14-compile-runtime/14-1-compile-time/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-14-compile-runtime/14-2-runtime",
-    "title": "14.2 哪些问题刻意留在运行期",
-    "description": "Part 14 · 编译期 vs 运行期的最终分界 - 14.2 哪些问题刻意留在运行期",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-14-compile-runtime/14-2-runtime/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-2-expression-model/2-1-expression-oriented",
-    "title": "2.1 表达式导向语言的真正含义",
-    "description": "Part 2 · 表达式模型：Rust 为什么\"不是 C++\" - 2.1 表达式导向语言的真正含义",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-2-expression-model/2-1-expression-oriented/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-2-expression-model/2-2-control-flow",
-    "title": "2.2 控制流 ≠ 流程控制",
-    "description": "Part 2 · 表达式模型：Rust 为什么\"不是 C++\" - 2.2 控制流 ≠ 流程控制",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-2-expression-model/2-2-control-flow/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-3-type-system/3-1-type-responsibility",
-    "title": "3.1 Rust 类型系统的真正职责",
-    "description": "Part 3 · 类型系统不是\"类型\"，而是\"约束集合\" - 3.1 Rust 类型系统的真正职责",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-3-type-system/3-1-type-responsibility/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-3-type-system/3-2-special-types",
-    "title": "3.2 特殊类型与边界类型",
-    "description": "Part 3 · 类型系统不是\"类型\"，而是\"约束集合\" - 3.2 特殊类型与边界类型",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-3-type-system/3-2-special-types/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-4-ownership/4-1-ownership-semantics",
-    "title": "4.1 所有权的形式化语义",
-    "description": "Part 4 · 所有权模型 - 4.1 所有权的形式化语义",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-4-ownership/4-1-ownership-semantics/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-4-ownership/4-2-move-copy-borrow",
-    "title": "4.2 Move / Copy / Borrow 的三态模型",
-    "description": "Part 4 · 所有权模型 - 4.2 Move / Copy / Borrow 的三态模型",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-4-ownership/4-2-move-copy-borrow/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-1-borrow-checker",
-    "title": "5.1 Borrow Checker 的真实目标",
-    "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.1 Borrow Checker 的真实目标",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-5-borrowing-lifetimes/5-1-borrow-checker/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-2-lifetime-relations",
-    "title": "5.2 生命周期不是时间，是关系",
-    "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.2 生命周期不是时间，是关系",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-5-borrowing-lifetimes/5-2-lifetime-relations/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-5-borrowing-lifetimes/5-3-hrtb",
-    "title": "5.3 高阶生命周期 (HRTB)",
-    "description": "Part 5 · 借用与生命周期：Rust 的\"证明系统\" - 5.3 高阶生命周期 (HRTB)",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-5-borrowing-lifetimes/5-3-hrtb/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-6-patterns/6-1-patterns-first-class",
-    "title": "6.1 Pattern 是一等公民",
-    "description": "Part 6 · 模式系统：Rust 的\"控制结构核心\" - 6.1 Pattern 是一等公民",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-6-patterns/6-1-patterns-first-class/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-6-patterns/6-2-exhaustiveness-refutability",
-    "title": "6.2 穷尽性与可反驳性",
-    "description": "Part 6 · 模式系统：Rust 的\"控制结构核心\" - 6.2 穷尽性与可反驳性",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-6-patterns/6-2-exhaustiveness-refutability/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-7-traits/7-1-trait-three-roles",
-    "title": "7.1 Trait 的三重身份",
-    "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.1 Trait 的三重身份",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-7-traits/7-1-trait-three-roles/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-7-traits/7-2-coherence-orphan-rule",
-    "title": "7.2 Impl、Coherence 与 Orphan Rule",
-    "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.2 Impl、Coherence 与 Orphan Rule",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-7-traits/7-2-coherence-orphan-rule/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-7-traits/7-3-static-dynamic-dispatch",
-    "title": "7.3 静态分发 vs 动态分发",
-    "description": "Part 7 · Trait 系统：Rust 抽象能力的根源 - 7.3 静态分发 vs 动态分发",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-7-traits/7-3-static-dynamic-dispatch/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-8-generics/8-1-monomorphization",
-    "title": "8.1 泛型代码如何变成机器码",
-    "description": "Part 8 · 泛型与单态化：零成本抽象的代价 - 8.1 泛型代码如何变成机器码",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-8-generics/8-1-monomorphization/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-8-generics/8-2-associated-types",
-    "title": "8.2 Associated Types vs 泛型参数",
-    "description": "Part 8 · 泛型与单态化：零成本抽象的代价 - 8.2 Associated Types vs 泛型参数",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-8-generics/8-2-associated-types/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-9-memory-model/9-1-memory-abstraction",
-    "title": "9.1 Rust 的内存抽象层次",
-    "description": "Part 9 · 内存模型与 Interior Mutability - 9.1 Rust 的内存抽象层次",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-9-memory-model/9-1-memory-abstraction/page.mdx",
-    "type": "mdx"
-  },
-  {
-    "slug": "learn/mental-model/part-9-memory-model/9-2-interior-mutability",
-    "title": "9.2 Interior Mutability 的合法性来源",
-    "description": "Part 9 · 内存模型与 Interior Mutability - 9.2 Interior Mutability 的合法性来源",
-    "category": "mental-model",
-    "filePath": "app/(site)/learn/mental-model/part-9-memory-model/9-2-interior-mutability/page.mdx",
+    "slug": "learn/third-party-libs",
+    "title": "第三方库解析 - Vision-RS",
+    "description": "Rust 生态的强项在于：许多核心能力并不强行塞进标准库，而是通过高质量第三方库先行探索",
+    "category": "third-party-libs",
+    "filePath": "app/(site)/learn/third-party-libs/page.mdx",
     "type": "mdx"
   }
 ]

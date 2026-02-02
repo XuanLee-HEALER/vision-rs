@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import ChapterNavigation from '@/components/navigation/ChapterNavigation';
+import TableOfContents from '@/components/mdx/TableOfContents';
 import { getAdjacentChapters } from '@/lib/navigation-helpers';
 
 interface LearnLayoutProps {
@@ -25,11 +26,19 @@ export default function LearnLayout({ children }: LearnLayoutProps) {
   }
 
   return (
-    <article className="prose prose-sm md:prose-base lg:prose-lg snap-y snap-start">
-      {children}
-      {(prevChapter || nextChapter) && (
-        <ChapterNavigation prevChapter={prevChapter} nextChapter={nextChapter} />
-      )}
-    </article>
+    <div className="flex gap-12">
+      {/* 文章内容区域 */}
+      <article className="prose prose-sm md:prose-base lg:prose-lg snap-y snap-start flex-1 min-w-0">
+        {children}
+        {(prevChapter || nextChapter) && (
+          <ChapterNavigation prevChapter={prevChapter} nextChapter={nextChapter} />
+        )}
+      </article>
+
+      {/* 右侧目录（大屏幕显示） */}
+      <aside className="w-64 flex-shrink-0">
+        <TableOfContents />
+      </aside>
+    </div>
   );
 }

@@ -37,6 +37,7 @@ export interface TocItem {
 export interface NavItem {
   title: string;
   href: string;
+  items?: NavItem[]; // 支持子项（用于二级导航）
 }
 
 export interface NavSubsection {

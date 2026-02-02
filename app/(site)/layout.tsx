@@ -10,15 +10,20 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       {/* Banner - 占据文档流 */}
       <SiteHeader />
 
-      {/* Main Container */}
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="flex gap-12 py-12">
-          <ContentShell>{children}</ContentShell>
+      {/* Main Content Area with Menu Button Space */}
+      <div className="relative">
+        {/* Fixed Menu Button */}
+        <SidebarToggle />
+
+        {/* Main Container - 始终为菜单按钮留出左侧空间 */}
+        <div className="ml-20 px-6">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex gap-12 py-12">
+              <ContentShell>{children}</ContentShell>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Floating Menu Button (左上角) */}
-      <SidebarToggle />
 
       {/* Overlay Menu */}
       <SideMenu />
