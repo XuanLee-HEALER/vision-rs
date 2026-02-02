@@ -42,7 +42,8 @@ fi
 # ============================================
 
 # 获取改动的文件列表
-CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || git diff --name-only HEAD)
+# 注意：Vercel 使用浅克隆（--depth=10），HEAD^ 可能不存在
+CHANGED_FILES=$(git diff --name-only HEAD^ HEAD 2>/dev/null || git diff --name-only HEAD 2>/dev/null || git show --name-only --pretty="" HEAD)
 
 # 如果没有改动，跳过
 if [ -z "$CHANGED_FILES" ]; then
