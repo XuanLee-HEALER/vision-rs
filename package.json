@@ -15,6 +15,7 @@
   "dependencies": {
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
+    "@mdxeditor/editor": "^3.52.3",
     "@next/mdx": "^16.1.6",
     "@octokit/rest": "^22.0.1",
     "@react-three/drei": "^10.7.7",
@@ -24,6 +25,7 @@
     "@uiw/react-md-editor": "^4.0.11",
     "@vercel/edge-config": "^1.4.3",
     "bcryptjs": "^3.0.3",
+    "chokidar": "^5.0.0",
     "framer-motion": "^11.11.17",
     "fuse.js": "^7.1.0",
     "iron-session": "^8.0.4",
