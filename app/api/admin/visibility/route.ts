@@ -25,9 +25,15 @@ export async function GET() {
     return NextResponse.json({ items });
   } catch (error) {
     console.error('Error getting visibility:', error);
+
+    // Only return 401 for auth errors, 500 for others
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unauthorized' },
-      { status: 401 }
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
     );
   }
 }

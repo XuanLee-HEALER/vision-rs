@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (_email: string, _password: string) => {
     // This method is kept for backward compatibility but is no longer used
     // Users should use the email verification code flow instead
     throw new Error('Password login is deprecated. Please use email verification code.');

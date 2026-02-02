@@ -15,6 +15,9 @@ export default [
       'dist/**',
       'build/**',
       '.serena/**',
+      '.claude/**', // Claude hooks (非运行时代码)
+      'scripts/generate-mental-model-templates.ts', // 废弃脚本
+      'scripts/migrate-mental-model.ts', // 废弃脚本
       '*.config.js',
       '*.config.mjs',
     ],

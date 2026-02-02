@@ -12,5 +12,5 @@ export type {
 // Navigation
 export { generateNavigation, getNavigation } from './navigation.server';
 
-// Table of Contents
-export { extractToc, buildTocTree } from './toc.server';
+// Note: Table of Contents is now handled client-side via components/mdx/TableOfContents.tsx
+// using DOM scanning + Intersection Observer (no server-side extraction needed)
