@@ -34,13 +34,14 @@ app/
 ├── (site)/                # 主站路由组（不影响 URL）
 │   ├── layout.tsx        # 主站布局
 │   ├── page.tsx          # 首页 /
-│   └── learn/            # 学习路由
-│       ├── page.tsx      # /learn
-│       ├── concepts/     # /learn/concepts
-│       ├── crates/       # /learn/crates
-│       ├── data-structures/
-│       ├── network/
-│       └── mental-model/
+│   └── learn/            # 学习路由（扁平化结构）
+│       ├── layout.tsx    # 学习页面布局（包含 TOC）
+│       ├── rust-philosophy/      # /learn/rust-philosophy
+│       ├── rust-stdlib/          # /learn/rust-stdlib
+│       ├── third-party-libs/     # /learn/third-party-libs
+│       ├── data-structures/      # /learn/data-structures
+│       ├── network-protocols/    # /learn/network-protocols
+│       └── distributed-systems/  # /learn/distributed-systems
 ├── admin/                 # 管理后台 /admin
 │   ├── layout.tsx
 │   ├── page.tsx
@@ -56,6 +57,7 @@ app/
 │       └── visibility/
 ├── layout.tsx             # 根布局（全局）
 ├── globals.css            # 全局样式
+├── not-found.tsx          # 自定义 404 页面
 └── sitemap.ts             # 站点地图生成
 ```
 
@@ -146,14 +148,15 @@ export default function Error({
 components/
 ├── code/                  # 代码相关组件
 │   └── InteractiveCodeBlock.client.tsx
-├── content/               # 内容组件
-│   └── TableOfContents.tsx
 ├── layout/                # 布局组件
 │   ├── ContentShell.tsx
 │   ├── LearnLayout.tsx
 │   └── SiteHeader.tsx
+├── mdx/                   # MDX 相关组件
+│   └── TableOfContents.tsx  # DOM 扫描 + Intersection Observer
 ├── navigation/            # 导航组件
 │   ├── NavigationMenu.client.tsx
+│   ├── ChapterNavigation.tsx
 │   ├── Sidebar.tsx
 │   ├── SidebarToggle.tsx
 │   ├── SideMenu.tsx
@@ -176,6 +179,7 @@ components/
 │   └── VisibilityMeta.tsx
 ├── BorrowChecker.tsx      # 借用检查器可视化
 ├── LifetimeAnimation.tsx  # 生命周期动画
+├── LearnLayout.tsx        # 学习页面布局（旧版，待废弃）
 ├── MDXEditor.tsx          # MDX 编辑器
 ├── MemoryLayout3D.tsx     # 3D 内存布局
 ├── MermaidDiagram.tsx     # Mermaid 图表
@@ -239,11 +243,11 @@ export function useAuth() {
 ```text
 features/
 └── learn/
-    ├── index.ts                   # 导出入口
-    ├── mental-model-config.ts     # 心智模型配置
-    ├── navigation.server.ts       # 导航数据（服务端）
-    ├── toc.server.ts             # 目录生成（服务端）
-    └── types.ts                   # 类型定义
+    ├── index.ts                     # 导出入口
+    ├── flat-navigation-config.ts    # 扁平化导航配置
+    ├── mental-model-config.ts       # 心智模型配置（旧版，待废弃）
+    ├── navigation.server.ts         # 导航数据（服务端）
+    └── types.ts                     # 类型定义
 ```
 
 ### 模块化优势
@@ -324,7 +328,7 @@ scripts/
 ├── compile-mdx.mjs              # 编译 MDX 文件
 ├── generate-learn-index.ts      # 生成学习索引
 ├── generate-search-index.ts     # 生成搜索索引
-└── generate-mental-model-templates.ts
+└── migrate-mental-model.ts      # 旧版迁移脚本（已废弃）
 ```
 
 ### 脚本执行时机
@@ -375,7 +379,9 @@ docs/
 ├── architecture/          # 架构文档（本目录）
 ├── CODE_QUALITY.md       # 代码质量规范
 ├── LOCAL_WORKFLOW.md     # 本地开发工作流
+├── QUALITY_FIXES.md      # 质量修复总结
 ├── SEARCH.md            # 搜索功能文档
+├── SECURITY.md          # 安全约束文档
 ├── UI.md                # UI 设计文档
 └── VERCEL_DEPLOYMENT_GUIDE.md
 ```

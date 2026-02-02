@@ -49,33 +49,36 @@ pnpm dev
 
 ## 添加新文章/页面
 
-### 方式一：使用 MDX 文件
+### 方式一：使用 MDX 文件（推荐）
 
 #### 1. 创建 MDX 文件
 
-在相应目录下创建 `.mdx` 文件：
+在相应的顶级主题目录下创建 `.mdx` 文件：
 
 ```bash
-# 例如：添加新的概念文章
-touch app/(site)/learn/concepts/closures/page.mdx
+# 例如：在 Rust 设计哲学主题下添加新文章
+touch app/(site)/learn/rust-philosophy/closures/page.mdx
+
+# 或在标准库主题下添加
+touch app/(site)/learn/rust-stdlib/string/page.mdx
 ```
 
-#### 2. 添加 Frontmatter 和内容
+**当前可用的顶级主题**：
+
+- `rust-philosophy/` - Rust 设计哲学
+- `rust-stdlib/` - Rust 标准库
+- `third-party-libs/` - 第三方库解析
+- `data-structures/` - 数据结构
+- `network-protocols/` - 网络协议
+- `distributed-systems/` - 分布式系统
+
+#### 2. 添加 Metadata 和内容
 
 ```mdx
----
-title: 闭包 - Vision-RS
-description: Rust 的闭包和函数式编程
----
-
-import LearnLayout from '@/components/LearnLayout';
-
 export const metadata = {
   title: '闭包 - Vision-RS',
   description: 'Rust 的闭包和函数式编程',
 };
-
-<LearnLayout>
 
 # 闭包
 
@@ -95,9 +98,13 @@ let x = 10;
 let add_x = |y| x + y;
 let result = add_x(5); // 15
 \`\`\`
-
-</LearnLayout>
 ```
+
+**注意**：
+
+- MDX 文件会被 `app/(site)/learn/layout.tsx` 自动包裹 `LearnLayout`
+- Metadata 会用于 SEO 和页面标题
+- 不需要导入 `LearnLayout` 组件
 
 #### 3. 编译 MDX
 
@@ -107,17 +114,30 @@ pnpm run compile-mdx
 
 这会生成 `page.js` 文件。
 
-#### 4. 更新导航（如需要）
+#### 4. 更新导航（可选）
 
-编辑 `features/learn/navigation.server.ts`：
+如果需要在导航中显示该文章，编辑 `features/learn/flat-navigation-config.ts`：
 
 ```typescript
-export const conceptsNav = [
-  // ... 其他项
+export const FLAT_LEARN_CONFIG: LearnSection[] = [
   {
-    title: '闭包',
-    href: '/learn/concepts/closures',
+    id: 'rust-philosophy',
+    title: 'Rust 设计哲学',
+    slug: 'rust-philosophy',
+    description: '...',
+    icon: '🧠',
+    order: 1,
+    color: 'blue',
+    // 添加子章节
+    chapters: [
+      {
+        id: 'closures',
+        title: '闭包',
+        slug: 'closures',
+      },
+    ],
   },
+  // ... 其他主题
 ];
 ```
 
@@ -345,6 +365,47 @@ pnpm start
 2. 打开 Chrome DevTools > Lighthouse
 3. 运行性能测试
 
+## ESLint 配置
+
+### 忽略文件配置
+
+**重要**：项目使用 `eslint.config.mjs` 的 `ignores` 配置，**不再使用** `.eslintignore` 文件。
+
+### 添加忽略规则
+
+编辑 `eslint.config.mjs`：
+
+```javascript
+export default [
+  {
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      '.claude/**', // Claude hooks
+      'scripts/某个脚本.ts', // 添加新的忽略规则
+      // ...
+    ],
+  },
+  // ...
+];
+```
+
+### Lint 范围
+
+**运行时代码**（必须 lint clean）：
+
+- `app/`
+- `components/`
+- `lib/`
+- `features/`
+- `contexts/`
+- `hooks/`
+
+**排除代码**（允许更宽松的规则）：
+
+- `.claude/` - Claude hooks
+- `scripts/migrate-mental-model.ts` - 废弃脚本
+
 ## 常见问题排查
 
 ### MDX 编译失败
@@ -521,6 +582,41 @@ vercel
 vercel --prod
 ```
 
+## Table of Contents (目录组件)
+
+**当前实现**：DOM 扫描 + Intersection Observer
+
+### 工作原理
+
+文章右侧的目录组件（`components/mdx/TableOfContents.tsx`）通过以下方式工作：
+
+1. **客户端扫描**：使用 `document.querySelectorAll` 扫描 `<article>` 中的 `h2` 和 `h3` 标题
+2. **滚动高亮**：使用 Intersection Observer API 监听标题可见性
+3. **自动生成**：无需手动配置，适配所有 MDX 文章
+
+### 标题要求
+
+- MDX 文件中的 `## 标题` 会自动生成 id（由 rehype-slug 插件处理）
+- 支持中英文标题
+- 目录只显示 h2 和 h3 级别的标题
+
+### 修改目录行为
+
+如果需要调整目录行为，编辑 `components/mdx/TableOfContents.tsx`：
+
+```typescript
+// 修改扫描的标题级别
+const elements = Array.from(
+  document.querySelectorAll('article h2, article h3, article h4') // 添加 h4
+);
+
+// 修改 Intersection Observer 配置
+const observerOptions = {
+  rootMargin: '-80px 0px -80% 0px', // 调整触发区域
+  threshold: 1.0, // 调整可见度阈值
+};
+```
+
 ## 代码质量检查清单
 
 发布前检查：
@@ -529,7 +625,7 @@ vercel --prod
 - [ ] 运行 `pnpm typecheck` 无错误
 - [ ] 运行 `pnpm build` 构建成功
 - [ ] 删除所有 `console.log` 和调试代码
-- [ ] MDX 文件包含正确的 frontmatter
+- [ ] MDX 文件包含正确的 metadata
 - [ ] 更新相关文档
 - [ ] 提交信息清晰描述变更
 
@@ -551,7 +647,9 @@ docs/
 ├── architecture/      # 本目录
 ├── CODE_QUALITY.md   # 代码规范
 ├── LOCAL_WORKFLOW.md # 本地开发
-└── SEARCH.md         # 搜索功能
+├── QUALITY_FIXES.md  # 质量修复记录
+├── SEARCH.md         # 搜索功能
+└── SECURITY.md       # 安全约束
 ```
 
 ## 获取帮助
