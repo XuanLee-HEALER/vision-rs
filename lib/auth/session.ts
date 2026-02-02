@@ -7,6 +7,23 @@ export interface SessionData {
 }
 
 /**
+ * 验证 SESSION_SECRET 是否已配置
+ * 在生产环境首次调用时检查
+ */
+function validateSessionSecret() {
+  if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+    throw new Error(
+      'SESSION_SECRET is required in production. Generate one with: openssl rand -base64 32'
+    );
+  }
+  if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32) {
+    throw new Error(
+      'SESSION_SECRET must be at least 32 characters. Generate a secure one with: openssl rand -base64 32'
+    );
+  }
+}
+
+/**
  * 获取当前会话
  */
 export async function getSession() {
@@ -18,6 +35,9 @@ export async function getSession() {
       isLoggedIn: true,
     } as SessionData;
   }
+
+  // 验证 SESSION_SECRET 配置
+  validateSessionSecret();
 
   const session = await getIronSession<SessionData>(await cookies(), {
     password: process.env.SESSION_SECRET!,

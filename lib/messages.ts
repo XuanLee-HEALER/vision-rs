@@ -1,4 +1,4 @@
-import { get } from '@vercel/edge-config';
+import { getFromStorage, setToStorage, atomicUpdate } from './storage';
 
 /**
  * Edge Config storage structure for messages
@@ -19,75 +19,26 @@ export interface RateLimitRecord {
 }
 
 /**
- * Get all messages from Edge Config
+ * Get all messages from storage
  */
-async function getAllMessagesFromEdgeConfig(): Promise<Message[]> {
-  try {
-    const data = await get<Message[]>('messages');
-    return data || [];
-  } catch (error) {
-    console.error('Error reading messages from Edge Config:', error);
-    return [];
-  }
+async function getAllMessages(): Promise<Message[]> {
+  const data = await getFromStorage<Message[]>('messages');
+  return data || [];
 }
 
 /**
- * Get rate limit records from Edge Config
+ * Get rate limit records from storage
  */
-async function getRateLimitRecordsFromEdgeConfig(): Promise<Record<string, RateLimitRecord>> {
-  try {
-    const data = await get<Record<string, RateLimitRecord>>('messageLimits');
-    return data || {};
-  } catch (error) {
-    console.error('Error reading rate limits from Edge Config:', error);
-    return {};
-  }
-}
-
-/**
- * Update Edge Config via Vercel API
- */
-async function updateEdgeConfigViaAPI(
-  key: string,
-  value: Message[] | Record<string, RateLimitRecord>
-): Promise<void> {
-  const edgeConfigId = process.env.EDGE_CONFIG?.match(/ecfg_[a-z0-9]+/)?.[0];
-  const token = process.env.VERCEL_API_TOKEN;
-
-  if (!edgeConfigId || !token) {
-    throw new Error(
-      'Missing EDGE_CONFIG or VERCEL_API_TOKEN. Cannot update Edge Config without these credentials.'
-    );
-  }
-
-  const response = await fetch(`https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      items: [
-        {
-          operation: 'upsert',
-          key,
-          value,
-        },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to update Edge Config: ${error}`);
-  }
+async function getRateLimitRecords(): Promise<Record<string, RateLimitRecord>> {
+  const data = await getFromStorage<Record<string, RateLimitRecord>>('messageLimits');
+  return data || {};
 }
 
 /**
  * Get recent messages (latest 7)
  */
 export async function getRecentMessages(): Promise<Omit<Message, 'ip'>[]> {
-  const messages = await getAllMessagesFromEdgeConfig();
+  const messages = await getAllMessages();
   // Return latest 7 messages without IP info
   return messages
     .sort((a, b) => b.timestamp - a.timestamp)
@@ -102,7 +53,7 @@ export async function checkRateLimit(
   ip: string,
   limitHours: number = 6
 ): Promise<{ allowed: boolean; remainingTime?: number }> {
-  const rateLimits = await getRateLimitRecordsFromEdgeConfig();
+  const rateLimits = await getRateLimitRecords();
   const record = rateLimits[ip];
 
   if (!record) {
@@ -123,12 +74,9 @@ export async function checkRateLimit(
 }
 
 /**
- * Add a new message
+ * Add a new message (使用原子更新防止并发冲突)
  */
 export async function addMessage(content: string, ip: string): Promise<Message> {
-  const messages = await getAllMessagesFromEdgeConfig();
-  const rateLimits = await getRateLimitRecordsFromEdgeConfig();
-
   const newMessage: Message = {
     id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     content,
@@ -136,17 +84,20 @@ export async function addMessage(content: string, ip: string): Promise<Message> 
     ip,
   };
 
-  // Add new message at the beginning
-  const updatedMessages = [newMessage, ...messages].slice(0, 100); // Keep only latest 100
+  // 原子更新消息列表
+  await atomicUpdate<Message[]>('messages', (current) => {
+    const messages = current || [];
+    return [newMessage, ...messages].slice(0, 100); // Keep only latest 100
+  });
 
-  // Update rate limit
-  rateLimits[ip] = {
-    lastMessageTime: Date.now(),
-  };
-
-  // Update both messages and rate limits
-  await updateEdgeConfigViaAPI('messages', updatedMessages);
-  await updateEdgeConfigViaAPI('messageLimits', rateLimits);
+  // 原子更新频率限制
+  await atomicUpdate<Record<string, RateLimitRecord>>('messageLimits', (current) => {
+    const rateLimits = current || {};
+    rateLimits[ip] = {
+      lastMessageTime: Date.now(),
+    };
+    return rateLimits;
+  });
 
   return newMessage;
 }
@@ -155,7 +106,7 @@ export async function addMessage(content: string, ip: string): Promise<Message> 
  * Delete a message (admin only)
  */
 export async function deleteMessage(id: string): Promise<void> {
-  const messages = await getAllMessagesFromEdgeConfig();
+  const messages = await getAllMessages();
   const updatedMessages = messages.filter((msg) => msg.id !== id);
-  await updateEdgeConfigViaAPI('messages', updatedMessages);
+  await setToStorage('messages', updatedMessages);
 }

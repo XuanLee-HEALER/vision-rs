@@ -1,8 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { generateCode, saveVerificationCode, isAdminEmail } from '@/lib/auth/verification';
+import {
+  generateCode,
+  saveVerificationCode,
+  isAdminEmail,
+  checkSendCodeRateLimit,
+} from '@/lib/auth/verification';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * 获取客户端 IP（使用 Vercel 提供的可信字段）
+ */
+function getClientIP(request: NextRequest): string {
+  // Vercel 提供的可信 IP 字段
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  const vercelIP = request.headers.get('x-vercel-forwarded-for'); // Vercel 特定
+
+  if (vercelIP) {
+    return vercelIP.split(',')[0].trim();
+  }
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+  if (realIP) {
+    return realIP;
+  }
+
+  return 'unknown';
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,9 +39,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
 
-    // 检查是否是管理员邮箱
-    if (!isAdminEmail(email)) {
-      return NextResponse.json({ error: 'Unauthorized email' }, { status: 403 });
+    // 获取客户端 IP
+    const clientIP = getClientIP(req);
+
+    // 检查频率限制（所有邮箱统一检查，不泄露管理员邮箱）
+    const rateLimit = await checkSendCodeRateLimit(clientIP, email);
+    if (!rateLimit.allowed) {
+      const seconds = Math.ceil((rateLimit.remainingTime || 0) / 1000);
+      return NextResponse.json({ error: `请等待 ${seconds} 秒后再试` }, { status: 429 });
+    }
+
+    // 检查是否是管理员邮箱（但不泄露结果）
+    const isAdmin = isAdminEmail(email);
+
+    // 为了防止邮箱枚举，即使不是管理员邮箱也返回成功
+    // 但只有管理员邮箱才真正发送验证码
+    if (!isAdmin) {
+      // 统一返回成功，不泄露邮箱不在白名单中
+      return NextResponse.json({ success: true });
     }
 
     // 生成并保存验证码

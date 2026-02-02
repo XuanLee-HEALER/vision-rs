@@ -1,4 +1,4 @@
-import { get } from '@vercel/edge-config';
+import { getFromStorage, atomicUpdate } from './storage';
 
 /**
  * Edge Config storage structure for visitor stats
@@ -18,52 +18,11 @@ export interface VisitorData {
 }
 
 /**
- * Get all visitor records from Edge Config
+ * Get all visitor records from storage
  */
-async function getAllVisitorsFromEdgeConfig(): Promise<Record<string, VisitorDayRecord>> {
-  try {
-    const data = await get<Record<string, VisitorDayRecord>>('visitors');
-    return data || {};
-  } catch (error) {
-    console.error('Error reading visitors from Edge Config:', error);
-    return {};
-  }
-}
-
-/**
- * Update Edge Config via Vercel API
- */
-async function updateEdgeConfigViaAPI(data: Record<string, VisitorDayRecord>): Promise<void> {
-  const edgeConfigId = process.env.EDGE_CONFIG?.match(/ecfg_[a-z0-9]+/)?.[0];
-  const token = process.env.VERCEL_API_TOKEN;
-
-  if (!edgeConfigId || !token) {
-    throw new Error(
-      'Missing EDGE_CONFIG or VERCEL_API_TOKEN. Cannot update Edge Config without these credentials.'
-    );
-  }
-
-  const response = await fetch(`https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      items: [
-        {
-          operation: 'upsert',
-          key: 'visitors',
-          value: data,
-        },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Failed to update Edge Config: ${error}`);
-  }
+async function getAllVisitors(): Promise<Record<string, VisitorDayRecord>> {
+  const data = await getFromStorage<Record<string, VisitorDayRecord>>('visitors');
+  return data || {};
 }
 
 /**
@@ -75,9 +34,9 @@ function getTodayKey(): string {
 }
 
 /**
- * Get last 7 days keys
+ * Get visitor stats date range (yesterday + today + next 5 days placeholders)
  */
-function getLast7Days(): string[] {
+function getVisitorStatsDateRange(): string[] {
   const days: string[] = [];
   const today = new Date();
 
@@ -108,42 +67,45 @@ function formatDate(dateStr: string): string {
 }
 
 /**
- * Record a visit from an IP
+ * Record a visit from an IP (使用原子更新防止并发冲突)
  */
 export async function recordVisit(ip: string): Promise<void> {
   const todayKey = getTodayKey();
-  const allVisitors = await getAllVisitorsFromEdgeConfig();
 
-  // Get or create today's record
-  const todayRecord = allVisitors[todayKey] || { count: 0, ips: [] };
+  await atomicUpdate<Record<string, VisitorDayRecord>>('visitors', (current) => {
+    const allVisitors = current || {};
 
-  // Check if this IP already visited today
-  if (!todayRecord.ips.includes(ip)) {
-    todayRecord.ips.push(ip);
-    todayRecord.count = todayRecord.ips.length;
-    allVisitors[todayKey] = todayRecord;
+    // Get or create today's record
+    const todayRecord = allVisitors[todayKey] || { count: 0, ips: [] };
 
-    // Clean up old records (keep only last 30 days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const cutoffKey = thirtyDaysAgo.toISOString().split('T')[0];
+    // Check if this IP already visited today
+    if (!todayRecord.ips.includes(ip)) {
+      todayRecord.ips.push(ip);
+      todayRecord.count = todayRecord.ips.length;
+      allVisitors[todayKey] = todayRecord;
 
-    Object.keys(allVisitors).forEach((key) => {
-      if (key < cutoffKey) {
-        delete allVisitors[key];
-      }
-    });
+      // Clean up old records (keep only last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const cutoffKey = thirtyDaysAgo.toISOString().split('T')[0];
 
-    await updateEdgeConfigViaAPI(allVisitors);
-  }
+      Object.keys(allVisitors).forEach((key) => {
+        if (key < cutoffKey) {
+          delete allVisitors[key];
+        }
+      });
+    }
+
+    return allVisitors;
+  });
 }
 
 /**
  * Get visitor stats for last 7 days
  */
 export async function getLast7DaysStats(): Promise<VisitorData[]> {
-  const allVisitors = await getAllVisitorsFromEdgeConfig();
-  const last7Days = getLast7Days();
+  const allVisitors = await getAllVisitors();
+  const last7Days = getVisitorStatsDateRange();
 
   return last7Days.map((dateKey) => ({
     date: formatDate(dateKey),
