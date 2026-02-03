@@ -1,0 +1,243 @@
+/* MDXEditor Catppuccin Theme Overrides */
+
+/* Main editor container */
+.mdxeditor {
+  --bg-base: #1e1e2e;
+  --bg-mantle: #181825;
+  --bg-surface0: #313244;
+  --bg-surface1: #45475a;
+  --text-primary: #cdd6f4;
+  --text-secondary: #bac2de;
+  --text-muted: #a6adc8;
+  --border-color: #45475a;
+  --accent-blue: #89b4fa;
+  --accent-red: #f38ba8;
+  --accent-green: #a6e3a1;
+  --accent-yellow: #f9e2af;
+
+  background-color: var(--bg-mantle) !important;
+  color: var(--text-primary) !important;
+  border: none !important;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+/* Toolbar */
+.mdxeditor-toolbar {
+  background-color: var(--bg-surface0) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 0.5rem !important;
+}
+
+.mdxeditor-toolbar button {
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.mdxeditor-toolbar button:hover {
+  background-color: var(--bg-surface1) !important;
+  border-color: var(--border-color) !important;
+}
+
+.mdxeditor-toolbar button[data-active='true'] {
+  background-color: var(--accent-blue) !important;
+  color: var(--bg-base) !important;
+}
+
+.mdxeditor-toolbar select {
+  background-color: var(--bg-surface1) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Content editable area */
+.mdxeditor-root-contenteditable {
+  background-color: var(--bg-mantle) !important;
+  color: var(--text-primary) !important;
+  caret-color: var(--accent-blue) !important;
+}
+
+/* Selection */
+.mdxeditor-root-contenteditable ::selection {
+  background-color: var(--accent-blue) !important;
+  color: var(--bg-base) !important;
+}
+
+/* Links */
+.mdxeditor-root-contenteditable a {
+  color: var(--accent-blue) !important;
+  text-decoration: underline;
+}
+
+.mdxeditor-root-contenteditable a:hover {
+  color: var(--text-primary) !important;
+}
+
+/* Code inline */
+.mdxeditor-root-contenteditable code {
+  background-color: var(--bg-surface0) !important;
+  color: var(--accent-red) !important;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: inherit;
+}
+
+/* Code blocks */
+.mdxeditor-root-contenteditable pre {
+  background-color: var(--bg-surface0) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.5rem;
+  padding: 1rem !important;
+  overflow-x: auto;
+}
+
+.mdxeditor-root-contenteditable pre code {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+  padding: 0;
+}
+
+/* Tables */
+.mdxeditor-root-contenteditable table {
+  border-collapse: collapse;
+  border: 1px solid var(--border-color) !important;
+}
+
+.mdxeditor-root-contenteditable table th,
+.mdxeditor-root-contenteditable table td {
+  border: 1px solid var(--border-color) !important;
+  padding: 0.5rem !important;
+}
+
+.mdxeditor-root-contenteditable table th {
+  background-color: var(--bg-surface0) !important;
+  font-weight: 600;
+}
+
+/* Blockquotes */
+.mdxeditor-root-contenteditable blockquote {
+  border-left: 4px solid var(--accent-blue) !important;
+  background-color: var(--bg-surface0) !important;
+  padding: 0.5rem 1rem !important;
+  margin: 1rem 0 !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Horizontal rules */
+.mdxeditor-root-contenteditable hr {
+  border-color: var(--border-color) !important;
+  margin: 2rem 0 !important;
+}
+
+/* Headings */
+.mdxeditor-root-contenteditable h1,
+.mdxeditor-root-contenteditable h2,
+.mdxeditor-root-contenteditable h3,
+.mdxeditor-root-contenteditable h4,
+.mdxeditor-root-contenteditable h5,
+.mdxeditor-root-contenteditable h6 {
+  color: var(--accent-blue) !important;
+  font-weight: 600;
+}
+
+/* Lists */
+.mdxeditor-root-contenteditable ul,
+.mdxeditor-root-contenteditable ol {
+  color: var(--text-primary) !important;
+}
+
+/* Dialogs and popups */
+.mdxeditor-popup-container {
+  background-color: var(--bg-surface0) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.mdxeditor-popup-container input,
+.mdxeditor-popup-container textarea {
+  background-color: var(--bg-mantle) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+}
+
+.mdxeditor-popup-container button {
+  background-color: var(--accent-blue) !important;
+  color: var(--bg-base) !important;
+  border: none !important;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.mdxeditor-popup-container button:hover {
+  opacity: 0.9;
+}
+
+/* Source view (raw markdown) */
+.mdxeditor-source-editor {
+  background-color: var(--bg-mantle) !important;
+  color: var(--text-primary) !important;
+}
+
+.mdxeditor-source-editor .cm-editor {
+  background-color: var(--bg-mantle) !important;
+}
+
+.mdxeditor-source-editor .cm-content {
+  color: var(--text-primary) !important;
+  caret-color: var(--accent-blue) !important;
+}
+
+.mdxeditor-source-editor .cm-line {
+  color: var(--text-primary) !important;
+}
+
+/* CodeMirror syntax highlighting */
+.mdxeditor-source-editor .cm-keyword {
+  color: var(--accent-blue) !important;
+}
+
+.mdxeditor-source-editor .cm-string {
+  color: var(--accent-green) !important;
+}
+
+.mdxeditor-source-editor .cm-comment {
+  color: var(--text-muted) !important;
+  font-style: italic;
+}
+
+.mdxeditor-source-editor .cm-number {
+  color: var(--accent-yellow) !important;
+}
+
+.mdxeditor-source-editor .cm-operator {
+  color: var(--text-primary) !important;
+}
+
+/* Scrollbars */
+.mdxeditor ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mdxeditor ::-webkit-scrollbar-track {
+  background: var(--bg-mantle);
+}
+
+.mdxeditor ::-webkit-scrollbar-thumb {
+  background: var(--bg-surface1);
+  border-radius: 4px;
+}
+
+.mdxeditor ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
+}
