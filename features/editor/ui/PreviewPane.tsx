@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { run } from '@mdx-js/mdx';
-import * as runtime from 'react/jsx-runtime';
+// 使用 jsx-dev-runtime 以获得更好的调试信息（组件名、源码位置等）
+// 配合 compile API 的 development: true 选项使用
+import * as runtime from 'react/jsx-dev-runtime';
 import { MDXProvider } from '@mdx-js/react';
 import { useMDXComponents } from '@/mdx-components';
 

@@ -42,6 +42,43 @@ function isMDXCompileError(error: unknown): error is MDXCompileError {
 }
 
 /**
+ * 预处理 MDX 内容，移除 export 语句（function-body 模式不支持）
+ * 这些 export 语句在预览时不需要
+ */
+function preprocessMDX(mdx: string): string {
+  let processed = mdx;
+
+  // 移除 export const metadata = {...}; 语句（可能跨越多行）
+  // 查找 "export const metadata = {" 的位置
+  const metadataStart = processed.indexOf('export const metadata');
+  if (metadataStart !== -1) {
+    // 找到开始的 {
+    const braceStart = processed.indexOf('{', metadataStart);
+    if (braceStart !== -1) {
+      // 找到匹配的 }; （计数括号）
+      let braceCount = 1;
+      let i = braceStart + 1;
+      while (i < processed.length && braceCount > 0) {
+        if (processed[i] === '{') braceCount++;
+        else if (processed[i] === '}') braceCount--;
+        i++;
+      }
+      // 跳过可能的分号和空白
+      while (i < processed.length && /[\s;]/.test(processed[i])) {
+        i++;
+      }
+      // 移除整个 metadata export 块
+      processed = processed.slice(0, metadataStart) + processed.slice(i);
+    }
+  }
+
+  // 移除其他简单的单行 export const 语句
+  processed = processed.replace(/^export\s+const\s+\w+\s*=\s*[^{].*?;\s*$/gm, '');
+
+  return processed.trim();
+}
+
+/**
  * Extract error snippet from source MDX content
  */
 function getErrorSnippet(mdx: string, line: number, contextLines = 3): string {
@@ -96,12 +133,15 @@ export async function POST(request: NextRequest) {
     }
 
     try {
+      // 预处理 MDX：移除 export 语句（function-body 模式不支持）
+      const processedMdx = preprocessMDX(mdx);
+
       // 编译MDX（与站点编译配置一致）
-      const result = await compile(mdx, {
+      const result = await compile(processedMdx, {
         remarkPlugins: [remarkGfm],
         rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]],
         outputFormat: 'function-body', // 输出可在浏览器执行的函数体
-        development: true, // 开发模式，包含更多调试信息
+        development: true, // 开发模式，生成 _jsxDEV 调用以获得更好的调试信息
       });
 
       const code = String(result.value);
