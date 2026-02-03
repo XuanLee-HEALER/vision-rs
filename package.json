@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "tsx scripts/generate-learn-index.ts && tsx scripts/generate-search-index.ts && node scripts/compile-mdx.mjs",
+    "prebuild": "tsx scripts/generate-learn-index.ts && tsx scripts/generate-search-index.ts && tsx scripts/generate-rss.ts && node scripts/compile-mdx.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "generate-index": "tsx scripts/generate-learn-index.ts",
     "generate-search": "tsx scripts/generate-search-index.ts",
+    "generate-rss": "tsx scripts/generate-rss.ts",
     "compile-mdx": "node scripts/compile-mdx.mjs"
   },
   "dependencies": {

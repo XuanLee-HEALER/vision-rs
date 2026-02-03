@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vision-RS - Rust 核心概念可视化学习</title>
+    <description>通过图文结合的方式，帮助开发者建立 Rust 语言的完整心智模型</description>
+    <link>https://vision-rs.vercel.app</link>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 03 Feb 2026 12:32:03 GMT</lastBuildDate>
+    <atom:link href="https://vision-rs.vercel.app/rss.xml" rel="self" type="application/rss+xml" />
+    <managingEditor>your-email@example.com (Vision-RS Team)</managingEditor>
+    <webMaster>your-email@example.com (Vision-RS Team)</webMaster>
+    <item>
+      <title><![CDATA[Rust 标准库 - Vision-RS]]></title>
+      <description><![CDATA[标准库是 Rust 语言哲学的工程化落地：它不仅提供 API，更体现了]]></description>
+      <link>https://vision-rs.vercel.app/learn/rust-stdlib</link>
+      <guid isPermaLink="true">https://vision-rs.vercel.app/learn/rust-stdlib</guid>
+      <pubDate>Tue, 03 Feb 2026 02:21:01 GMT</pubDate>
+      
+    </item>
+    <item>
+      <title><![CDATA[第三方库解析 - Vision-RS]]></title>
+      <description><![CDATA[Rust 生态的强项在于：许多核心能力并不强行塞进标准库，而是通过高质量第三方库先行探索]]></description>
+      <link>https://vision-rs.vercel.app/learn/third-party-libs</link>
+      <guid isPermaLink="true">https://vision-rs.vercel.app/learn/third-party-libs</guid>
+      <pubDate>Tue, 03 Feb 2026 02:21:01 GMT</pubDate>
+      
+    </item>
+    <item>
+      <title><![CDATA[网络协议 - Vision-RS]]></title>
+      <description><![CDATA[网络协议的本质是：在不可靠的媒介上建立可组合的]]></description>
+      <link>https://vision-rs.vercel.app/learn/network-protocols</link>
+      <guid isPermaLink="true">https://vision-rs.vercel.app/learn/network-protocols</guid>
+      <pubDate>Tue, 03 Feb 2026 02:21:01 GMT</pubDate>
+      
+    </item>
+    <item>
+      <title><![CDATA[Rust 设计哲学 - Vision-RS]]></title>
+      <description><![CDATA[Rust 的设计哲学围绕一个核心目标：在不牺牲性能的前提下，把]]></description>
+      <link>https://vision-rs.vercel.app/learn/rust-philosophy</link>
+      <guid isPermaLink="true">https://vision-rs.vercel.app/learn/rust-philosophy</guid>
+      <pubDate>Tue, 03 Feb 2026 02:21:01 GMT</pubDate>
+      
+    </item>
+    <item>
+      <title><![CDATA[数据结构 - Vision-RS]]></title>
+      <description><![CDATA[数据结构是性能与可维护性之间的共同语言。在 Rust 中，数据结构不仅是算法载体，更与所有权、借用、内存布局、可变性边界深度绑定]]></description>
+      <link>https://vision-rs.vercel.app/learn/data-structures</link>
+      <guid isPermaLink="true">https://vision-rs.vercel.app/learn/data-structures</guid>
+      <pubDate>Tue, 03 Feb 2026 02:21:01 GMT</pubDate>
+      
+    </item>
+    <item>
+      <title><![CDATA[分布式系统 - Vision-RS]]></title>
+      <description><![CDATA[分布式系统是]]></description>
+      <link>https://vision-rs.vercel.app/learn/distributed-systems</link>
+      <guid isPermaLink="true">https://vision-rs.vercel.app/learn/distributed-systems</guid>
+      <pubDate>Tue, 03 Feb 2026 02:21:01 GMT</pubDate>
+      
+    </item>
+  </channel>
+</rss>

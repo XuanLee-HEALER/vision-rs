@@ -30,19 +30,14 @@ interface Project {
 
 const projects: Project[] = [
   {
-    name: 'project-alpha',
-    url: 'https://github.com/username/project-alpha',
-    description: '高性能数据处理管道',
+    name: 'zuo-algo',
+    url: 'https://github.com/XuanLee-HEALER/zuo-algo',
+    description: '算法学习与实践的 Rust 实现（涵盖排序、树、图等经典算法）',
   },
   {
-    name: 'ui-components',
-    url: 'https://github.com/username/ui-components',
-    description: '可复用的 React 组件库',
-  },
-  {
-    name: 'cli-toolkit',
-    url: 'https://github.com/username/cli-toolkit',
-    description: '开发者命令行工具集',
+    name: 'FeedMe',
+    url: 'https://github.com/XuanLee-HEALER/FeedMe',
+    description: '原生 macOS 菜单栏 RSS 阅读器（SwiftUI + OPML 支持）',
   },
 ];
 
@@ -410,6 +405,7 @@ export default function Footer() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
+                marginBottom: '0.8rem',
               }}
             >
               <span style={{ color: colors.rust }}>我想待在</span>
@@ -428,6 +424,53 @@ export default function Footer() {
                 <circle cx="12" cy="10" r="3" />
               </svg>
               <span>北京 · 成都</span>
+            </div>
+
+            {/* RSS Subscribe */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <span style={{ color: colors.subtext1 }}>订阅</span>
+              <a
+                href="/rss.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  textDecoration: 'none',
+                  color: colors.text,
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = colors.rust;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = colors.text;
+                }}
+                title="RSS 订阅"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ marginRight: '4px' }}
+                >
+                  <path d="M4 11a9 9 0 0 1 9 9" />
+                  <path d="M4 4a16 16 0 0 1 16 16" />
+                  <circle cx="5" cy="19" r="1" />
+                </svg>
+                <span style={{ fontSize: '0.85rem' }}>RSS</span>
+              </a>
             </div>
           </div>
         </div>
