@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import Link from 'next/link';
+import Footer from '@/components/layout/Footer';
 
 // Catppuccin Macchiato Color Palette
 const colors = {
@@ -608,23 +609,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer
-        style={{
-          padding: '3rem 2rem 2rem',
-          textAlign: 'center',
-          color: colors.overlay1,
-          fontSize: '0.9rem',
-          borderTop: `1px solid ${colors.surface0}`,
-          marginTop: '4rem',
-        }}
-      >
-        <p style={{ margin: 0 }}>
-          Built with Next.js 16 & React 19 · Styled with Catppuccin Macchiato
-        </p>
-        <p style={{ margin: '0.5rem 0 0 0', color: colors.overlay0 }}>
-          © 2024 vision-rs · 让 Rust 学习更加直观
-        </p>
-      </footer>
+      <Footer />
 
       <style jsx>{`
         @keyframes slideIn {
