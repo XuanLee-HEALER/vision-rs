@@ -10,6 +10,7 @@ import {
   pathToUrl,
 } from '@/lib/dev/security';
 import { checkRateLimit } from '@/lib/dev/rate-limit';
+import { FLAT_LEARN_CONFIG } from '@/features/learn/flat-navigation-config';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -78,10 +79,14 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // 按category和path排序
+    // 按配置的 order 排序（与页面展示一致）
+    const categoryOrder = new Map(FLAT_LEARN_CONFIG.map((section, index) => [section.id, index]));
+
     fileList.sort((a, b) => {
-      if (a.category !== b.category) {
-        return a.category.localeCompare(b.category);
+      const orderA = categoryOrder.get(a.category) ?? 999;
+      const orderB = categoryOrder.get(b.category) ?? 999;
+      if (orderA !== orderB) {
+        return orderA - orderB;
       }
       return a.path.localeCompare(b.path);
     });

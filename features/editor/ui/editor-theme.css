@@ -47,6 +47,29 @@
   color: var(--bg-base) !important;
 }
 
+/* Fix toolbar SVG icon colors for dark theme */
+.mdxeditor-toolbar button svg {
+  fill: var(--text-secondary) !important;
+  stroke: var(--text-secondary) !important;
+}
+
+.mdxeditor-toolbar button svg path {
+  fill: var(--text-secondary) !important;
+  stroke: var(--text-secondary) !important;
+}
+
+.mdxeditor-toolbar button:hover svg,
+.mdxeditor-toolbar button:hover svg path {
+  fill: var(--text-primary) !important;
+  stroke: var(--text-primary) !important;
+}
+
+.mdxeditor-toolbar button[data-active='true'] svg,
+.mdxeditor-toolbar button[data-active='true'] svg path {
+  fill: var(--bg-base) !important;
+  stroke: var(--bg-base) !important;
+}
+
 .mdxeditor-toolbar select {
   background-color: var(--bg-surface1) !important;
   color: var(--text-primary) !important;

@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import FileTree from '@/features/editor/ui/FileTree';
 import PreviewPane from '@/features/editor/ui/PreviewPane';
+import CreateFileDialog from '@/features/editor/ui/CreateFileDialog';
+import RenameDialog from '@/features/editor/ui/RenameDialog';
+import DeleteConfirmDialog from '@/features/editor/ui/DeleteConfirmDialog';
 
 // 动态导入MDXEditor相关组件
 const EditorWrapper = dynamic(() => import('@/features/editor/ui/EditorWrapper'), {
@@ -34,8 +37,16 @@ export default function EditorPage() {
   const [compileError, setCompileError] = useState<CompileError | null>(null);
   const [isCompiling, setIsCompiling] = useState(false);
 
+  // 文件操作对话框状态
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [targetPath, setTargetPath] = useState<string>('');
+  const [categories, setCategories] = useState<string[]>([]);
+
   // 防抖timer
   const compileTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fileTreeRefreshRef = useRef<() => void>(() => {});
 
   // 检查开发环境
   useEffect(() => {
@@ -43,6 +54,25 @@ export default function EditorPage() {
       router.push('/');
     }
   }, [router]);
+
+  // 加载分类列表
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/dev/mdx/list');
+        if (response.ok) {
+          const data = await response.json();
+          const uniqueCategories = [
+            ...new Set(data.files.map((f: { category: string }) => f.category)),
+          ] as string[];
+          setCategories(uniqueCategories);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // 监听内容变化
   useEffect(() => {
@@ -162,6 +192,114 @@ export default function EditorPage() {
     }
   }, [selectedPath, isDirty, content]);
 
+  // 创建文件
+  const handleCreateFile = async (path: string) => {
+    const response = await fetch('/api/dev/mdx/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to create file');
+    }
+
+    // 刷新文件树
+    fileTreeRefreshRef.current();
+
+    // 重新生成索引
+    await fetch('/api/dev/mdx/regenerate-index', { method: 'POST' });
+
+    // 更新分类列表
+    const listResponse = await fetch('/api/dev/mdx/list');
+    if (listResponse.ok) {
+      const data = await listResponse.json();
+      const uniqueCategories = [
+        ...new Set(data.files.map((f: { category: string }) => f.category)),
+      ] as string[];
+      setCategories(uniqueCategories);
+    }
+
+    // 加载新文件
+    await loadFile(path);
+  };
+
+  // 删除文件
+  const handleDeleteFile = async (path: string) => {
+    const response = await fetch('/api/dev/mdx/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to delete file');
+    }
+
+    // 如果删除的是当前文件，清空编辑器
+    if (path === selectedPath) {
+      setSelectedPath(null);
+      setContent('');
+      setOriginalContent('');
+      setCompiledCode(null);
+    }
+
+    // 刷新文件树
+    fileTreeRefreshRef.current();
+
+    // 重新生成索引
+    await fetch('/api/dev/mdx/regenerate-index', { method: 'POST' });
+  };
+
+  // 重命名文件
+  const handleRenameFile = async (oldPath: string, newPath: string) => {
+    const response = await fetch('/api/dev/mdx/rename', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldPath, newPath }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to rename file');
+    }
+
+    // 如果重命名的是当前文件，更新路径
+    if (oldPath === selectedPath) {
+      setSelectedPath(newPath);
+    }
+
+    // 刷新文件树
+    fileTreeRefreshRef.current();
+
+    // 重新生成索引
+    await fetch('/api/dev/mdx/regenerate-index', { method: 'POST' });
+
+    // 更新分类列表
+    const listResponse = await fetch('/api/dev/mdx/list');
+    if (listResponse.ok) {
+      const data = await listResponse.json();
+      const uniqueCategories = [
+        ...new Set(data.files.map((f: { category: string }) => f.category)),
+      ] as string[];
+      setCategories(uniqueCategories);
+    }
+  };
+
+  // 打开重命名对话框
+  const openRenameDialog = (path: string) => {
+    setTargetPath(path);
+    setIsRenameDialogOpen(true);
+  };
+
+  // 打开删除对话框
+  const openDeleteDialog = (path: string) => {
+    setTargetPath(path);
+    setIsDeleteDialogOpen(true);
+  };
+
   // 键盘快捷键
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -239,7 +377,14 @@ export default function EditorPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* File Tree */}
         <div className="w-64 border-r border-overlay0">
-          <FileTree selectedPath={selectedPath} onSelectFile={loadFile} />
+          <FileTree
+            selectedPath={selectedPath}
+            onSelectFile={loadFile}
+            onCreateFile={() => setIsCreateDialogOpen(true)}
+            onDeleteFile={openDeleteDialog}
+            onRenameFile={openRenameDialog}
+            onRefresh={fileTreeRefreshRef as unknown as () => void}
+          />
         </div>
 
         {/* Editor */}
@@ -276,6 +421,28 @@ export default function EditorPage() {
           </div>
         </div>
       </div>
+
+      {/* Dialogs */}
+      <CreateFileDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onConfirm={handleCreateFile}
+        categories={categories}
+      />
+
+      <RenameDialog
+        isOpen={isRenameDialogOpen}
+        currentPath={targetPath}
+        onClose={() => setIsRenameDialogOpen(false)}
+        onConfirm={handleRenameFile}
+      />
+
+      <DeleteConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        filePath={targetPath}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteFile}
+      />
     </div>
   );
 }

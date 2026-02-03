@@ -168,3 +168,96 @@ export function pathToUrl(relativePath: string): string {
   const urlPath = relativePath.replace(/\/page\.mdx$/, '');
   return `/learn/${urlPath}`;
 }
+
+/**
+ * 验证创建路径安全性（允许父目录不存在，用于创建新目录）
+ * @param relativePath 相对于LEARN_ROOT的路径
+ * @returns 如果安全，返回规范化的绝对路径；否则抛出错误
+ */
+export async function validateCreatePath(relativePath: string): Promise<string> {
+  // 移除开头的斜杠
+  const cleanPath = relativePath.replace(/^\/+/, '');
+
+  // 禁止空路径
+  if (!cleanPath) {
+    throw new Error('Invalid path: path cannot be empty');
+  }
+
+  // 禁止只有扩展名的文件名
+  if (cleanPath === '.mdx' || cleanPath.endsWith('/.mdx')) {
+    throw new Error('Invalid path: filename cannot be empty');
+  }
+
+  // 解析为绝对路径
+  const absolutePath = path.join(LEARN_ROOT, cleanPath);
+
+  // 规范化路径（解析 .. 等）
+  const normalizedPath = path.normalize(absolutePath);
+
+  // 确保是.mdx文件
+  if (!normalizedPath.endsWith('.mdx')) {
+    throw new Error('Invalid path: must be an .mdx file');
+  }
+
+  // 验证 LEARN_ROOT 目录存在
+  try {
+    await realpath(LEARN_ROOT);
+  } catch {
+    throw new Error('Invalid path: learn directory does not exist');
+  }
+
+  // 确保规范化后的路径在 LEARN_ROOT 之下
+  const normalizedLearnRoot = path.normalize(LEARN_ROOT);
+  if (
+    !normalizedPath.startsWith(normalizedLearnRoot + path.sep) &&
+    normalizedPath !== normalizedLearnRoot
+  ) {
+    throw new Error('Invalid path: must be under learn directory');
+  }
+
+  return normalizedPath;
+}
+
+/**
+ * 验证目录路径安全性（用于删除空目录）
+ * @param relativePath 相对于LEARN_ROOT的目录路径
+ * @returns 如果安全，返回绝对路径；否则抛出错误
+ */
+export async function validateDirectoryPath(relativePath: string): Promise<string> {
+  // 移除开头的斜杠
+  const cleanPath = relativePath.replace(/^\/+/, '');
+
+  // 禁止空路径（防止删除 LEARN_ROOT 本身）
+  if (!cleanPath) {
+    throw new Error('Invalid path: cannot operate on root directory');
+  }
+
+  // 解析为绝对路径
+  const absolutePath = path.join(LEARN_ROOT, cleanPath);
+
+  // 规范化路径
+  const normalizedPath = path.normalize(absolutePath);
+
+  // 解析 LEARN_ROOT 的真实路径
+  let realLearnRoot: string;
+  try {
+    realLearnRoot = await realpath(LEARN_ROOT);
+  } catch {
+    throw new Error('Invalid path: learn directory does not exist');
+  }
+
+  // 验证目录存在
+  let realPath: string;
+  try {
+    realPath = await realpath(normalizedPath);
+  } catch {
+    throw new Error('Invalid path: directory does not exist');
+  }
+
+  // 确保真实路径在 LEARN_ROOT 之下（但不能是 LEARN_ROOT 本身）
+  if (!realPath.startsWith(realLearnRoot + path.sep)) {
+    throw new Error('Invalid path: must be under learn directory');
+  }
+
+  return realPath;
+}
