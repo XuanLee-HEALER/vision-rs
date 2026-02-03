@@ -2,6 +2,12 @@
 
 <div align="center">
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://vercel.com/)
+
 <!-- markdownlint-disable MD036 -->
 
 **通过图文并茂的方式深入学习 Rust 编程语言**
@@ -46,8 +52,8 @@ Vision-RS 是一个现代化的 Rust 学习平台，旨在通过**图文结合**
 
 | 类别     | 技术                                |
 | -------- | ----------------------------------- |
-| 框架     | Next.js 14 (App Router)             |
-| 语言     | TypeScript                          |
+| 框架     | Next.js 16 (App Router) + React 19  |
+| 语言     | TypeScript 5                        |
 | 样式     | Tailwind CSS (Catppuccin Macchiato) |
 | 内容     | MDX                                 |
 | 代码高亮 | Shiki                               |
