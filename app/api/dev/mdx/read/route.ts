@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       if (error.message.includes('Invalid path')) {
         return NextResponse.json({ error: error.message }, { status: 403 });
       }
-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      if ('code' in error && error.code === 'ENOENT') {
         return NextResponse.json({ error: 'File not found' }, { status: 404 });
       }
     }

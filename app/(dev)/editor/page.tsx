@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import FileTree from '@/features/editor/ui/FileTree';
@@ -35,7 +35,7 @@ export default function EditorPage() {
   const [isCompiling, setIsCompiling] = useState(false);
 
   // 防抖timer
-  const compileTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const compileTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 检查开发环境
   useEffect(() => {
@@ -48,6 +48,41 @@ export default function EditorPage() {
   useEffect(() => {
     setIsDirty(content !== originalContent);
   }, [content, originalContent]);
+
+  // 编译内容
+  const compileContent = useCallback(
+    async (mdx: string) => {
+      if (!mdx.trim()) return;
+
+      setIsCompiling(true);
+
+      try {
+        const response = await fetch('/api/dev/mdx/compile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mdx, path: selectedPath }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setCompiledCode(data.code);
+          setCompileError(null);
+        } else {
+          setCompiledCode(null);
+          setCompileError(data.error);
+        }
+      } catch (error) {
+        console.error('Compile error:', error);
+        setCompileError({
+          message: error instanceof Error ? error.message : 'Failed to compile',
+        });
+      } finally {
+        setIsCompiling(false);
+      }
+    },
+    [selectedPath]
+  );
 
   // 防抖编译
   useEffect(() => {
@@ -70,39 +105,7 @@ export default function EditorPage() {
         clearTimeout(compileTimerRef.current);
       }
     };
-  }, [content]);
-
-  // 编译内容
-  const compileContent = async (mdx: string) => {
-    if (!mdx.trim()) return;
-
-    setIsCompiling(true);
-
-    try {
-      const response = await fetch('/api/dev/mdx/compile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mdx, path: selectedPath }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setCompiledCode(data.code);
-        setCompileError(null);
-      } else {
-        setCompiledCode(null);
-        setCompileError(data.error);
-      }
-    } catch (error) {
-      console.error('Compile error:', error);
-      setCompileError({
-        message: error instanceof Error ? error.message : 'Failed to compile',
-      });
-    } finally {
-      setIsCompiling(false);
-    }
-  };
+  }, [content, compileContent]);
 
   // 加载文件
   const loadFile = async (path: string) => {
@@ -125,7 +128,7 @@ export default function EditorPage() {
   };
 
   // 保存文件
-  const saveFile = async () => {
+  const saveFile = useCallback(async () => {
     if (!selectedPath || !isDirty) return;
 
     setIsSaving(true);
@@ -157,7 +160,7 @@ export default function EditorPage() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [selectedPath, isDirty, content]);
 
   // 键盘快捷键
   useEffect(() => {
@@ -171,7 +174,7 @@ export default function EditorPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPath, isDirty, content]);
+  }, [saveFile]);
 
   // 离开确认
   useEffect(() => {

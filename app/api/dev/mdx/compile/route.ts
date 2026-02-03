@@ -59,17 +59,25 @@ export async function POST(request: NextRequest) {
 
       // 提取位置信息（如果有）
       if (error && typeof error === 'object') {
-        const errObj = error as any;
+        const errObj = error as Record<string, unknown>;
 
-        if (errObj.position) {
-          compileError.position = errObj.position;
-          if (errObj.position.start) {
-            compileError.line = errObj.position.start.line;
-            compileError.column = errObj.position.start.column;
+        if (
+          errObj.position &&
+          typeof errObj.position === 'object' &&
+          errObj.position !== null &&
+          'start' in errObj.position
+        ) {
+          const position = errObj.position as CompileError['position'];
+          compileError.position = position;
+          if (position?.start) {
+            compileError.line = position.start.line;
+            compileError.column = position.start.column;
           }
-        } else if (errObj.line !== undefined) {
+        } else if (typeof errObj.line === 'number') {
           compileError.line = errObj.line;
-          compileError.column = errObj.column;
+          if (typeof errObj.column === 'number') {
+            compileError.column = errObj.column;
+          }
         }
       }
 

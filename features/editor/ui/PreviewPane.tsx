@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { run } from '@mdx-js/mdx';
 import * as runtime from 'react/jsx-runtime';
 import { MDXProvider } from '@mdx-js/react';
@@ -31,10 +31,10 @@ export default function PreviewPane({ code, error }: PreviewPaneProps) {
         setRuntimeError(null);
 
         // 运行MDX代码
-        const { default: Component } = await run(code, {
+        const { default: Component } = (await run(code, {
           ...runtime,
           baseUrl: import.meta.url,
-        } as any);
+        })) as { default: React.ComponentType };
 
         if (isMounted) {
           setMDXContent(() => Component);

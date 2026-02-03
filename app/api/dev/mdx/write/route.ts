@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, rename, unlink } from 'fs/promises';
-import path from 'path';
 import { devGuard, validatePath } from '@/lib/dev/security';
 
 export const runtime = 'nodejs';
