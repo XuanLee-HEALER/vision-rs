@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, rename, unlink } from 'fs/promises';
 import { devGuard, validatePath } from '@/lib/dev/security';
+import { checkRateLimit } from '@/lib/dev/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+// Maximum file size: 1MB
+const MAX_FILE_SIZE = 1024 * 1024;
 
 /**
  * PUT /api/dev/mdx/write
@@ -15,6 +19,10 @@ export async function PUT(request: NextRequest) {
   const guardResponse = devGuard();
   if (guardResponse) return guardResponse;
 
+  // 速率限制检查
+  const rateLimitResponse = checkRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     // 解析请求体
     const body = await request.json();
@@ -22,6 +30,18 @@ export async function PUT(request: NextRequest) {
 
     if (!relativePath || typeof content !== 'string') {
       return NextResponse.json({ error: 'Missing path or content' }, { status: 400 });
+    }
+
+    // 文件大小检查
+    if (content.length > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        {
+          error: 'File too large',
+          maxSize: MAX_FILE_SIZE,
+          actualSize: content.length,
+        },
+        { status: 413 }
+      );
     }
 
     // 验证路径安全性

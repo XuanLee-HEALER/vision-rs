@@ -327,22 +327,22 @@ console.log(`[MDX Compile] ${compileTime.toFixed(2)}ms (${mdx.length} chars)`);
 
 ## 实施计划
 
-### 第一阶段 (1-2 周)
+### 第一阶段 (1-2 周) ✅ 已完成
 
 - [x] 合并 MDX 编辑器分支
-- [ ] P1.1: 添加核心模块单元测试
-- [ ] P1.2: 改进类型定义
-- [ ] P2.5: 添加文件大小限制
+- [x] P1.1: 添加核心模块单元测试 (Vitest, 42 测试用例, lib/dev 覆盖率 97.5%)
+- [x] P1.2: 改进类型定义 (添加类型守卫 `isMDXCompileError`)
+- [x] P2.5: 添加文件大小限制 (1MB 限制)
 
-### 第二阶段 (3-4 周)
+### 第二阶段 (3-4 周) ✅ 已完成
 
-- [ ] P1.3: 实现编译缓存
-- [ ] P2.4: 添加 API 速率限制
-- [ ] P2.6: 改进错误提示
+- [x] P1.3: 实现编译缓存 (SHA256 哈希, 100 条上限, 5 分钟 TTL)
+- [x] P2.4: 添加 API 速率限制 (60 请求/分钟, 所有 API 路由)
+- [x] P2.6: 改进错误提示 (错误行代码片段显示, 上下文 3 行)
 
 ### 第三阶段 (长期)
 
-- [ ] P3.7: 撤销/重做功能
+- [x] P3.7: 撤销/重做功能 (已由 @mdxeditor/editor 内置)
 - [ ] P3.9: 性能监控
 - [ ] P3.8: 协作编辑支持（可选）
 
@@ -376,6 +376,29 @@ console.log(`[MDX Compile] ${compileTime.toFixed(2)}ms (${mdx.length} chars)`);
 | 日期       | 版本 | 变更内容                  |
 | ---------- | ---- | ------------------------- |
 | 2026-02-03 | 1.0  | 初始版本，记录合并时 TODO |
+| 2026-02-03 | 2.0  | 完成 P1/P2 所有改进项     |
+
+---
+
+## 实现详情 (v2.0)
+
+### 新增文件
+
+- `vitest.config.ts` - Vitest 测试配置
+- `lib/dev/security.test.ts` - 安全模块测试 (21 用例)
+- `lib/dev/compile-cache.ts` - 编译缓存模块
+- `lib/dev/compile-cache.test.ts` - 缓存模块测试 (12 用例)
+- `lib/dev/rate-limit.ts` - 速率限制模块
+- `lib/dev/rate-limit.test.ts` - 速率限制测试 (9 用例)
+
+### 修改文件
+
+- `package.json` - 添加 vitest, @vitest/coverage-v8, 测试脚本
+- `app/api/dev/mdx/compile/route.ts` - 类型守卫、缓存集成、速率限制
+- `app/api/dev/mdx/write/route.ts` - 文件大小限制、速率限制
+- `app/api/dev/mdx/read/route.ts` - 速率限制
+- `app/api/dev/mdx/list/route.ts` - 速率限制
+- `features/editor/ui/PreviewPane.tsx` - 错误代码片段显示
 
 ---
 

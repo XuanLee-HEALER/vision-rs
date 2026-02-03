@@ -8,7 +8,7 @@ import { useMDXComponents } from '@/mdx-components';
 
 interface PreviewPaneProps {
   code: string | null;
-  error: { message: string; line?: number; column?: number } | null;
+  error: { message: string; line?: number; column?: number; snippet?: string } | null;
 }
 
 export default function PreviewPane({ code, error }: PreviewPaneProps) {
@@ -77,6 +77,21 @@ export default function PreviewPane({ code, error }: PreviewPaneProps) {
             )}
           </div>
           <pre className="overflow-x-auto text-sm text-red/90">{error.message}</pre>
+          {error.snippet && (
+            <div className="mt-4">
+              <div className="mb-2 text-xs font-medium text-subtext0">Code Context:</div>
+              <pre className="overflow-x-auto rounded bg-mantle p-3 font-mono text-xs leading-relaxed text-text">
+                {error.snippet.split('\n').map((line, i) => {
+                  const isErrorLine = line.startsWith('>');
+                  return (
+                    <div key={i} className={isErrorLine ? 'bg-red/20 text-red' : 'text-subtext1'}>
+                      {line}
+                    </div>
+                  );
+                })}
+              </pre>
+            </div>
+          )}
         </div>
       </div>
     );

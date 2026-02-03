@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { devGuard, validatePath } from '@/lib/dev/security';
+import { checkRateLimit } from '@/lib/dev/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,10 @@ export async function GET(request: NextRequest) {
   // 开发环境检查
   const guardResponse = devGuard();
   if (guardResponse) return guardResponse;
+
+  // 速率限制检查
+  const rateLimitResponse = checkRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
 
   try {
     // 获取路径参数

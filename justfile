@@ -55,6 +55,23 @@ typecheck:
 # 运行所有检查（lint + format + typecheck）
 check: lint format-check typecheck
 
+# ============== 测试 ==============
+
+# 运行测试
+test:
+    pnpm test
+
+# 运行测试（监听模式）
+test-watch:
+    pnpm test:watch
+
+# 运行测试并生成覆盖率报告
+test-coverage:
+    pnpm test:coverage
+
+# 运行所有检查 + 测试
+check-all: check test
+
 # ============== 依赖管理 ==============
 
 # 安装依赖

@@ -4,18 +4,59 @@ import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import { devGuard } from '@/lib/dev/security';
+import { hashContent, getCachedCompile, setCachedCompile } from '@/lib/dev/compile-cache';
+import { checkRateLimit } from '@/lib/dev/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+interface PositionInfo {
+  start: { line: number; column: number; offset: number };
+  end: { line: number; column: number; offset: number };
+}
 
 interface CompileError {
   message: string;
   line?: number;
   column?: number;
-  position?: {
-    start: { line: number; column: number; offset: number };
-    end: { line: number; column: number; offset: number };
-  };
+  position?: PositionInfo;
+  snippet?: string;
+}
+
+interface MDXCompileError extends Error {
+  position?: PositionInfo;
+  line?: number;
+  column?: number;
+}
+
+/**
+ * Type guard for MDX compile errors with position information
+ */
+function isMDXCompileError(error: unknown): error is MDXCompileError {
+  if (!(error instanceof Error)) return false;
+  const e = error as MDXCompileError;
+  return (
+    (typeof e.position === 'object' && e.position !== null && 'start' in e.position) ||
+    typeof e.line === 'number'
+  );
+}
+
+/**
+ * Extract error snippet from source MDX content
+ */
+function getErrorSnippet(mdx: string, line: number, contextLines = 3): string {
+  const lines = mdx.split('\n');
+  const startLine = Math.max(0, line - contextLines - 1);
+  const endLine = Math.min(lines.length, line + contextLines);
+
+  return lines
+    .slice(startLine, endLine)
+    .map((content, index) => {
+      const lineNum = startLine + index + 1;
+      const marker = lineNum === line ? '>' : ' ';
+      return `${marker} ${lineNum.toString().padStart(3)} | ${content}`;
+    })
+    .join('\n');
 }
 
 /**
@@ -28,6 +69,10 @@ export async function POST(request: NextRequest) {
   const guardResponse = devGuard();
   if (guardResponse) return guardResponse;
 
+  // 速率限制检查
+  const rateLimitResponse = checkRateLimit(request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     // 解析请求体
     const body = await request.json();
@@ -35,6 +80,19 @@ export async function POST(request: NextRequest) {
 
     if (typeof mdx !== 'string') {
       return NextResponse.json({ error: 'Missing or invalid mdx content' }, { status: 400 });
+    }
+
+    // Check cache first
+    const contentHash = hashContent(mdx);
+    const cachedCode = getCachedCompile(contentHash);
+
+    if (cachedCode) {
+      return NextResponse.json({
+        success: true,
+        code: cachedCode,
+        path: filePath,
+        cached: true,
+      });
     }
 
     try {
@@ -46,38 +104,37 @@ export async function POST(request: NextRequest) {
         development: true, // 开发模式，包含更多调试信息
       });
 
+      const code = String(result.value);
+
+      // Store in cache
+      setCachedCompile(contentHash, code);
+
       return NextResponse.json({
         success: true,
-        code: String(result.value),
+        code,
         path: filePath,
+        cached: false,
       });
     } catch (error) {
-      // 编译错误
+      // 编译错误 - 使用类型守卫提取详细信息
       const compileError: CompileError = {
         message: error instanceof Error ? error.message : 'Compilation failed',
       };
 
-      // 提取位置信息（如果有）
-      if (error && typeof error === 'object') {
-        const errObj = error as Record<string, unknown>;
+      // 使用类型守卫提取位置信息
+      if (isMDXCompileError(error)) {
+        if (error.position?.start) {
+          compileError.position = error.position;
+          compileError.line = error.position.start.line;
+          compileError.column = error.position.start.column;
+        } else if (typeof error.line === 'number') {
+          compileError.line = error.line;
+          compileError.column = error.column;
+        }
 
-        if (
-          errObj.position &&
-          typeof errObj.position === 'object' &&
-          errObj.position !== null &&
-          'start' in errObj.position
-        ) {
-          const position = errObj.position as CompileError['position'];
-          compileError.position = position;
-          if (position?.start) {
-            compileError.line = position.start.line;
-            compileError.column = position.start.column;
-          }
-        } else if (typeof errObj.line === 'number') {
-          compileError.line = errObj.line;
-          if (typeof errObj.column === 'number') {
-            compileError.column = errObj.column;
-          }
+        // 添加代码片段
+        if (compileError.line) {
+          compileError.snippet = getErrorSnippet(mdx, compileError.line);
         }
       }
 
