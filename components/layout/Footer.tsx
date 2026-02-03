@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 
 // Catppuccin Macchiato Color Palette
@@ -33,22 +32,37 @@ const projects: Project[] = [
   {
     name: 'project-alpha',
     url: 'https://github.com/username/project-alpha',
-    description: 'A high-performance data processing pipeline',
+    description: '高性能数据处理管道',
   },
   {
     name: 'ui-components',
     url: 'https://github.com/username/ui-components',
-    description: 'Reusable React component library',
+    description: '可复用的 React 组件库',
   },
   {
     name: 'cli-toolkit',
     url: 'https://github.com/username/cli-toolkit',
-    description: 'Command-line utilities for developers',
+    description: '开发者命令行工具集',
   },
 ];
 
 export default function Footer() {
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
+  const [pdfHovered, setPdfHovered] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
+  const [copyHovered, setCopyHovered] = useState(false);
+
+  const email = 'your-email@example.com';
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setEmailCopied(true);
+      setTimeout(() => setEmailCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+    }
+  };
 
   return (
     <footer
@@ -89,7 +103,7 @@ export default function Footer() {
               margin: '0 0 1rem 0',
             }}
           >
-            Visualizing Rust Concepts
+            可视化 Rust 核心概念
           </p>
           <div
             style={{
@@ -99,7 +113,7 @@ export default function Footer() {
             }}
           >
             <p style={{ margin: '0.3rem 0' }}>
-              Built with{' '}
+              基于{' '}
               <a
                 href="https://nextjs.org"
                 target="_blank"
@@ -121,7 +135,7 @@ export default function Footer() {
               >
                 Next.js
               </a>{' '}
-              &{' '}
+              与{' '}
               <a
                 href="https://react.dev"
                 target="_blank"
@@ -142,10 +156,11 @@ export default function Footer() {
                 }}
               >
                 React
-              </a>
+              </a>{' '}
+              构建
             </p>
             <p style={{ margin: '0.3rem 0' }}>
-              Styled with{' '}
+              采用{' '}
               <a
                 href="https://github.com/catppuccin/catppuccin"
                 target="_blank"
@@ -166,7 +181,8 @@ export default function Footer() {
                 }}
               >
                 Catppuccin
-              </a>
+              </a>{' '}
+              配色
             </p>
           </div>
         </div>
@@ -182,7 +198,7 @@ export default function Footer() {
               marginBottom: '1.2rem',
             }}
           >
-            Other Projects
+            其他项目
           </h3>
           <ul
             style={{
@@ -206,8 +222,7 @@ export default function Footer() {
                     padding: '0.5rem',
                     marginLeft: '-0.5rem',
                     borderRadius: '6px',
-                    background:
-                      hoveredProject === project.name ? colors.surface0 : 'transparent',
+                    background: hoveredProject === project.name ? colors.surface0 : 'transparent',
                   }}
                 >
                   <div
@@ -269,71 +284,135 @@ export default function Footer() {
               marginBottom: '1.2rem',
             }}
           >
-            Get in Touch
+            联系方式
           </h3>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <a
-              href="/resume.pdf"
-              download
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.7rem 1.2rem',
-                background: colors.surface0,
-                color: colors.text,
-                textDecoration: 'none',
-                borderRadius: '8px',
-                fontSize: '0.95rem',
-                fontWeight: '500',
-                border: `1px solid ${colors.surface1}`,
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = colors.rust;
-                e.currentTarget.style.borderColor = colors.rust;
-                e.currentTarget.style.color = colors.crust;
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = colors.surface0;
-                e.currentTarget.style.borderColor = colors.surface1;
-                e.currentTarget.style.color = colors.text;
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Download Resume
-            </a>
-          </div>
           <div
             style={{
               fontSize: '0.9rem',
               color: colors.subtext1,
-              lineHeight: '1.8',
+              lineHeight: '2',
             }}
           >
+            {/* Resume */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                marginBottom: '0.5rem',
+                marginBottom: '0.8rem',
               }}
             >
+              <span style={{ color: colors.subtext1 }}>简历</span>
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                onMouseEnter={() => setPdfHovered(true)}
+                onMouseLeave={() => setPdfHovered(false)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{
+                    color: pdfHovered ? colors.rust : colors.overlay1,
+                    transition: 'color 0.2s',
+                  }}
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <polyline points="10 9 9 9 8 9" />
+                </svg>
+              </a>
+            </div>
+
+            {/* Email */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '0.8rem',
+              }}
+            >
+              <span style={{ color: colors.subtext1 }}>邮箱</span>
+              <span
+                style={{
+                  color: colors.text,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: '0.85rem',
+                }}
+              >
+                {email}
+              </span>
+              <button
+                onClick={copyEmail}
+                onMouseEnter={() => setCopyHovered(true)}
+                onMouseLeave={() => setCopyHovered(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '2px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  transition: 'all 0.2s',
+                }}
+                title="复制邮箱"
+              >
+                {emailCopied ? (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={colors.green}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={copyHovered ? colors.blue : colors.overlay1}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ transition: 'stroke 0.2s' }}
+                  >
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                )}
+              </button>
+            </div>
+
+            {/* Location */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <span style={{ color: colors.rust }}>我想待在</span>
               <svg
                 width="16"
                 height="16"
@@ -348,21 +427,8 @@ export default function Footer() {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              <span>Beijing · Chengdu</span>
+              <span>北京 · 成都</span>
             </div>
-            <p
-              style={{
-                margin: '1rem 0 0 0',
-                padding: '0.8rem',
-                background: colors.surface0,
-                borderRadius: '6px',
-                borderLeft: `3px solid ${colors.green}`,
-                fontSize: '0.9rem',
-                fontWeight: '500',
-              }}
-            >
-              Open to Opportunities
-            </p>
           </div>
         </div>
       </div>
