@@ -1,4 +1,4 @@
-import { getFromStorage, setToStorage, atomicUpdate } from './storage';
+import { getVersionedData, atomicUpdate } from './storage';
 
 /**
  * Edge Config storage structure for messages
@@ -19,18 +19,18 @@ export interface RateLimitRecord {
 }
 
 /**
- * Get all messages from storage
+ * Get all messages from storage (reads from versioned storage)
  */
 async function getAllMessages(): Promise<Message[]> {
-  const data = await getFromStorage<Message[]>('messages');
+  const data = await getVersionedData<Message[]>('messages');
   return data || [];
 }
 
 /**
- * Get rate limit records from storage
+ * Get rate limit records from storage (reads from versioned storage)
  */
 async function getRateLimitRecords(): Promise<Record<string, RateLimitRecord>> {
-  const data = await getFromStorage<Record<string, RateLimitRecord>>('messageLimits');
+  const data = await getVersionedData<Record<string, RateLimitRecord>>('messageLimits');
   return data || {};
 }
 
@@ -103,10 +103,11 @@ export async function addMessage(content: string, ip: string): Promise<Message> 
 }
 
 /**
- * Delete a message (admin only)
+ * Delete a message (admin only, 使用原子更新保持版本化存储一致性)
  */
 export async function deleteMessage(id: string): Promise<void> {
-  const messages = await getAllMessages();
-  const updatedMessages = messages.filter((msg) => msg.id !== id);
-  await setToStorage('messages', updatedMessages);
+  await atomicUpdate<Message[]>('messages', (current) => {
+    const messages = current || [];
+    return messages.filter((msg) => msg.id !== id);
+  });
 }

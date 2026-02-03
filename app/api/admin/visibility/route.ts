@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth/session';
 import { getAllVisibility, batchSetVisibility, deleteVisibility } from '@/lib/visibility';
 import contentIndex from '@/app/(site)/learn/_index.generated.json';
 
+// 有效的 slug 集合（从内容索引生成）
+const validSlugs = new Set(contentIndex.map((item) => item.slug));
+
 /**
  * GET /api/admin/visibility
  * Get all content items with their visibility status
@@ -60,6 +63,11 @@ export async function PUT(req: NextRequest) {
           { status: 400 }
         );
       }
+
+      // 校验 slug 是否在内容索引中
+      if (!validSlugs.has(update.slug)) {
+        return NextResponse.json({ error: `Invalid slug: ${update.slug}` }, { status: 400 });
+      }
     }
 
     // Batch update
@@ -88,6 +96,11 @@ export async function DELETE(req: NextRequest) {
 
     if (!slug) {
       return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
+    }
+
+    // 校验 slug 是否在内容索引中
+    if (!validSlugs.has(slug)) {
+      return NextResponse.json({ error: `Invalid slug: ${slug}` }, { status: 400 });
     }
 
     await deleteVisibility(slug);

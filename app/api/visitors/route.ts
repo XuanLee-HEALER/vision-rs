@@ -3,19 +3,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { recordVisit, getLast7DaysStats } from '@/lib/visitors';
 
 function getClientIP(request: NextRequest): string {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  // 1. Vercel 特定头（最可信，直接来自 Vercel Edge）
+  const vercelIP = request.headers.get('x-vercel-forwarded-for');
+  if (vercelIP) return vercelIP.split(',')[0].trim();
 
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
-  }
-  if (realIP) {
-    return realIP;
-  }
-  if (cfConnectingIP) {
-    return cfConnectingIP;
-  }
+  // 2. Cloudflare 真实 IP
+  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  if (cfConnectingIP) return cfConnectingIP;
+
+  // 3. 标准代理头
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) return forwardedFor.split(',')[0].trim();
+
+  // 4. 其他
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP) return realIP;
 
   return 'unknown';
 }

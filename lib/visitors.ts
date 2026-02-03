@@ -1,4 +1,4 @@
-import { getFromStorage, atomicUpdate } from './storage';
+import { getVersionedData, atomicUpdate } from './storage';
 
 /**
  * Edge Config storage structure for visitor stats
@@ -18,10 +18,10 @@ export interface VisitorData {
 }
 
 /**
- * Get all visitor records from storage
+ * Get all visitor records from storage (reads from versioned storage)
  */
 async function getAllVisitors(): Promise<Record<string, VisitorDayRecord>> {
-  const data = await getFromStorage<Record<string, VisitorDayRecord>>('visitors');
+  const data = await getVersionedData<Record<string, VisitorDayRecord>>('visitors');
   return data || {};
 }
 
@@ -34,25 +34,17 @@ function getTodayKey(): string {
 }
 
 /**
- * Get visitor stats date range (yesterday + today + next 5 days placeholders)
+ * Get recent 7 days date range (past 6 days + today)
  */
-function getVisitorStatsDateRange(): string[] {
+function getRecentSevenDays(): string[] {
   const days: string[] = [];
   const today = new Date();
 
-  // 昨天 (1天历史数据)
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  days.push(yesterday.toISOString().split('T')[0]);
-
-  // 今天
-  days.push(today.toISOString().split('T')[0]);
-
-  // 未来5天占位符
-  for (let i = 1; i <= 5; i++) {
-    const future = new Date(today);
-    future.setDate(future.getDate() + i);
-    days.push(future.toISOString().split('T')[0]);
+  // 过去6天 + 今天 = 7天
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    days.push(date.toISOString().split('T')[0]);
   }
 
   return days;
@@ -105,7 +97,7 @@ export async function recordVisit(ip: string): Promise<void> {
  */
 export async function getLast7DaysStats(): Promise<VisitorData[]> {
   const allVisitors = await getAllVisitors();
-  const last7Days = getVisitorStatsDateRange();
+  const last7Days = getRecentSevenDays();
 
   return last7Days.map((dateKey) => ({
     date: formatDate(dateKey),

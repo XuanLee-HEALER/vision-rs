@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, rename, unlink } from 'fs/promises';
-import { devGuard, validatePath } from '@/lib/dev/security';
+import { devGuard, validateWritePath } from '@/lib/dev/security';
 import { checkRateLimit } from '@/lib/dev/rate-limit';
 
 export const runtime = 'nodejs';
@@ -44,8 +44,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 验证路径安全性
-    const absolutePath = validatePath(relativePath);
+    // 验证写入路径安全性（允许文件不存在，支持创建新文件）
+    const absolutePath = await validateWritePath(relativePath);
 
     // 原子写入：先写临时文件，再重命名
     const tempPath = `${absolutePath}.tmp`;

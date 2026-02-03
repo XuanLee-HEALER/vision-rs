@@ -3,6 +3,7 @@ import {
   isDevelopment,
   devGuard,
   validatePath,
+  validateWritePath,
   toRelativePath,
   inferTitleFromPath,
   extractCategory,
@@ -51,36 +52,77 @@ describe('security module', () => {
   });
 
   describe('validatePath', () => {
-    it('should accept valid .mdx files under LEARN_ROOT', () => {
-      const result = validatePath('concepts/ownership/page.mdx');
-      expect(result).toContain(LEARN_ROOT);
+    // 使用真实存在的文件路径进行测试
+    it('should accept valid .mdx files under LEARN_ROOT', async () => {
+      const result = await validatePath('data-structures/page.mdx');
+      expect(result).toContain('data-structures/page.mdx');
       expect(result.endsWith('page.mdx')).toBe(true);
     });
 
-    it('should normalize paths with leading slashes', () => {
-      const result = validatePath('/concepts/ownership/page.mdx');
-      expect(result).toContain('concepts/ownership/page.mdx');
+    it('should normalize paths with leading slashes', async () => {
+      const result = await validatePath('/data-structures/page.mdx');
+      expect(result).toContain('data-structures/page.mdx');
     });
 
-    it('should throw on path traversal attempts', () => {
-      expect(() => validatePath('../../../etc/passwd')).toThrow('Invalid path');
-      expect(() => validatePath('concepts/../../secret.mdx')).toThrow('Invalid path');
+    it('should throw on path traversal attempts', async () => {
+      await expect(validatePath('../../../etc/passwd')).rejects.toThrow('Invalid path');
+      await expect(validatePath('data-structures/../../secret.mdx')).rejects.toThrow(
+        'Invalid path'
+      );
     });
 
-    it('should throw on non-.mdx files', () => {
-      expect(() => validatePath('concepts/ownership/page.tsx')).toThrow('Invalid path');
-      expect(() => validatePath('concepts/ownership/page.js')).toThrow('Invalid path');
-      expect(() => validatePath('concepts/ownership/page')).toThrow('Invalid path');
+    it('should throw on non-.mdx files', async () => {
+      await expect(validatePath('data-structures/page.tsx')).rejects.toThrow('Invalid path');
+      await expect(validatePath('data-structures/page.js')).rejects.toThrow('Invalid path');
+      await expect(validatePath('data-structures/page')).rejects.toThrow('Invalid path');
     });
 
-    it('should handle deeply nested valid paths', () => {
-      const result = validatePath('crates/web/actix/basics/page.mdx');
-      expect(result).toContain('crates/web/actix/basics/page.mdx');
+    it('should accept another valid path', async () => {
+      const result = await validatePath('rust-philosophy/page.mdx');
+      expect(result).toContain('rust-philosophy/page.mdx');
     });
 
-    it('should reject paths trying to escape with encoded characters', () => {
+    it('should reject paths trying to escape with encoded characters', async () => {
       // Paths with .. should be caught after normalization
-      expect(() => validatePath('concepts/../../../page.mdx')).toThrow('Invalid path');
+      await expect(validatePath('data-structures/../../../page.mdx')).rejects.toThrow(
+        'Invalid path'
+      );
+    });
+
+    it('should throw for non-existent files', async () => {
+      await expect(validatePath('nonexistent/path/page.mdx')).rejects.toThrow('Invalid path');
+    });
+  });
+
+  describe('validateWritePath', () => {
+    // 允许文件不存在（用于创建新文件）
+    it('should accept new .mdx files in existing directories', async () => {
+      const result = await validateWritePath('data-structures/new-file.mdx');
+      expect(result).toContain('data-structures/new-file.mdx');
+      expect(result.endsWith('new-file.mdx')).toBe(true);
+    });
+
+    it('should accept existing files', async () => {
+      const result = await validateWritePath('data-structures/page.mdx');
+      expect(result).toContain('data-structures/page.mdx');
+    });
+
+    it('should throw on path traversal attempts', async () => {
+      await expect(validateWritePath('../../../etc/passwd')).rejects.toThrow('Invalid path');
+      await expect(validateWritePath('data-structures/../../secret.mdx')).rejects.toThrow(
+        'Invalid path'
+      );
+    });
+
+    it('should throw on non-.mdx files', async () => {
+      await expect(validateWritePath('data-structures/new.tsx')).rejects.toThrow('Invalid path');
+      await expect(validateWritePath('data-structures/new.js')).rejects.toThrow('Invalid path');
+    });
+
+    it('should throw for non-existent parent directories', async () => {
+      await expect(validateWritePath('nonexistent-dir/page.mdx')).rejects.toThrow(
+        'parent directory does not exist'
+      );
     });
   });
 

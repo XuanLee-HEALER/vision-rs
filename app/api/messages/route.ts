@@ -1,21 +1,24 @@
 // 留言板 API - 使用 Vercel Edge Config 存储
 import { NextRequest, NextResponse } from 'next/server';
 import { getRecentMessages, checkRateLimit, addMessage, deleteMessage } from '@/lib/messages';
+import { requireAuth } from '@/lib/auth/session';
 
 function getClientIP(request: NextRequest): string {
-  const forwardedFor = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  // 1. Vercel 特定头（最可信，直接来自 Vercel Edge）
+  const vercelIP = request.headers.get('x-vercel-forwarded-for');
+  if (vercelIP) return vercelIP.split(',')[0].trim();
 
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
-  }
-  if (realIP) {
-    return realIP;
-  }
-  if (cfConnectingIP) {
-    return cfConnectingIP;
-  }
+  // 2. Cloudflare 真实 IP
+  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  if (cfConnectingIP) return cfConnectingIP;
+
+  // 3. 标准代理头
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) return forwardedFor.split(',')[0].trim();
+
+  // 4. 其他
+  const realIP = request.headers.get('x-real-ip');
+  if (realIP) return realIP;
 
   return 'unknown';
 }
@@ -85,13 +88,13 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { id, adminKey } = await request.json();
+    // 使用 session 认证（比 ADMIN_KEY 更安全，有 CSRF 保护）
+    await requireAuth();
 
-    // 验证管理员密钥
-    const ADMIN_KEY = process.env.ADMIN_KEY;
+    const { id } = await request.json();
 
-    if (!ADMIN_KEY || adminKey !== ADMIN_KEY) {
-      return NextResponse.json({ error: '无权限' }, { status: 403 });
+    if (!id || typeof id !== 'string') {
+      return NextResponse.json({ error: '缺少留言ID' }, { status: 400 });
     }
 
     await deleteMessage(id);
@@ -99,6 +102,12 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting message:', error);
+
+    // 区分认证错误和其他错误
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: '无权限' }, { status: 401 });
+    }
+
     return NextResponse.json({ error: '服务器错误' }, { status: 500 });
   }
 }
