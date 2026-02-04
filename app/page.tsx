@@ -1,15 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import Link from 'next/link';
 import Footer from '@/components/layout/Footer';
 
@@ -29,19 +20,12 @@ const colors = {
   overlay2: '#939ab7',
   blue: '#8aadf4',
   lavender: '#b7bdf8',
-  sapphire: '#7dc4e4',
-  sky: '#91d7e3',
-  teal: '#8bd5ca',
+  rust: '#f5a97f',
   green: '#a6da95',
   yellow: '#eed49f',
   peach: '#f5a97f',
-  maroon: '#ee99a0',
-  red: '#ed8796',
   mauve: '#c6a0f6',
-  pink: '#f5bde6',
-  flamingo: '#f0c6c6',
-  rosewater: '#f4dbd6',
-  rust: '#f5a97f',
+  red: '#ed8796',
 };
 
 interface Message {
@@ -61,15 +45,18 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [visitorData, setVisitorData] = useState<VisitorData[]>([]);
+  const [bioExpanded, setBioExpanded] = useState(false);
+  const [bioState, setBioState] = useState<'visible' | 'orb' | 'expanded'>('visible');
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  // 加载访问统计和留言
+  // 加载数据
   useEffect(() => {
-    // 记录访问（POST 请求）
+    // 记录访问
     fetch('/api/visitors', { method: 'POST' }).catch((err) =>
       console.error('Failed to record visit:', err)
     );
 
-    // 加载访问统计（GET 请求，只读）
+    // 加载统计
     fetch('/api/visitors')
       .then((res) => res.json())
       .then((data) => setVisitorData(data.data))
@@ -81,6 +68,18 @@ export default function HomePage() {
       .then((data) => setMessages(data.messages))
       .catch((err) => console.error('Failed to load messages:', err));
   }, []);
+
+  // 30秒后自动收起为 Orb
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (bioState === 'visible') {
+        setBioState('orb');
+        setBioExpanded(false);
+      }
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, [bioState]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +124,10 @@ export default function HomePage() {
     return `${days}天前`;
   };
 
+  // 计算总访问量
+  const totalVisitors = visitorData.reduce((sum, item) => sum + item.visitors, 0);
+  const todayVisitors = visitorData.length > 0 ? visitorData[visitorData.length - 1].visitors : 0;
+
   return (
     <div
       style={{
@@ -132,272 +135,556 @@ export default function HomePage() {
         background: colors.base,
         color: colors.text,
         fontFamily: "'Geist', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+        position: 'relative',
       }}
     >
+      {/* Bio Card / Orb - 右上角悬浮 */}
+      <>
+        {bioState === 'orb' ? (
+          /* Orb 状态 - 浮动圆球 */
+          <div
+            style={{
+              position: 'fixed',
+              top: '2rem',
+              right: '2rem',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: `linear-gradient(135deg, ${colors.rust}, ${colors.lavender})`,
+              cursor: 'pointer',
+              zIndex: 100,
+              animation: 'pulse 3s ease-in-out infinite',
+              transition: 'all 0.3s ease',
+            }}
+            onClick={() => setBioState('expanded')}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+            aria-label="打开个人简介"
+          >
+            {/* Tooltip */}
+            {showTooltip && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: 'calc(100% + 12px)',
+                  transform: 'translateY(-50%)',
+                  padding: '0.5rem 1rem',
+                  background: colors.surface0,
+                  color: colors.text,
+                  fontSize: '0.85rem',
+                  borderRadius: '6px',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                  animation: 'fadeIn 0.2s ease',
+                }}
+              >
+                关于我
+              </div>
+            )}
+          </div>
+        ) : (
+          /* 卡片状态 - 完整个人简介 */
+          <div
+            style={{
+              position: 'fixed',
+              top: '2rem',
+              right: '2rem',
+              width: '320px',
+              background: 'rgba(30, 32, 48, 0.8)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              paddingBottom: bioExpanded ? '1.5rem' : '1rem',
+              border: `1px solid transparent`,
+              backgroundImage: `linear-gradient(${colors.mantle}, ${colors.mantle}), linear-gradient(135deg, ${colors.rust}, ${colors.lavender})`,
+              backgroundOrigin: 'border-box',
+              backgroundClip: 'padding-box, border-box',
+              zIndex: 100,
+              maxHeight: bioExpanded ? '480px' : '260px',
+              overflow: 'hidden',
+              transition:
+                bioState === 'expanded'
+                  ? 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                  : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: bioState === 'expanded' ? 'scale(1)' : 'scale(1)',
+              opacity: bioState === 'expanded' ? 1 : 1,
+              animation:
+                bioState === 'expanded' ? 'scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setBioState('orb');
+                setBioExpanded(false);
+              }}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                border: 'none',
+                background: colors.surface0,
+                color: colors.subtext1,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.2rem',
+                lineHeight: '1',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = colors.surface1;
+                e.currentTarget.style.color = colors.text;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = colors.surface0;
+                e.currentTarget.style.color = colors.subtext1;
+              }}
+              aria-label="关闭个人简介"
+            >
+              ×
+            </button>
+
+            {/* Avatar and Nickname */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                marginBottom: '1rem',
+              }}
+            >
+              {/* Avatar */}
+              <div
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${colors.rust}, ${colors.lavender})`,
+                  flexShrink: 0,
+                  backgroundImage: 'url("/avatar.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+
+              {/* Nickname */}
+              <div style={{ flex: 1 }}>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: '1.2rem',
+                    fontWeight: '600',
+                    color: colors.text,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  XuanLee
+                </h3>
+                <p
+                  style={{
+                    margin: '0.25rem 0 0 0',
+                    fontSize: '0.85rem',
+                    color: colors.overlay1,
+                  }}
+                >
+                  全栈开发者
+                </p>
+              </div>
+            </div>
+
+            {/* Bio Text */}
+            <p
+              style={{
+                fontSize: '0.95rem',
+                lineHeight: '1.7',
+                color: colors.subtext1,
+                margin: 0,
+                paddingBottom: '0.5rem',
+              }}
+            >
+              已加入 Vibe Coding 阵营，践行无边界开发理念。深耕服务端编程，其他领域仍在探索。
+            </p>
+
+            {/* Expand Indicator */}
+            <div
+              onClick={() => setBioExpanded(!bioExpanded)}
+              style={{
+                marginTop: '1rem',
+                paddingTop: '1rem',
+                borderTop: `1px solid ${colors.surface0}`,
+                fontSize: '0.85rem',
+                color: colors.overlay1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = colors.text;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = colors.overlay1;
+              }}
+            >
+              <span
+                style={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  minWidth: '64px',
+                  height: '1.2em',
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    opacity: bioExpanded ? 0 : 1,
+                    transition: 'opacity 0.2s ease',
+                  }}
+                >
+                  查看更多
+                </span>
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    opacity: bioExpanded ? 1 : 0,
+                    transition: 'opacity 0.2s ease',
+                  }}
+                >
+                  收起
+                </span>
+              </span>
+              <span
+                style={{
+                  display: 'inline-block',
+                  transform: bioExpanded ? 'rotate(180deg)' : 'rotate(0)',
+                  transition: 'transform 0.3s ease',
+                }}
+              >
+                ↓
+              </span>
+            </div>
+
+            {/* Expanded Content */}
+            <div
+              style={{
+                marginTop: '1rem',
+                paddingTop: bioExpanded ? '1rem' : 0,
+                borderTop: bioExpanded ? `1px solid ${colors.surface0}` : 'none',
+                maxHeight: bioExpanded ? '200px' : '0',
+                opacity: bioExpanded ? 1 : 0,
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                pointerEvents: bioExpanded ? 'auto' : 'none',
+              }}
+            >
+              <div style={{ fontSize: '0.9rem', color: colors.subtext1, lineHeight: '1.8' }}>
+                <p style={{ margin: '0.5rem 0' }}>
+                  <strong style={{ color: colors.text }}>技术栈：</strong>Rust / Go / TypeScript
+                </p>
+                <p style={{ margin: '0.5rem 0' }}>
+                  <strong style={{ color: colors.text }}>关注领域：</strong>系统编程 / 后端架构
+                </p>
+                <p style={{ margin: '0.5rem 0' }}>
+                  <strong style={{ color: colors.text }}>当前状态：</strong>持续学习中
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+
       {/* Hero Section */}
       <header
         style={{
-          padding: '4rem 2rem 2rem',
+          padding: '6rem 2rem 4rem',
           maxWidth: '1400px',
           margin: '0 auto',
         }}
       >
-        <div
+        {/* Title */}
+        <h1
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '3rem',
+            fontSize: 'clamp(4rem, 10vw, 8rem)',
+            fontWeight: '700',
+            margin: 0,
+            background: `linear-gradient(135deg, ${colors.rust} 0%, ${colors.peach} 50%, ${colors.yellow} 100%)`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.04em',
+            lineHeight: '1.1',
+            animation: 'fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both',
           }}
         >
-          {/* Title */}
-          <div>
-            <h1
-              style={{
-                fontSize: 'clamp(3rem, 8vw, 6rem)',
-                fontWeight: '700',
-                margin: 0,
-                background: `linear-gradient(135deg, ${colors.rust} 0%, ${colors.peach} 50%, ${colors.yellow} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                letterSpacing: '-0.03em',
-                lineHeight: '1.1',
-              }}
-            >
-              vision-rs
-            </h1>
-            <p
-              style={{
-                fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-                color: colors.subtext1,
-                margin: '1.5rem 0 0 0',
-                lineHeight: '1.8',
-                maxWidth: '900px',
-              }}
-            >
-              Rust
-              以其内存安全和高性能著称，但其所有权系统、生命周期等核心概念对初学者来说往往难以理解。
-              <Link
-                href="/learn"
-                style={{
-                  color: colors.blue,
-                  textDecoration: 'none',
-                  borderBottom: `2px solid ${colors.blue}`,
-                  fontWeight: '500',
-                  fontSize: '1.1em',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.lavender;
-                  e.currentTarget.style.borderBottomColor = colors.lavender;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.blue;
-                  e.currentTarget.style.borderBottomColor = colors.blue;
-                }}
-              >
-                vision-rs
-              </Link>
-              致力于通过交互式图形化界面，将这些抽象概念可视化呈现，让学习者能够直观地看到变量的所有权转移、借用检查的工作机制，以及内存分配的实时状态。我相信，通过视觉化的方式，能够大大降低
-              Rust 的学习曲线，帮助更多开发者掌握这门强大的系统编程语言。
-            </p>
-          </div>
+          vision-rs
+        </h1>
 
-          {/* Rust Lifetime Error Showcase */}
+        {/* Divider */}
+        <div
+          style={{
+            width: '200px',
+            height: '3px',
+            background: `linear-gradient(90deg, ${colors.rust} 0%, transparent 100%)`,
+            margin: '2rem 0',
+            animation: 'fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both',
+          }}
+        />
+
+        {/* Slogan */}
+        <p
+          style={{
+            fontSize: 'clamp(1.2rem, 2vw, 1.5rem)',
+            color: colors.subtext1,
+            margin: '2rem 0 0 0',
+            lineHeight: '1.8',
+            maxWidth: '60%',
+            animation: 'fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both',
+          }}
+        >
+          Rust
+          以其内存安全和高性能著称，但其所有权系统、生命周期等核心概念对初学者来说往往难以理解。
+          <Link
+            href="/learn"
+            style={{
+              color: colors.blue,
+              textDecoration: 'none',
+              position: 'relative',
+              fontWeight: '500',
+              fontSize: '1.05em',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = colors.lavender;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = colors.blue;
+            }}
+          >
+            vision-rs
+          </Link>
+          致力于通过交互式图形化界面，将这些抽象概念可视化呈现，让学习者能够直观地看到变量的所有权转移、借用检查的工作机制，以及内存分配的实时状态。
+        </p>
+
+        {/* Code Showcase - 倾斜切角 */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1.2fr 1fr',
+            gap: '2px',
+            marginTop: '4rem',
+            clipPath:
+              'polygon(0 0, 100% 0, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%)',
+            background: `linear-gradient(135deg, ${colors.mantle} 0%, ${colors.crust} 100%)`,
+            animation: 'fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both',
+          }}
+        >
+          {/* Source Code */}
           <div
             style={{
               background: colors.mantle,
-              border: `1px solid ${colors.surface0}`,
-              borderRadius: '12px',
-              overflow: 'hidden',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1px',
+              padding: '2rem',
+              position: 'relative',
             }}
           >
-            {/* Source Code (Left) */}
             <div
               style={{
-                background: colors.mantle,
-                padding: '1.5rem',
-                position: 'relative',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '1px',
+                background: `linear-gradient(90deg, transparent 0%, ${colors.rust} 50%, transparent 100%)`,
+              }}
+            />
+            <div
+              style={{
+                marginBottom: '1rem',
+                fontSize: '0.85rem',
+                color: colors.overlay1,
+                fontWeight: '600',
               }}
             >
-              <div
-                style={{
-                  marginBottom: '1rem',
-                  fontSize: '0.85rem',
-                  color: colors.overlay1,
-                  fontWeight: '600',
-                }}
-              >
-                源码 (src/main.rs)
-              </div>
-              <pre
-                style={{
-                  margin: 0,
-                  fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
-                  lineHeight: '1.6',
-                  overflow: 'auto',
-                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                }}
-              >
-                <code>
-                  <span style={{ color: colors.mauve }}>fn</span>{' '}
-                  <span style={{ color: colors.blue }}>get_first</span>
-                  {'<'}
-                  <span style={{ color: colors.yellow }}>&apos;a</span>
-                  {'>('}
-                  <span style={{ color: colors.text }}>data</span>: &amp;
-                  <span style={{ color: colors.yellow }}>&apos;a</span> Vec&lt;i32&gt;)
-                  {'\n'}
-                  {'    -> &'}
-                  <span style={{ color: colors.yellow }}>&apos;a</span> i32 {'{'}
-                  {'\n'}
-                  {'    &data['}
-                  <span style={{ color: colors.peach }}>0</span>
-                  {']'}
-                  {'\n'}
-                  {'}'}
-                  {'\n\n'}
-                  <span style={{ color: colors.mauve }}>fn</span>{' '}
-                  <span style={{ color: colors.blue }}>main</span>() {'{'}
-                  {'\n'}
-                  {'    '}
-                  <span style={{ color: colors.mauve }}>let</span>{' '}
-                  <span style={{ color: colors.text }}>result</span>;{'\n'}
-                  {'    {'}
-                  {'\n'}
-                  {'        '}
-                  <span style={{ color: colors.mauve }}>let</span>{' '}
-                  <span style={{ color: colors.text }}>data</span> ={' '}
-                  <span style={{ color: colors.blue }}>vec!</span>[
-                  <span style={{ color: colors.peach }}>1</span>,{' '}
-                  <span style={{ color: colors.peach }}>2</span>,{' '}
-                  <span style={{ color: colors.peach }}>3</span>];
-                  {'\n'}
-                  {'        '}
-                  <span style={{ color: colors.text }}>result</span> ={' '}
-                  <span style={{ color: colors.blue }}>get_first</span>(&amp;data);{' '}
-                  <span style={{ color: colors.red }}>// ❌</span>
-                  {'\n'}
-                  {'    }'}
-                  {'\n'}
-                  {'    '}
-                  <span style={{ color: colors.blue }}>println!</span>(
-                  <span style={{ color: colors.green }}>&quot;First: {'{}'}&quot;</span>, result);
-                  {'\n'}
-                  {'}'}
-                </code>
-              </pre>
+              源码 (src/main.rs)
             </div>
+            <pre
+              style={{
+                margin: 0,
+                fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
+                lineHeight: '1.6',
+                overflow: 'auto',
+                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+              }}
+            >
+              <code>
+                <span style={{ color: colors.mauve }}>fn</span>{' '}
+                <span style={{ color: colors.blue }}>get_first</span>
+                {'<'}
+                <span style={{ color: colors.yellow }}>&apos;a</span>
+                {'>('}
+                <span style={{ color: colors.text }}>data</span>: &amp;
+                <span style={{ color: colors.yellow }}>&apos;a</span> Vec&lt;i32&gt;)
+                {'\n'}
+                {'    -> &'}
+                <span style={{ color: colors.yellow }}>&apos;a</span> i32 {'{'}
+                {'\n'}
+                {'    &data['}
+                <span style={{ color: colors.peach }}>0</span>
+                {']'}
+                {'\n'}
+                {'}'}
+                {'\n\n'}
+                <span style={{ color: colors.mauve }}>fn</span>{' '}
+                <span style={{ color: colors.blue }}>main</span>() {'{'}
+                {'\n'}
+                {'    '}
+                <span style={{ color: colors.mauve }}>let</span>{' '}
+                <span style={{ color: colors.text }}>result</span>;{'\n'}
+                {'    {'}
+                {'\n'}
+                {'        '}
+                <span style={{ color: colors.mauve }}>let</span>{' '}
+                <span style={{ color: colors.text }}>data</span> ={' '}
+                <span style={{ color: colors.blue }}>vec!</span>[
+                <span style={{ color: colors.peach }}>1</span>,{' '}
+                <span style={{ color: colors.peach }}>2</span>,{' '}
+                <span style={{ color: colors.peach }}>3</span>];
+                {'\n'}
+                {'        '}
+                <span style={{ color: colors.text }}>result</span> ={' '}
+                <span style={{ color: colors.blue }}>get_first</span>(&amp;data);{' '}
+                <span style={{ color: colors.red }}>// ❌</span>
+                {'\n'}
+                {'    }'}
+                {'\n'}
+                {'    '}
+                <span style={{ color: colors.blue }}>println!</span>(
+                <span style={{ color: colors.green }}>&quot;First: {'{}'}&quot;</span>, result);
+                {'\n'}
+                {'}'}
+              </code>
+            </pre>
+          </div>
 
-            {/* Compiler Error (Right) */}
+          {/* Compiler Error */}
+          <div
+            style={{
+              background: colors.crust,
+              padding: '2rem',
+              borderLeft: `1px solid ${colors.surface0}`,
+            }}
+          >
             <div
               style={{
-                background: colors.crust,
-                padding: '1.5rem',
-                borderLeft: `1px solid ${colors.surface0}`,
+                marginBottom: '1rem',
+                fontSize: '0.85rem',
+                color: colors.red,
+                fontWeight: '600',
               }}
             >
-              <div
-                style={{
-                  marginBottom: '1rem',
-                  fontSize: '0.85rem',
-                  color: colors.red,
-                  fontWeight: '600',
-                }}
-              >
-                编译错误
-              </div>
-              <pre
-                style={{
-                  margin: 0,
-                  fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
-                  lineHeight: '1.6',
-                  overflow: 'auto',
-                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  color: colors.text,
-                }}
-              >
-                <code>
-                  <span style={{ color: colors.red, fontWeight: '600' }}>error[E0597]</span>
-                  <span style={{ color: colors.text }}>: `data` does not</span>
-                  {'\n'}
-                  <span style={{ color: colors.text }}>live long enough</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> --&gt; src/main.rs:9:30</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}>9 |</span>
-                  <span style={{ color: colors.text }}> result = get_first(</span>
-                  <span style={{ color: colors.red }}>&amp;data</span>
-                  <span style={{ color: colors.text }}>);</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'                              '}
-                  <span style={{ color: colors.red }}>^^^^^ borrowed</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'                              '}
-                  <span style={{ color: colors.red }}>value does not</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'                              '}
-                  <span style={{ color: colors.red }}>live long enough</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}>10 |</span>
-                  <span style={{ color: colors.text }}> {'}'}</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'     '}
-                  <span style={{ color: colors.red }}>- `data` dropped here</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'       '}
-                  <span style={{ color: colors.red }}>while still borrowed</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}>11 |</span>
-                  <span style={{ color: colors.text }}> println!(...);</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'     '}
-                  <span style={{ color: colors.red }}>------ borrow later</span>
-                  {'\n'}
-                  <span style={{ color: colors.blue }}> |</span>
-                  {'            '}
-                  <span style={{ color: colors.red }}>used here</span>
-                  {'\n\n'}
-                  <span style={{ color: colors.yellow }}>help</span>
-                  <span style={{ color: colors.text }}>: consider moving `data`</span>
-                  {'\n'}
-                  <span style={{ color: colors.text }}>outside the inner scope</span>
-                </code>
-              </pre>
+              编译错误
             </div>
+            <pre
+              style={{
+                margin: 0,
+                fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
+                lineHeight: '1.6',
+                overflow: 'auto',
+                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                color: colors.text,
+              }}
+            >
+              <code>
+                <span style={{ color: colors.red, fontWeight: '600' }}>error[E0597]</span>
+                <span style={{ color: colors.text }}>: `data` does not</span>
+                {'\n'}
+                <span style={{ color: colors.text }}>live long enough</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> --&gt; src/main.rs:9:30</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}>9 |</span>
+                <span style={{ color: colors.text }}> result = get_first(</span>
+                <span style={{ color: colors.red }}>&amp;data</span>
+                <span style={{ color: colors.text }}>);</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'                              '}
+                <span style={{ color: colors.red }}>^^^^^ borrowed</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'                              '}
+                <span style={{ color: colors.red }}>value does not</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'                              '}
+                <span style={{ color: colors.red }}>live long enough</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}>10 |</span>
+                <span style={{ color: colors.text }}> {'}'}</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'     '}
+                <span style={{ color: colors.red }}>- `data` dropped here</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'       '}
+                <span style={{ color: colors.red }}>while still borrowed</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}>11 |</span>
+                <span style={{ color: colors.text }}> println!(...);</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'     '}
+                <span style={{ color: colors.red }}>------ borrow later</span>
+                {'\n'}
+                <span style={{ color: colors.blue }}> |</span>
+                {'            '}
+                <span style={{ color: colors.red }}>used here</span>
+              </code>
+            </pre>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - 不规则网格 */}
       <main
         style={{
           padding: '2rem',
           maxWidth: '1400px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: '0.8fr 1.2fr',
           gap: '2rem',
         }}
       >
-        {/* Visitor Chart */}
+        {/* Visitor Stats - 简化为卡片 */}
         <section
           style={{
             background: colors.mantle,
             border: `1px solid ${colors.surface0}`,
             borderRadius: '12px',
             padding: '2rem',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = `0 8px 24px rgba(0, 0, 0, 0.3)`;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
           }}
         >
           <h2
@@ -405,42 +692,46 @@ export default function HomePage() {
               fontSize: '1.5rem',
               fontWeight: '600',
               marginTop: 0,
-              marginBottom: '1.5rem',
+              marginBottom: '2rem',
               color: colors.lavender,
             }}
           >
             访问统计
           </h2>
-          <div style={{ width: '100%', height: '300px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={visitorData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={colors.surface0} />
-                <XAxis dataKey="date" stroke={colors.subtext0} style={{ fontSize: '0.85rem' }} />
-                <YAxis stroke={colors.subtext0} style={{ fontSize: '0.85rem' }} />
-                <Tooltip
-                  contentStyle={{
-                    background: colors.surface0,
-                    border: `1px solid ${colors.surface1}`,
-                    borderRadius: '8px',
-                    color: colors.text,
-                  }}
-                  labelStyle={{ color: colors.subtext1 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="visitors"
-                  stroke={colors.rust}
-                  strokeWidth={3}
-                  dot={{ fill: colors.rust, r: 5 }}
-                  activeDot={{ r: 7 }}
-                  name="访问量"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem',
+            }}
+          >
+            {/* Circular Progress Placeholder */}
+            <div
+              style={{
+                width: '160px',
+                height: '160px',
+                borderRadius: '50%',
+                border: `8px solid ${colors.surface0}`,
+                borderTop: `8px solid ${colors.rust}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+              }}
+            >
+              <div style={{ fontSize: '2.5rem', fontWeight: '700', color: colors.text }}>
+                {totalVisitors}
+              </div>
+              <div style={{ fontSize: '0.85rem', color: colors.subtext0 }}>总访问量</div>
+            </div>
+            <div style={{ fontSize: '1rem', color: colors.subtext1 }}>
+              今日访问: {todayVisitors}
+            </div>
           </div>
         </section>
 
-        {/* Message Board */}
+        {/* Message Board - 瀑布流 */}
         <section
           style={{
             background: colors.mantle,
@@ -497,15 +788,8 @@ export default function HomePage() {
                   borderLeft: `4px solid ${colors.red}`,
                 }}
               >
-                <p
-                  style={{
-                    margin: 0,
-                    color: colors.red,
-                    fontSize: '0.9rem',
-                    fontWeight: '500',
-                  }}
-                >
-                  ⚠️ {error}
+                <p style={{ margin: 0, color: colors.red, fontSize: '0.9rem', fontWeight: '500' }}>
+                  {error}
                 </p>
               </div>
             )}
@@ -547,28 +831,38 @@ export default function HomePage() {
               >
                 {loading ? '发送中...' : '发送留言'}
               </button>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '0.85rem',
-                  color: colors.overlay1,
-                }}
-              >
-                💡 每个IP地址6小时内只能发送一条留言 · {newMessage.length}/150
+              <p style={{ margin: 0, fontSize: '0.85rem', color: colors.overlay1 }}>
+                每个IP地址6小时内只能发送一条留言 · {newMessage.length}/150
               </p>
             </div>
           </form>
 
-          {/* Messages List */}
-          <div>
-            {messages.map((message, index) => (
+          {/* Messages Grid */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+              gap: '1rem',
+            }}
+          >
+            {messages.map((message) => (
               <div
                 key={message.id}
                 style={{
-                  paddingBottom: '1rem',
-                  marginBottom: '1rem',
-                  borderBottom:
-                    index < messages.length - 1 ? `1px solid ${colors.surface0}` : 'none',
+                  background: 'rgba(54, 58, 79, 0.5)',
+                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  transition: 'all 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.background = 'rgba(73, 77, 100, 0.7)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.background = 'rgba(54, 58, 79, 0.5)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <p
@@ -582,13 +876,7 @@ export default function HomePage() {
                 >
                   {message.content}
                 </p>
-                <p
-                  style={{
-                    margin: '0.5rem 0 0 0',
-                    fontSize: '0.75rem',
-                    color: colors.overlay0,
-                  }}
-                >
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.75rem', color: colors.overlay0 }}>
                   {formatTime(message.timestamp)}
                 </p>
               </div>
@@ -599,9 +887,10 @@ export default function HomePage() {
                   textAlign: 'center',
                   color: colors.overlay1,
                   padding: '2rem',
+                  gridColumn: '1 / -1',
                 }}
               >
-                暂无留言，来写第一条吧！
+                暂无留言，来写第一条吧
               </p>
             )}
           </div>
@@ -611,16 +900,58 @@ export default function HomePage() {
       {/* Footer */}
       <Footer />
 
-      <style jsx>{`
-        @keyframes slideIn {
+      {/* Animations */}
+      <style jsx global>{`
+        @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateY(30px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(245, 169, 127, 0.6);
+          }
+          50% {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(245, 169, 127, 0.9);
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            transform: scale(0);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 1023px) {
+          /* 平板 */
+        }
+
+        @media (max-width: 767px) {
+          /* 移动端 */
         }
       `}</style>
     </div>
