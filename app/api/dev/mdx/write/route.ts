@@ -11,8 +11,10 @@ const MAX_FILE_SIZE = 1024 * 1024;
 
 /**
  * PUT /api/dev/mdx/write
- * Body: { path: string, content: string }
+ * Body: { path: string, metadata?: string, content: string }
  * 写入MDX文件内容（原子操作）
+ * - metadata: export const metadata = {...}; 语句（可选，保持原样不被编辑器处理）
+ * - content: markdown 内容
  */
 export async function PUT(request: NextRequest) {
   // 开发环境检查
@@ -26,19 +28,23 @@ export async function PUT(request: NextRequest) {
   try {
     // 解析请求体
     const body = await request.json();
-    const { path: relativePath, content } = body;
+    const { path: relativePath, metadata = '', content } = body;
 
     if (!relativePath || typeof content !== 'string') {
       return NextResponse.json({ error: 'Missing path or content' }, { status: 400 });
     }
 
+    // 拼接 metadata 和 content
+    // metadata 保持原样（不经过 MDXEditor），content 是编辑后的 markdown
+    const fullContent = metadata ? `${metadata}${content}` : content;
+
     // 文件大小检查
-    if (content.length > MAX_FILE_SIZE) {
+    if (fullContent.length > MAX_FILE_SIZE) {
       return NextResponse.json(
         {
           error: 'File too large',
           maxSize: MAX_FILE_SIZE,
-          actualSize: content.length,
+          actualSize: fullContent.length,
         },
         { status: 413 }
       );
@@ -52,7 +58,7 @@ export async function PUT(request: NextRequest) {
 
     try {
       // 写入临时文件
-      await writeFile(tempPath, content, 'utf-8');
+      await writeFile(tempPath, fullContent, 'utf-8');
 
       // 重命名为目标文件（原子操作）
       await rename(tempPath, absolutePath);
@@ -60,7 +66,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({
         success: true,
         path: relativePath,
-        size: content.length,
+        size: fullContent.length,
       });
     } catch (error) {
       // 清理临时文件

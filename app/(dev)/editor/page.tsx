@@ -32,6 +32,7 @@ export default function EditorPage() {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [content, setContent] = useState('');
   const [originalContent, setOriginalContent] = useState('');
+  const [metadata, setMetadata] = useState(''); // 存储 export const metadata = {...}; 部分，不经过 MDXEditor
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -103,10 +104,12 @@ export default function EditorPage() {
       setIsCompiling(true);
 
       try {
+        // 编译时需要包含完整内容（metadata + content）
+        const fullMdx = metadata ? metadata + mdx : mdx;
         const response = await fetch('/api/dev/mdx/compile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mdx, path: selectedPath }),
+          body: JSON.stringify({ mdx: fullMdx, path: selectedPath }),
         });
 
         const data = await response.json();
@@ -127,7 +130,7 @@ export default function EditorPage() {
         setIsCompiling(false);
       }
     },
-    [selectedPath]
+    [selectedPath, metadata]
   );
 
   // 防抖编译
@@ -163,6 +166,10 @@ export default function EditorPage() {
       }
 
       const data = await response.json();
+      // API 返回分离的 metadata 和 content
+      // metadata: export const metadata = {...}; 语句
+      // content: markdown 内容
+      setMetadata(data.metadata || '');
       setContent(data.content);
       setOriginalContent(data.content);
       setSelectedPath(path);
@@ -181,10 +188,12 @@ export default function EditorPage() {
     setSaveStatus('saving');
 
     try {
+      // 发送分离的 metadata 和 content
+      // API 会将它们拼接后写入文件
       const response = await fetch('/api/dev/mdx/write', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: selectedPath, content }),
+        body: JSON.stringify({ path: selectedPath, metadata, content }),
       });
 
       if (!response.ok) {
@@ -206,7 +215,7 @@ export default function EditorPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [selectedPath, isDirty, content]);
+  }, [selectedPath, isDirty, metadata, content]);
 
   // 创建文件
   const handleCreateFile = async (path: string) => {
