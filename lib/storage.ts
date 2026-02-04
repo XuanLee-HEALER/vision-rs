@@ -134,16 +134,39 @@ interface VersionedData<T> {
 
 /**
  * 原子更新操作（使用乐观锁）
+ *
+ * ⚠️ 已知限制：
+ * Edge Config 更新是异步的，存在以下并发风险：
+ * 1. 高并发场景下可能出现"丢失更新"（Lost Update）
+ * 2. 读后写之间的时间窗口内，其他请求可能已完成写入
+ * 3. Edge Config 的读写延迟使得"写入后读回验证"无法保证真正的原子性
+ *
+ * 风险场景示例：
+ * - 请求 A 读取 version=1
+ * - 请求 B 读取 version=1
+ * - 请求 A 写入 version=2
+ * - 请求 B 写入 version=2（覆盖 A 的更新）
+ * - 请求 A 验证成功（因延迟读到旧值）
+ * - 请求 B 验证成功（读到自己的值）
+ * - 结果：请求 A 的更新丢失
+ *
+ * 缓解措施：
+ * 1. 增加重试次数和随机延迟，降低冲突概率
+ * 2. 建议为写入热点添加应用层队列或互斥锁
+ * 3. 对关键数据考虑迁移到支持真正原子操作的存储（如 Redis）
+ * 4. 添加监控告警，检测异常的重试率或数据不一致
+ *
  * @param key 存储键
  * @param updateFn 更新函数，接收当前数据并返回新数据
- * @param maxRetries 最大重试次数（默认3次）
+ * @param maxRetries 最大重试次数（默认5次，增加以应对高并发）
  */
 export async function atomicUpdate<T>(
   key: string,
   updateFn: (current: T | null) => T,
-  maxRetries: number = 3
+  maxRetries: number = 5
 ): Promise<void> {
   let attempts = 0;
+  let lastKnownVersion = -1;
 
   while (attempts < maxRetries) {
     try {
@@ -151,6 +174,17 @@ export async function atomicUpdate<T>(
       const versioned = await getFromStorage<VersionedData<T>>(`versioned:${key}`);
       const currentVersion = versioned?.version || 0;
       const currentData = versioned?.data || null;
+
+      // 检测潜在的更新丢失：如果版本号回退，说明有问题
+      if (lastKnownVersion !== -1 && currentVersion < lastKnownVersion) {
+        console.error(
+          `⚠️ CRITICAL: Version rollback detected for key ${key}! ` +
+            `Expected >= ${lastKnownVersion}, got ${currentVersion}. ` +
+            `Possible lost update or data corruption.`
+        );
+      }
+
+      lastKnownVersion = currentVersion;
 
       // 应用更新函数
       const newData = updateFn(currentData);
@@ -166,31 +200,52 @@ export async function atomicUpdate<T>(
       await setToStorage(`versioned:${key}`, newVersioned);
 
       // 验证写入（读取并检查版本）
+      // 注意：在 Edge Config 环境下，这只是"最佳努力"验证
       const written = await getFromStorage<VersionedData<T>>(`versioned:${key}`);
 
-      // 在开发环境（内存存储）中，写入总是成功的
-      // 在生产环境中，我们无法真正验证版本冲突，因为 Edge Config 更新有延迟
-      // 这里我们假设写入成功，因为 Edge Config 的更新通常很快
-      if (written?.version === newVersioned.version || !useEdgeConfig) {
-        return; // 成功
+      // 在开发环境（内存存储）中，写入是同步的，可以可靠验证
+      // 在生产环境中，由于 Edge Config 延迟，验证结果可能不准确
+      if (!useEdgeConfig) {
+        // 内存存储：可靠验证
+        if (written?.version === newVersioned.version) {
+          return; // 成功
+        }
+      } else {
+        // Edge Config：宽松验证（只要写入完成即认为成功）
+        // 真正的冲突检测依赖于下次读取时的版本号检查
+        if (written?.version === newVersioned.version || written?.version === currentVersion + 1) {
+          return; // 成功（或可能成功）
+        }
       }
 
-      // 版本冲突，重试
+      // 版本冲突或验证失败，重试
       attempts++;
-      console.warn(`Version conflict on key ${key}, attempt ${attempts}/${maxRetries}`);
+      console.warn(
+        `⚠️ Version conflict on key ${key}, attempt ${attempts}/${maxRetries}. ` +
+          `Expected version ${newVersioned.version}, got ${written?.version || 'null'}`
+      );
 
-      // 等待一小段时间后重试
-      await new Promise((resolve) => setTimeout(resolve, 100 * attempts));
+      // 指数退避 + 随机抖动，降低多个请求同时重试的概率
+      const baseDelay = 100 * Math.pow(2, attempts - 1); // 100, 200, 400, 800, 1600ms
+      const jitter = Math.random() * baseDelay * 0.5; // 0-50% 随机抖动
+      await new Promise((resolve) => setTimeout(resolve, baseDelay + jitter));
     } catch (error) {
-      console.error(`Error in atomic update for key ${key}:`, error);
+      console.error(`❌ Error in atomic update for key ${key}:`, error);
       attempts++;
 
       if (attempts >= maxRetries) {
-        throw new Error(`Failed to update ${key} after ${maxRetries} attempts`);
+        // 记录失败告警（建议接入监控系统）
+        console.error(
+          `🚨 ALERT: Failed to atomically update ${key} after ${maxRetries} attempts. ` +
+            `This may indicate high contention or storage issues. Consider adding application-level queueing.`
+        );
+        throw new Error(`Failed to update ${key} after ${maxRetries} attempts: ${error}`);
       }
 
-      // 等待后重试
-      await new Promise((resolve) => setTimeout(resolve, 100 * attempts));
+      // 等待后重试（指数退避）
+      const baseDelay = 100 * Math.pow(2, attempts - 1);
+      const jitter = Math.random() * baseDelay * 0.5;
+      await new Promise((resolve) => setTimeout(resolve, baseDelay + jitter));
     }
   }
 

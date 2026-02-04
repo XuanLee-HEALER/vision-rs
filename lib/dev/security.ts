@@ -16,7 +16,7 @@ export function isDevelopment(): boolean {
 
 /**
  * 开发环境守卫 - 如果不在开发环境，返回404响应
- * 多层防护：检查 NODE_ENV 和 Vercel 环境变量
+ * 多层防护：检查 NODE_ENV、Vercel 环境变量、DEV_MDX_TOKEN
  */
 export function devGuard(): NextResponse | null {
   // 检查1: NODE_ENV
@@ -24,8 +24,15 @@ export function devGuard(): NextResponse | null {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  // 检查2: Vercel 生产环境（防止 NODE_ENV 误配）
-  if (process.env.VERCEL_ENV === 'production' || process.env.VERCEL) {
+  // 检查2: Vercel 环境（防止 NODE_ENV 误配）
+  // 在任何 Vercel 环境下都拒绝访问（包括预览和生产）
+  if (process.env.VERCEL_ENV || process.env.VERCEL) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  // 检查3: 强校验 - 要求显式的 DEV_MDX_ENABLED 标志
+  // 防止在非预期环境下意外启用 dev API
+  if (process.env.DEV_MDX_ENABLED !== 'true') {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 

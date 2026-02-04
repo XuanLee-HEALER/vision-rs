@@ -1,4 +1,5 @@
 import { getFromStorage, setToStorage } from '@/lib/storage';
+import { randomInt } from 'crypto';
 
 interface VerificationData {
   code: string;
@@ -20,8 +21,7 @@ const RATELIMIT_STORAGE_KEY = 'auth:ratelimits';
  */
 export function generateCode(): string {
   // 使用 crypto.randomInt 生成密码学安全的随机数
-  const crypto = require('crypto');
-  return crypto.randomInt(100000, 1000000).toString();
+  return randomInt(100000, 1000000).toString();
 }
 
 /**

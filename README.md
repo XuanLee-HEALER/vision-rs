@@ -33,6 +33,14 @@ Vision-RS 是一个现代化的 Rust 学习平台，旨在通过**图文结合**
 - **精美设计**: Catppuccin Macchiato 主题，舒适的阅读体验
 - **开发者友好**: 开发模式下的实时 MDX 编辑器
 
+### 最近更新 (2026-02)
+
+- ✨ 升级 TypeScript 编译目标到 ESNext，支持最新 JavaScript 特性
+- 🔒 增强开发 API 安全性，要求显式启用标志（`DEV_MDX_ENABLED`）
+- 🐛 修复模块导入不一致问题（`crypto` 模块）
+- 📈 改进并发写入的数据一致性处理和监控能力
+- 🎨 全新杂志式主页设计，悬浮球个人简介交互
+
 ## 学习内容
 
 当前内容分为 6 个主题分类：
@@ -53,12 +61,13 @@ Vision-RS 是一个现代化的 Rust 学习平台，旨在通过**图文结合**
 | 类别     | 技术                                |
 | -------- | ----------------------------------- |
 | 框架     | Next.js 16 (App Router) + React 19  |
-| 语言     | TypeScript 5                        |
+| 语言     | TypeScript 5 (ESNext target)        |
 | 样式     | Tailwind CSS (Catppuccin Macchiato) |
 | 内容     | MDX                                 |
 | 代码高亮 | Shiki                               |
 | 搜索     | Fuse.js                             |
 | 认证     | iron-session + Resend               |
+| 存储     | Vercel Edge Config / 内存           |
 | 部署     | Vercel                              |
 
 ### 项目结构
@@ -172,20 +181,30 @@ pnpm tsc --noEmit  # TypeScript
 
 ## 环境变量
 
+### 本地开发最小配置
+
 ```env
 # 必需 - 管理后台
 ADMIN_EMAILS=admin@example.com
 SESSION_SECRET=xxx  # openssl rand -base64 32
 RESEND_API_KEY=re_xxx
 
-# 可选 - 可见性存储 (Vercel Edge Config)
+# 必需 - 启用开发 API (MDX 编辑器)
+DEV_MDX_ENABLED=true
+```
+
+### 生产环境额外配置
+
+```env
+# Edge Config 存储 (Vercel 自动注入)
 EDGE_CONFIG=xxx
+VERCEL_API_TOKEN=xxx
 
 # 可选 - SEO
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 ```
 
-本地开发无需配置，使用 fail-open 策略。
+详细配置说明见 `.env.local.example`。
 
 ## 贡献
 
