@@ -159,8 +159,8 @@ export default function PreviewPane({ code, error }: PreviewPaneProps) {
 
   // 渲染预览
   return (
-    <div className="h-full overflow-auto">
-      <div className="mx-auto max-w-4xl px-8 py-6">
+    <div className="px-10 py-8">
+      <div className="mx-auto max-w-4xl">
         <MDXProvider components={mdxComponents}>
           <div className="prose prose-invert max-w-none">
             <MDXContent />

@@ -23,6 +23,10 @@ interface CompileError {
   column?: number;
 }
 
+// 最小宽度常量（保留两排工具栏的空间）
+const MIN_EDITOR_WIDTH = 400;
+const MIN_PREVIEW_WIDTH = 300;
+
 export default function EditorPage() {
   const router = useRouter();
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
@@ -47,6 +51,18 @@ export default function EditorPage() {
   // 防抖timer
   const compileTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileTreeRefreshRef = useRef<() => void>(() => {});
+
+  // 分割条拖动状态
+  const [editorWidth, setEditorWidth] = useState(50); // 编辑器宽度百分比
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragStartXRef = useRef<number>(0); // 拖动开始时的鼠标X位置
+  const dragStartWidthRef = useRef<number>(50); // 拖动开始时的编辑器宽度百分比
+
+  // 同步滚动 refs
+  const editorScrollRef = useRef<HTMLDivElement>(null);
+  const previewScrollRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef<'editor' | 'preview' | null>(null);
 
   // 检查开发环境
   useEffect(() => {
@@ -327,6 +343,102 @@ export default function EditorPage() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+  // 分割条拖动处理
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      // 记录拖动开始时的鼠标位置和当前宽度
+      dragStartXRef.current = e.clientX;
+      dragStartWidthRef.current = editorWidth;
+      setIsDragging(true);
+    },
+    [editorWidth]
+  );
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    // 拖动时设置全局光标样式，防止光标跳动
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      const fileTreeWidth = 256; // w-64 = 16rem = 256px
+      const availableWidth = rect.width - fileTreeWidth;
+
+      // 计算鼠标移动的距离，转换为百分比变化
+      const deltaX = e.clientX - dragStartXRef.current;
+      const deltaPercent = (deltaX / availableWidth) * 100;
+      const newPercent = dragStartWidthRef.current + deltaPercent;
+
+      // 计算最小宽度百分比
+      const minEditorPercent = (MIN_EDITOR_WIDTH / availableWidth) * 100;
+      const maxEditorPercent = 100 - (MIN_PREVIEW_WIDTH / availableWidth) * 100;
+
+      // 限制在有效范围内
+      const clampedPercent = Math.max(minEditorPercent, Math.min(maxEditorPercent, newPercent));
+      setEditorWidth(clampedPercent);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      // 恢复默认光标样式
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      // 清理时也恢复默认样式
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging]);
+
+  // 同步滚动处理
+  const handleEditorScroll = useCallback(() => {
+    if (isScrollingRef.current === 'preview') return;
+    if (!editorScrollRef.current || !previewScrollRef.current) return;
+
+    isScrollingRef.current = 'editor';
+
+    const editor = editorScrollRef.current;
+    const preview = previewScrollRef.current;
+
+    const scrollRatio = editor.scrollTop / (editor.scrollHeight - editor.clientHeight || 1);
+    preview.scrollTop = scrollRatio * (preview.scrollHeight - preview.clientHeight);
+
+    // 使用 requestAnimationFrame 重置标志，避免死循环
+    requestAnimationFrame(() => {
+      isScrollingRef.current = null;
+    });
+  }, []);
+
+  const handlePreviewScroll = useCallback(() => {
+    if (isScrollingRef.current === 'editor') return;
+    if (!editorScrollRef.current || !previewScrollRef.current) return;
+
+    isScrollingRef.current = 'preview';
+
+    const editor = editorScrollRef.current;
+    const preview = previewScrollRef.current;
+
+    const scrollRatio = preview.scrollTop / (preview.scrollHeight - preview.clientHeight || 1);
+    editor.scrollTop = scrollRatio * (editor.scrollHeight - editor.clientHeight);
+
+    requestAnimationFrame(() => {
+      isScrollingRef.current = null;
+    });
+  }, []);
+
   if (process.env.NODE_ENV === 'production') {
     return null;
   }
@@ -374,9 +486,9 @@ export default function EditorPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div ref={containerRef} className="flex flex-1 overflow-hidden">
         {/* File Tree */}
-        <div className="w-64 border-r border-overlay0">
+        <div className="w-64 flex-shrink-0 border-r border-overlay0">
           <FileTree
             selectedPath={selectedPath}
             onSelectFile={loadFile}
@@ -388,36 +500,47 @@ export default function EditorPage() {
         </div>
 
         {/* Editor */}
-        <div className="flex-1 border-r border-overlay0 bg-mantle">
-          <div className="flex h-full flex-col">
-            <div className="border-b border-overlay0 bg-surface0 px-4 py-2">
-              <h2 className="text-sm font-medium text-text">Editor</h2>
-            </div>
-            <div className="flex-1 overflow-hidden p-4">
-              {selectedPath ? (
-                <div className="h-full">
-                  <EditorWrapper content={content} onChange={setContent} />
+        <div
+          className="flex flex-col bg-mantle"
+          style={{ width: `${editorWidth}%`, minWidth: MIN_EDITOR_WIDTH }}
+        >
+          <div className="flex-shrink-0 border-b border-overlay0 bg-surface0 px-4 py-2">
+            <h2 className="text-sm font-medium text-text">Editor</h2>
+          </div>
+          <div ref={editorScrollRef} className="flex-1 overflow-auto" onScroll={handleEditorScroll}>
+            {selectedPath ? (
+              <div className="h-full min-h-0">
+                <EditorWrapper content={content} onChange={setContent} />
+              </div>
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center text-subtext0">
+                  <p className="text-sm">Select a file to start editing</p>
                 </div>
-              ) : (
-                <div className="flex h-full items-center justify-center">
-                  <div className="text-center text-subtext0">
-                    <p className="text-sm">Select a file to start editing</p>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Resizer */}
+        <div
+          className={`w-1 flex-shrink-0 cursor-col-resize bg-overlay0 transition-colors hover:bg-blue ${
+            isDragging ? 'bg-blue' : ''
+          }`}
+          onMouseDown={handleMouseDown}
+        />
+
         {/* Preview */}
-        <div className="flex-1 bg-base">
-          <div className="flex h-full flex-col">
-            <div className="border-b border-overlay0 bg-surface0 px-4 py-2">
-              <h2 className="text-sm font-medium text-text">Preview</h2>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <PreviewPane code={compiledCode} error={compileError} />
-            </div>
+        <div className="flex flex-1 flex-col bg-base" style={{ minWidth: MIN_PREVIEW_WIDTH }}>
+          <div className="flex-shrink-0 border-b border-overlay0 bg-surface0 px-4 py-2">
+            <h2 className="text-sm font-medium text-text">Preview</h2>
+          </div>
+          <div
+            ref={previewScrollRef}
+            className="flex-1 overflow-auto"
+            onScroll={handlePreviewScroll}
+          >
+            <PreviewPane code={compiledCode} error={compileError} />
           </div>
         </div>
       </div>
